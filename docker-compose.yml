@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: ai-bookstore-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-admin}
+
+  server:
+    build: ./server
+    container_name: ai-bookstore-server
+    depends_on:
+      - mongo
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env
+    volumes:
+      - ./server:/app
+      - server_uploads:/app/uploads
+
+  client:
+    build: ./client
+    container_name: ai-bookstore-client
+    depends_on:
+      - server
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./client/.env
+    volumes:
+      - ./client:/app
+      - client_node_modules:/app/node_modules
+
+volumes:
+  mongo_data:
+  server_uploads:
+  client_node_modules:

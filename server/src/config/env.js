@@ -43,4 +43,13 @@ module.exports = {
   EMBEDDING_DIM: Number(process.env.EMBEDDING_DIM) || 384,
   VECTOR_BACKEND: process.env.VECTOR_BACKEND || "local",
   VECTOR_INDEX: process.env.VECTOR_INDEX || "book_embeddings",
+
+  MAIL_HOST: process.env.MAIL_HOST || "smtp.example.com",
+  MAIL_PORT: Number(process.env.MAIL_PORT) || 587,
+  MAIL_USER: process.env.MAIL_USER || "",
+  MAIL_PASS: process.env.MAIL_PASS || "",
+  MAIL_FROM: process.env.MAIL_FROM || "AI Bookstore <no-reply@example.com>",
+
+  ADMIN_EMAIL: process.env.ADMIN_EMAIL || "admin@bookstore.com",
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || "Admin@12345",
 };

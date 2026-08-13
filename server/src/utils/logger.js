@@ -1,5 +1,18 @@
 /**
- * utils/logger.js — minimal structured logger (pino-style fallback).
+ * utils/logger.js — minimal structured logger.
  */
-// TODO
-module.exports = {};
+/* eslint-disable no-console */
+function ts() {
+  return new Date().toISOString();
+}
+
+const logger = {
+  info: (...args) => console.log(`[info]`, ...args),
+  warn: (...args) => console.warn(`[warn]`, ts(), ...args),
+  error: (...args) => console.error(`[error]`, ts(), ...args),
+  debug: (...args) => {
+    if (process.env.NODE_ENV !== "production") console.log(`[debug]`, ts(), ...args);
+  },
+};
+
+module.exports = logger;

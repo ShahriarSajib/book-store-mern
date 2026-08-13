@@ -11,7 +11,7 @@ function isValidationError(err) {
 
 function normalizeError(err) {
   if (err instanceof AppError) {
-    return { statusCode: err.statusCode, code: err.code, message: err.message };
+    return { statusCode: err.statusCode, code: err.code, message: err.message, details: err.details };
   }
 
   if (err && err.name === "ValidationError") {

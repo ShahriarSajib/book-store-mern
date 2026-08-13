@@ -1,5 +1,10 @@
 /**
  * utils/catchAsync.js — async wrapper.
  */
-// TODO
-module.exports = {};
+function catchAsync(fn) {
+  return function wrapped(req, res, next) {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+}
+
+module.exports = catchAsync;

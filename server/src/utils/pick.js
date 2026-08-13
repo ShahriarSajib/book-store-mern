@@ -1,5 +1,11 @@
 /**
  * utils/pick.js — object field picker.
  */
-// TODO
-module.exports = {};
+function pick(source, keys) {
+  return keys.reduce((acc, key) => {
+    if (source && source[key] !== undefined) acc[key] = source[key];
+    return acc;
+  }, {});
+}
+
+module.exports = pick;

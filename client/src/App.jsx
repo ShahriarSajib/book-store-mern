@@ -8,7 +8,6 @@
 import AppRouter from "./routes/AppRouter.jsx";
 import Navbar from "./components/layout/Navbar.jsx";
 import Footer from "./components/layout/Footer.jsx";
-import ChatbotWidget from "./features/chatbot/ChatbotWidget.jsx";
 
 export default function App() {
   return (
@@ -18,7 +17,6 @@ export default function App() {
         <AppRouter />
       </main>
       <Footer />
-      <ChatbotWidget />
     </div>
   );
 }

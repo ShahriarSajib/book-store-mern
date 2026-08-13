@@ -1,9 +1,18 @@
 /**
  * pages/public/Home.jsx
- *   Hero + feature highlights. Auth-focused landing.
+ * Hero + features + featured categories + auth flow CTA.
+ * Uses the shared design tokens from styles/index.css so it matches the auth pages.
  */
 import { Link } from "react-router-dom";
-import { FaBook, FaBrain, FaShieldAlt, FaUserPlus, FaSignInAlt } from "react-icons/fa";
+import {
+  FaBook,
+  FaBrain,
+  FaShieldAlt,
+  FaUserPlus,
+  FaSignInAlt,
+  FaArrowRight,
+  FaStar,
+} from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
 import Button from "../../components/ui/Button";
 
@@ -11,12 +20,12 @@ const features = [
   {
     icon: FaBook,
     title: "Catalog & reviews",
-    text: "Browse books by category, author and publisher, with ratings and reviews.",
+    text: "Browse books by category, author and publisher, with real ratings and reviews.",
   },
   {
     icon: FaBrain,
     title: "Semantic search",
-    text: "Search with natural language, powered by embedding-based book recommendations.",
+    text: "Search with natural language — embedding-based recommendations find what you mean.",
   },
   {
     icon: FaShieldAlt,
@@ -25,89 +34,149 @@ const features = [
   },
 ];
 
+const categories = [
+  { name: "Fiction", count: "1.2k+" },
+  { name: "AI & ML", count: "340" },
+  { name: "Self-help", count: "210" },
+  { name: "Children", count: "480" },
+];
+
 export default function Home() {
   const { user, isAuthenticated, isAdmin, isLoading } = useAuth();
 
   return (
-    <div className="space-y-16">
-      <section className="mx-auto max-w-3xl pt-14 text-center">
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-          The AI-powered{" "}
-          <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            bookstore
-          </span>
-        </h1>
-        <p className="mt-4 text-lg text-slate-600">
-          Discover books you'll love with semantic search and personalized recommendations.
-        </p>
-
-        <div className="mt-8 flex items-center justify-center gap-3">
-          {isLoading ? null : isAuthenticated ? (
-            <>
-              <Link to={isAdmin ? "/admin" : "/profile"}>
-                <Button size="lg">{isAdmin ? "Open admin panel" : "Go to my profile"}</Button>
-              </Link>
-              <Link to="/books">
-                <Button variant="outline" size="lg">
-                  Browse books
-                </Button>
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link to="/register">
-                <Button size="lg">
-                  <FaUserPlus /> Create account
-                </Button>
-              </Link>
-              <Link to="/login">
-                <Button variant="outline" size="lg">
-                  <FaSignInAlt /> Log in
-                </Button>
-              </Link>
-            </>
-          )}
-        </div>
-
-        {!isLoading && isAuthenticated && (
-          <p className="mt-4 text-sm text-slate-500">
-            Signed in as <span className="font-medium text-slate-700">{user.email}</span> ({user.role})
-          </p>
-        )}
-      </section>
-
-      <section className="grid gap-6 md:grid-cols-3">
-        {features.map(({ icon: Icon, title, text }) => (
-          <div key={title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-xl text-indigo-600">
-              <Icon />
+    <div>
+      {/* Hero */}
+      <section className="section">
+        <div className="hero px-6 py-16 sm:px-12 sm:py-24">
+          <div className="relative z-10 mx-auto max-w-3xl text-center">
+            <span className="chip border-white/40 bg-white/10 text-white/90 backdrop-blur">
+              <FaStar className="text-amber-300" /> New: AI-curated weekly picks
             </span>
-            <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-            <p className="mt-1 text-sm text-slate-600">{text}</p>
+            <h1 className="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+              The AI-powered{" "}
+              <span className="bg-gradient-to-r from-amber-200 via-pink-200 to-white bg-clip-text text-transparent">
+                bookstore
+              </span>
+            </h1>
+            <p className="mx-auto mt-5 max-w-xl text-base text-indigo-100 sm:text-lg">
+              Discover books you&apos;ll love with semantic search, real reviews, and personalized
+              recommendations tuned to your taste.
+            </p>
+
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              {!isLoading && isAuthenticated ? (
+                <>
+                  <Link to={isAdmin ? "/admin" : "/profile"}>
+                    <Button size="lg" className="bg-white !text-brand-700 hover:!bg-white">
+                      {isAdmin ? "Open admin panel" : "Go to my profile"}
+                    </Button>
+                  </Link>
+                  <Link to="/books">
+                    <Button size="lg" variant="ghost" className="!text-white hover:!bg-white/10">
+                      Browse books <FaArrowRight />
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link to="/register">
+                    <Button size="lg" className="bg-white !text-brand-700 hover:!bg-white">
+                      <FaUserPlus /> Create account
+                    </Button>
+                  </Link>
+                  <Link to="/login">
+                    <Button size="lg" variant="ghost" className="!text-white hover:!bg-white/10">
+                      <FaSignInAlt /> Log in
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </div>
+
+            {!isLoading && isAuthenticated && (
+              <p className="mt-5 text-sm text-indigo-100">
+                Signed in as <span className="font-semibold text-white">{user.email}</span>
+                <span className="ml-2 inline-flex rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                  {user.role}
+                </span>
+              </p>
+            )}
           </div>
-        ))}
+        </div>
       </section>
 
-      <section className="mx-auto max-w-2xl rounded-2xl bg-indigo-50 p-8 text-center">
-        <h2 className="text-2xl font-bold text-slate-900">Try the authentication flows</h2>
-        <p className="mt-2 text-sm text-slate-600">
-          Register, verify your email, log in, reset your password, and manage users with role-based admin access.
-          <br />
-          Admin login: <code className="rounded bg-white px-1.5 py-0.5 text-xs">admin@bookstore.com</code> /{" "}
-          <code className="rounded bg-white px-1.5 py-0.5 text-xs">Admin@12345</code>
-        </p>
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <Link to="/register">
-            <Button>Sign up</Button>
-          </Link>
-          <Link to="/forgot-password">
-            <Button variant="outline">Forgot password</Button>
-          </Link>
-          {isAdmin && (
-            <Link to="/admin/users">
-              <Button variant="secondary">Manage users</Button>
+      {/* Features */}
+      <section className="section">
+        <div className="mb-8 flex items-end justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-brand-600">
+              Why AI Bookstore
+            </p>
+            <h2 className="mt-1 text-2xl font-bold text-ink-900 sm:text-3xl">
+              Built for how readers actually shop
+            </h2>
+          </div>
+        </div>
+        <div className="grid gap-5 md:grid-cols-3">
+          {features.map(({ icon: Icon, title, text }) => (
+            <article key={title} className="card p-6">
+              <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-xl text-brand-600">
+                <Icon />
+              </span>
+              <h3 className="text-base font-semibold text-ink-900">{title}</h3>
+              <p className="mt-1 text-sm text-ink-500">{text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Categories */}
+      <section className="section">
+        <div className="mb-8">
+          <p className="text-xs font-semibold uppercase tracking-wider text-brand-600">
+            Browse
+          </p>
+          <h2 className="mt-1 text-2xl font-bold text-ink-900 sm:text-3xl">Popular categories</h2>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {categories.map((c) => (
+            <Link
+              key={c.name}
+              to={`/books?cat=${encodeURIComponent(c.name)}`}
+              className="card flex items-center justify-between p-5 transition-transform hover:-translate-y-0.5"
+            >
+              <div>
+                <p className="text-base font-semibold text-ink-900">{c.name}</p>
+                <p className="text-xs text-ink-500">{c.count} titles</p>
+              </div>
+              <FaArrowRight className="text-brand-500" />
             </Link>
-          )}
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="section">
+        <div className="card overflow-hidden p-8 sm:p-10">
+          <div className="grid items-center gap-6 md:grid-cols-3">
+            <div className="md:col-span-2">
+              <h2 className="text-2xl font-bold text-ink-900 sm:text-3xl">
+                Try the full auth flow in seconds
+              </h2>
+              <p className="mt-2 text-sm text-ink-500">
+                Register, verify your email, log in, reset your password — every step is wired up
+                end-to-end.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 md:justify-end">
+              <Link to="/register"><Button>Sign up</Button></Link>
+              <Link to="/forgot-password"><Button variant="secondary">Forgot password</Button></Link>
+              {isAdmin && (
+                <Link to="/admin/users"><Button variant="ghost">Manage users</Button></Link>
+              )}
+            </div>
+          </div>
         </div>
       </section>
     </div>

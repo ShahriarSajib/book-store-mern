@@ -1,93 +1,142 @@
 /**
  * components/layout/Navbar.jsx
- * Responsibility: top navigation (logo, links, auth-aware actions).
+ * Sticky glass navbar with desktop links, mobile drawer, cart badge, user menu.
  */
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { FaBook, FaHome, FaShieldAlt, FaSignOutAlt, FaUser } from "react-icons/fa";
+import {
+  FaBars,
+  FaBook,
+  FaShieldAlt,
+  FaShoppingCart,
+  FaSignOutAlt,
+  FaTimes,
+  FaUser,
+} from "react-icons/fa";
 import toast from "react-hot-toast";
 import useAuth from "../../hooks/useAuth";
 import Button from "../ui/Button";
 
-const linkClass = ({ isActive }) =>
-  `inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-    isActive ? "bg-indigo-50 text-indigo-700" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-  }`;
+const navLink = ({ isActive }) =>
+  `navbar__link${isActive ? " is-active" : ""}`;
+
+const drawerLink = ({ isActive }) =>
+  `navbar__drawer-link${isActive ? " is-active" : ""}`;
 
 export default function Navbar() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  // Close user menu on outside click
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const onClick = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [menuOpen]);
 
   const handleLogout = async () => {
+    setMenuOpen(false);
+    setDrawerOpen(false);
     await logout();
     toast.success("Logged out");
     navigate("/");
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2 text-xl font-bold text-indigo-600">
-          <FaBook className="text-2xl" />
+    <header className="navbar">
+      <div className="navbar__inner">
+        <Link to="/" className="navbar__brand" onClick={() => setDrawerOpen(false)}>
+          <span className="navbar__brand-mark">
+            <FaBook />
+          </span>
           <span>AI Bookstore</span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
-          <NavLink to="/" className={linkClass} end>
-            <FaHome /> Home
+        <nav className="navbar__menu" aria-label="Primary">
+          <NavLink to="/" className={navLink} end>
+            Home
           </NavLink>
-          <NavLink to="/books" className={linkClass}>
+          <NavLink to="/books" className={navLink}>
             Books
           </NavLink>
           {isAdmin && (
-            <NavLink to="/admin" className={linkClass}>
+            <NavLink to="/admin" className={navLink}>
               <FaShieldAlt /> Admin
             </NavLink>
           )}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="navbar__actions">
+          {isAuthenticated && (
+            <Link
+              to="/cart"
+              className="navbar__link relative"
+              aria-label="View cart"
+            >
+              <FaShoppingCart />
+              <span className="absolute -right-0.5 -top-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-accent-500 px-1 text-[10px] font-bold text-white">
+                0
+              </span>
+            </Link>
+          )}
+
           {isAuthenticated ? (
-            <div className="relative">
+            <div className="relative" ref={menuRef}>
               <button
+                type="button"
                 onClick={() => setMenuOpen((v) => !v)}
-                className="flex items-center gap-2 rounded-full border border-slate-200 py-1 pl-1 pr-3 hover:bg-slate-50"
+                className="avatar-btn"
+                aria-haspopup="menu"
+                aria-expanded={menuOpen}
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
-                  {user.name.charAt(0).toUpperCase()}
+                <span className="avatar">
+                  {user.name?.charAt(0).toUpperCase()}
                 </span>
-                <span className="text-sm font-medium text-slate-700">{user.name.split(" ")[0]}</span>
+                <span className="hidden text-sm font-medium text-ink-700 sm:inline">
+                  {user.name?.split(" ")[0]}
+                </span>
               </button>
 
               {menuOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-xl border border-slate-200 bg-white py-1 shadow-lg">
-                  <div className="border-b border-slate-100 px-4 py-2">
-                    <p className="truncate text-sm font-medium text-slate-900">{user.name}</p>
-                    <p className="truncate text-xs text-slate-500">{user.email}</p>
-                    <span className="mt-1 inline-block rounded bg-indigo-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700">
-                      {user.role}
-                    </span>
+                <div className="user-menu" role="menu">
+                  <div className="user-menu__head">
+                    <p className="truncate text-sm font-semibold text-ink-900">
+                      {user.name}
+                    </p>
+                    <p className="truncate text-xs text-ink-500">{user.email}</p>
+                    <span className="user-menu__role">{user.role}</span>
                   </div>
                   <Link
                     to="/profile"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                    className="user-menu__item"
+                    role="menuitem"
                   >
-                    <FaUser className="text-slate-400" /> My profile
+                    <FaUser /> <span className="text-ink-400" />&nbsp;My profile
                   </Link>
                   {isAdmin && (
                     <Link
                       to="/admin"
                       onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                      className="user-menu__item"
+                      role="menuitem"
                     >
-                      <FaShieldAlt className="text-slate-400" /> Admin panel
+                      <FaShieldAlt className="text-ink-400" /> Admin panel
                     </Link>
                   )}
                   <button
+                    type="button"
                     onClick={handleLogout}
-                    className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                    className="user-menu__item user-menu__item--danger"
+                    role="menuitem"
                   >
                     <FaSignOutAlt /> Log out
                   </button>
@@ -97,17 +146,60 @@ export default function Navbar() {
           ) : (
             <>
               <Link to="/login">
-                <Button variant="ghost" size="sm">
-                  Log in
-                </Button>
+                <Button variant="ghost" size="sm">Log in</Button>
               </Link>
-              <Link to="/register">
+              <Link to="/register" className="hidden sm:inline-flex">
                 <Button size="sm">Sign up</Button>
               </Link>
             </>
           )}
+
+          <button
+            type="button"
+            className="navbar__burger"
+            onClick={() => setDrawerOpen((v) => !v)}
+            aria-label="Toggle menu"
+            aria-expanded={drawerOpen}
+          >
+            {drawerOpen ? <FaTimes /> : <FaBars />}
+          </button>
         </div>
       </div>
+
+      {drawerOpen && (
+        <div className="navbar__drawer">
+          <NavLink to="/" className={drawerLink} end onClick={() => setDrawerOpen(false)}>
+            Home
+          </NavLink>
+          <NavLink to="/books" className={drawerLink} onClick={() => setDrawerOpen(false)}>
+            Books
+          </NavLink>
+          {isAdmin && (
+            <NavLink to="/admin" className={drawerLink} onClick={() => setDrawerOpen(false)}>
+              Admin
+            </NavLink>
+          )}
+          {!isAuthenticated && (
+            <>
+              <Link to="/login" className="navbar__drawer-link" onClick={() => setDrawerOpen(false)}>
+                Log in
+              </Link>
+              <Link to="/register" className="navbar__drawer-link" onClick={() => setDrawerOpen(false)}>
+                Sign up
+              </Link>
+            </>
+          )}
+          {isAuthenticated && (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="navbar__drawer-link text-red-600"
+            >
+              Log out
+            </button>
+          )}
+        </div>
+      )}
     </header>
   );
 }

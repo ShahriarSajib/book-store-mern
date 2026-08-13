@@ -13,12 +13,22 @@ const connectDB = require("./config/db");
 
 async function bootstrap() {
   await connectDB();
-  app.listen(env.PORT, () => {
-    console.log(`[server] listening on :${env.PORT}`);
+  const server = app.listen(env.PORT, () => {
+    console.log(`[server] running on :${env.PORT} (${env.NODE_ENV})`);
+  });
+
+  server.on("error", (err) => {
+    console.error("[server] failed to start:", err.message);
+    process.exit(1);
   });
 }
 
 bootstrap().catch((err) => {
-  console.error("[server] fatal startup error:", err);
+  console.error("[server] fatal startup error:", err.message);
+  if (err && err.name === "MongooseServerSelectionError") {
+    console.error(
+      "[server] hint: MongoDB Atlas could not be reached. Check MONGO_URI in .env, whitelist your current IP in Atlas, and verify your network."
+    );
+  }
   process.exit(1);
 });

@@ -1,7 +1,6 @@
 /**
  * pages/auth/Register.jsx
  */
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
@@ -15,7 +14,6 @@ import AuthShell from "./AuthShell";
 export default function Register() {
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
-  const [verificationLink, setVerificationLink] = useState(null);
 
   const {
     register,
@@ -25,47 +23,13 @@ export default function Register() {
 
   const onSubmit = async (data) => {
     try {
-      const result = await registerUser(data);
-      toast.success("Account created! Check your email to verify.");
-      if (result.verificationLink) setVerificationLink(result.verificationLink);
-      else navigate("/login", { replace: true });
+      await registerUser(data);
+      toast.success("Account created! A verification email has been sent. Please verify your email to log in.");
+      navigate("/login", { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.error?.message || "Registration failed");
     }
   };
-
-  if (verificationLink) {
-    return (
-      <AuthShell
-        title="Almost there — verify your email"
-        subtitle="We sent a verification link to your inbox."
-        footer={
-          <>
-            Already verified?{" "}
-            <Link className="font-medium text-indigo-600 hover:underline" to="/login">
-              Go to login
-            </Link>
-          </>
-        }
-      >
-        <div className="space-y-4 text-center">
-          <p className="text-sm text-slate-600">
-            Click the button below to confirm your email address. It expires in 24 hours.
-          </p>
-          <Button
-            onClick={() => {
-              window.location.href = verificationLink;
-            }}
-          >
-            Verify my email
-          </Button>
-          <p className="text-xs text-slate-400">
-            This link is shown only in development mode. In production it is sent by email.
-          </p>
-        </div>
-      </AuthShell>
-    );
-  }
 
   return (
     <AuthShell

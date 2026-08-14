@@ -1,10 +1,9 @@
 /**
  * pages/auth/ForgotPassword.jsx
  */
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import authApi from "../../services/authApi";
 import { forgotPasswordSchema } from "../../utils/validation";
@@ -13,7 +12,7 @@ import Button from "../../components/ui/Button";
 import AuthShell from "./AuthShell";
 
 export default function ForgotPassword() {
-  const [resetLink, setResetLink] = useState(null);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -22,43 +21,13 @@ export default function ForgotPassword() {
 
   const onSubmit = async ({ email }) => {
     try {
-      const result = await authApi.forgotPassword(email);
-      toast.success(result.message);
-      if (result.resetLink) setResetLink(result.resetLink);
+      await authApi.forgotPassword(email);
+      toast.success("If an account exists with that email, a reset link has been sent.");
+      navigate("/login", { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.error?.message || "Something went wrong");
     }
   };
-
-  if (resetLink) {
-    return (
-      <AuthShell
-        title="Check your email"
-        subtitle="A reset link has been generated."
-        footer={
-          <>
-            Remembered your password?{" "}
-            <Link className="font-medium text-indigo-600 hover:underline" to="/login">
-              Back to login
-            </Link>
-          </>
-        }
-      >
-        <div className="space-y-4 text-center">
-          <p className="text-sm text-slate-600">
-            In development the reset link is shown below. In production it is emailed to you.
-          </p>
-          <Button
-            onClick={() => {
-              window.location.href = resetLink;
-            }}
-          >
-            Open reset page
-          </Button>
-        </div>
-      </AuthShell>
-    );
-  }
 
   return (
     <AuthShell

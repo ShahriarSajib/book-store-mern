@@ -2,13 +2,14 @@
  * pages/auth/VerifyEmail.jsx
  */
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 import authApi from "../../services/authApi";
-import Button from "../../components/ui/Button";
 import AuthShell from "./AuthShell";
 
 export default function VerifyEmail() {
   const { token } = useParams();
+  const navigate = useNavigate();
   const [status, setStatus] = useState("loading");
 
   useEffect(() => {
@@ -16,7 +17,9 @@ export default function VerifyEmail() {
     (async () => {
       try {
         await authApi.verifyEmail(token);
-        if (!cancelled) setStatus("success");
+        if (cancelled) return;
+        toast.success("Email verified! You can now log in.");
+        navigate("/login", { replace: true });
       } catch {
         if (!cancelled) setStatus("error");
       }
@@ -24,37 +27,13 @@ export default function VerifyEmail() {
     return () => {
       cancelled = true;
     };
-  }, [token]);
+  }, [token, navigate]);
 
   if (status === "loading") {
     return (
       <AuthShell title="Verifying your email…" subtitle="Please wait a moment.">
         <div className="flex justify-center py-4">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />
-        </div>
-      </AuthShell>
-    );
-  }
-
-  if (status === "success") {
-    return (
-      <AuthShell
-        title="Email verified! 🎉"
-        subtitle="Your account is now fully active."
-        footer={
-          <>
-            Ready to shop?{" "}
-            <Link className="font-medium text-indigo-600 hover:underline" to="/login">
-              Go to login
-            </Link>
-          </>
-        }
-      >
-        <div className="text-center">
-          <p className="mb-6 text-sm text-slate-600">
-            Thanks for confirming your email address. You can now sign in and start browsing.
-          </p>
-          <Button onClick={() => (window.location.href = "/login")}>Sign in</Button>
         </div>
       </AuthShell>
     );

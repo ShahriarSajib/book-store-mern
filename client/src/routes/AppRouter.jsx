@@ -11,6 +11,8 @@ import AdminLayout from "../components/layout/AdminLayout.jsx";
 
 // public pages
 import Home from "../pages/public/Home.jsx";
+import Books from "../pages/public/Books.jsx";
+import BookDetails from "../pages/public/BookDetails.jsx";
 import NotFound from "../pages/public/NotFound.jsx";
 import ComingSoon from "../pages/public/ComingSoon.jsx";
 
@@ -27,15 +29,16 @@ import Profile from "../pages/customer/Profile.jsx";
 // admin pages
 import AdminDashboard from "../pages/admin/Dashboard.jsx";
 import AdminUsers from "../pages/admin/Users.jsx";
+import AdminBooks from "../pages/admin/Books.jsx";
 
 export default function AppRouter() {
   return (
     <Routes>
       {/* Public */}
       <Route path="/" element={<Home />} />
-      <Route path="/books" element={<ComingSoon title="Book catalog" />} />
-      <Route path="/books/:id" element={<ComingSoon title="Book details" />} />
-      <Route path="/search" element={<ComingSoon title="Search" />} />
+      <Route path="/books" element={<Books />} />
+      <Route path="/books/:id" element={<BookDetails />} />
+      <Route path="/search" element={<Books />} />
       <Route path="/categories/:id" element={<ComingSoon title="Category" />} />
       <Route path="/authors/:id" element={<ComingSoon title="Author" />} />
       <Route path="/publishers/:id" element={<ComingSoon title="Publisher" />} />
@@ -64,7 +67,7 @@ export default function AppRouter() {
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/admin/books" element={<ComingSoon title="Admin · Books" />} />
+          <Route path="/admin/books" element={<AdminBooks />} />
           <Route path="/admin/categories" element={<ComingSoon title="Admin · Categories" />} />
           <Route path="/admin/authors" element={<ComingSoon title="Admin · Authors" />} />
           <Route path="/admin/publishers" element={<ComingSoon title="Admin · Publishers" />} />

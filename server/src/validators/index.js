@@ -4,4 +4,5 @@
 module.exports = {
   authValidators: require("./authValidators"),
   userValidators: require("./userValidators"),
+  bookValidators: require("./bookValidators"),
 };

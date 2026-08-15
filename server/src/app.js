@@ -1,6 +1,13 @@
 /**
  * app.js — Express app composition
  */
+const trendingRoutes =
+  require("./routes/trendingRoutes");
+const userPreferenceRoutes =
+  require("./routes/userPreferenceRoutes");
+
+const personalizedRecommendationRoutes =
+  require("./routes/personalizedRecommendationRoutes");
 
 const express = require("express");
 const cors = require("cors");
@@ -58,6 +65,22 @@ app.use(
 app.use(
   "/api/similar-books",
   similarBookRoutes
+);
+app.use(
+  "/api/recommendations/personalized",
+  personalizedRecommendationRoutes
+);
+app.use(
+  "/api/ai/recommendations/trending",
+  trendingRoutes
+);
+app.use(
+  "/api/users/preferences",
+  userPreferenceRoutes
+);
+app.use(
+  "/api/ai/preferences",
+  userPreferenceRoutes
 );
 
 // Error handlers MUST remain last

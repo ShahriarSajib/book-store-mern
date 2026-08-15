@@ -8,7 +8,7 @@ import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import AdminRoute from "./AdminRoute.jsx";
 import AdminLayout from "../components/layout/AdminLayout.jsx";
-
+import SemanticSearch from "../ai/pages/SemanticSearch.jsx";
 // public pages
 import Home from "../pages/public/Home.jsx";
 import Books from "../pages/public/Books.jsx";
@@ -39,6 +39,10 @@ export default function AppRouter() {
       <Route path="/books" element={<Books />} />
       <Route path="/books/:id" element={<BookDetails />} />
       <Route path="/search" element={<Books />} />
+      <Route
+  path="/ai-search"
+  element={<SemanticSearch />}
+/>
       <Route path="/categories/:id" element={<ComingSoon title="Category" />} />
       <Route path="/authors/:id" element={<ComingSoon title="Author" />} />
       <Route path="/publishers/:id" element={<ComingSoon title="Publisher" />} />

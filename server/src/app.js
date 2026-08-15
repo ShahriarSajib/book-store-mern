@@ -12,6 +12,7 @@ const rateLimit = require("express-rate-limit");
 const env = require("./config/env");
 const apiRouter = require("./routes");
 const semanticRoutes = require("./routes/semanticRoutes");
+const similarBookRoutes = require("./routes/similarBookRoutes");
 
 const errorHandler = require("./middleware/errorHandler");
 const notFound = require("./middleware/notFound");
@@ -53,6 +54,10 @@ app.use("/api", apiRouter);
 app.use(
   "/api/semantic-search",
   semanticRoutes
+);
+app.use(
+  "/api/similar-books",
+  similarBookRoutes
 );
 
 // Error handlers MUST remain last

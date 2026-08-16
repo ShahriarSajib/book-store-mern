@@ -4,9 +4,10 @@
  *   GET /autocomplete
  */
 const router = require("express").Router();
+const { optionalAuth } = require("../middleware/auth");
 const ctrl = require("../controllers/searchController");
 
 router.get("/autocomplete", ctrl.autocomplete);
-router.get("/", ctrl.search);
+router.get("/", optionalAuth, ctrl.search);
 
 module.exports = router;

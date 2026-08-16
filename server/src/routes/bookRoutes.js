@@ -5,13 +5,13 @@
  */
 const router = require("express").Router();
 const validate = require("../middleware/validate");
-const { protect } = require("../middleware/auth");
+const { protect, optionalAuth } = require("../middleware/auth");
 const { requireAdmin } = require("../middleware/admin");
 const { bookValidators } = require("../validators");
 const ctrl = require("../controllers/bookController");
 
 router.get("/", validate(bookValidators.listBooksValidators), ctrl.list);
-router.get("/:id", ctrl.getById);
+router.get("/:id", optionalAuth, ctrl.getById);
 
 router.post("/", protect, requireAdmin, validate(bookValidators.createBookValidators), ctrl.create);
 router.put("/:id", protect, requireAdmin, validate(bookValidators.updateBookValidators), ctrl.update);

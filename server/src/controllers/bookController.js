@@ -12,6 +12,17 @@ const list = catchAsync(async (req, res) => {
 
 const getById = catchAsync(async (req, res) => {
   const book = await bookService.getBookById(req.params.id);
+  if (req.user?.id) {
+    const { User } = require("../models");
+    User.updateOne(
+      { _id: req.user.id },
+      {
+        $push: {
+          browseHistory: { $each: [book._id], $slice: -50 },
+        },
+      }
+    ).catch(() => {});
+  }
   res.json({ book });
 });
 

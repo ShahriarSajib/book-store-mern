@@ -8,6 +8,20 @@ const { Book } = require("../models");
 
 const search = catchAsync(async (req, res) => {
   const result = await bookService.listBooks(req.query);
+  if (req.user?.id && req.query.q) {
+    const { User } = require("../models");
+    User.updateOne(
+      { _id: req.user.id },
+      {
+        $push: {
+          searchHistory: {
+            $each: [String(req.query.q).slice(0, 200)],
+            $slice: -20,
+          },
+        },
+      }
+    ).catch(() => {});
+  }
   res.json(result);
 });
 

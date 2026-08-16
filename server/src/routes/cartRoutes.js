@@ -4,16 +4,16 @@
  */
 const router = require("express").Router();
 const validate = require("../middleware/validate");
-const { protect } = require("../middleware/auth");
+const { protect, requireVerified } = require("../middleware/auth");
 const { cartValidators } = require("../validators");
 const ctrl = require("../controllers/cartController");
 
 router.use(protect);
 
 router.get("/", ctrl.getCart);
-router.post("/", validate(cartValidators.addItemValidators), ctrl.addItem);
-router.put("/:bookId", validate(cartValidators.updateQuantityValidators), ctrl.updateItem);
-router.delete("/:bookId", ctrl.removeItem);
-router.delete("/", ctrl.clearCart);
+router.post("/", requireVerified, validate(cartValidators.addItemValidators), ctrl.addItem);
+router.put("/:bookId", requireVerified, validate(cartValidators.updateQuantityValidators), ctrl.updateItem);
+router.delete("/:bookId", requireVerified, ctrl.removeItem);
+router.delete("/", requireVerified, ctrl.clearCart);
 
 module.exports = router;

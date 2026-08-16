@@ -4,6 +4,7 @@
  * Uses the shared design tokens from styles/index.css so it matches the auth pages.
  */
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   FaBook,
   FaBrain,
@@ -14,6 +15,7 @@ import {
   FaStar,
 } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
+import catalogApi from "../../services/catalogApi";
 import Button from "../../components/ui/Button";
 import SemanticSearchBox from "../../components/recommendations/SemanticSearchBox";
 import PersonalizedForYou from "../../components/recommendations/PersonalizedForYou";
@@ -37,15 +39,18 @@ const features = [
   },
 ];
 
-const categories = [
-  { name: "Fiction", count: "1.2k+" },
-  { name: "AI & ML", count: "340" },
-  { name: "Self-help", count: "210" },
-  { name: "Children", count: "480" },
-];
-
 export default function Home() {
   const { user, isAuthenticated, isAdmin, isLoading } = useAuth();
+
+  const { data: catData } = useQuery({
+    queryKey: ["home-categories"],
+    queryFn: () => catalogApi.categories.list(),
+  });
+
+  const categories = (catData?.items || []).slice(0, 4).map((c) => ({
+    name: c.name,
+    count: c.bookCount ?? "—",
+  }));
 
   return (
     <div>

@@ -6,7 +6,7 @@
  */
 const router = require("express").Router();
 const validate = require("../middleware/validate");
-const { protect } = require("../middleware/auth");
+const { protect, requireVerified } = require("../middleware/auth");
 const { userValidators, authValidators } = require("../validators");
 const ctrl = require("../controllers/userController");
 
@@ -22,7 +22,7 @@ router.delete("/me/addresses/:id", protect, ctrl.deleteAddress);
 router.get("/me/history", protect, ctrl.getHistory);
 
 router.get("/me/wishlist", protect, ctrl.getWishlist);
-router.post("/me/wishlist", protect, ctrl.addWishlistItem);
-router.delete("/me/wishlist/:bookId", protect, ctrl.removeWishlistItem);
+router.post("/me/wishlist", protect, requireVerified, ctrl.addWishlistItem);
+router.delete("/me/wishlist/:bookId", protect, requireVerified, ctrl.removeWishlistItem);
 
 module.exports = router;

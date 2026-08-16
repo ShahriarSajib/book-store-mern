@@ -179,6 +179,18 @@ async function updateStatus(orderId, patch) {
   return order;
 }
 
+function escapeCsvField(value) {
+  const str = String(value);
+  if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+function escapeCsvRow(row) {
+  return row.map(escapeCsvField).join(",");
+}
+
 function invoiceRows(order) {
   const rows = [
     ["AI Bookstore — Invoice"],
@@ -203,7 +215,7 @@ function invoiceRows(order) {
     ["Tax", order.tax.toFixed(2)],
     ["Total", order.total.toFixed(2)],
   ];
-  return rows.map((row) => row.join(",")).join("\n");
+  return rows.map((row) => (row.length === 0 ? "" : escapeCsvRow(row))).join("\n");
 }
 
 module.exports = {

@@ -9,7 +9,7 @@ export const bookApi = {
   create: (data) => api.post("/books", data).then((r) => r.data),
   update: (id, data) => api.put(`/books/${id}`, data).then((r) => r.data),
   remove: (id) => api.delete(`/books/${id}`).then((r) => r.data),
-  reviews: (id) => api.get(`/books/${id}/reviews`).then((r) => r.data),
+  reviews: (id) => api.get(`/reviews/book/${id}`).then((r) => r.data),
 };
 
 export default bookApi;

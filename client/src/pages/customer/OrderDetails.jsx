@@ -29,7 +29,7 @@ export default function OrderDetails() {
   });
 
   const cancelMutation = useMutation({
-    mutationFn: () => orderApi.cancel(id),
+    mutationFn: (reason) => orderApi.cancel(id, reason),
     onSuccess: () => {
       toast.success("Order cancelled");
       queryClient.invalidateQueries({ queryKey: ["order", id] });
@@ -66,9 +66,9 @@ export default function OrderDetails() {
     order.status === ORDER_STATUS.PENDING || order.status === ORDER_STATUS.PROCESSING;
 
   const handleCancel = () => {
-    if (window.confirm("Cancel this order? This cannot be undone.")) {
-      cancelMutation.mutate();
-    }
+    const reason = window.prompt("Reason for cancellation (optional):");
+    if (reason === null) return;
+    cancelMutation.mutate(reason);
   };
 
   const handleInvoice = async () => {
@@ -147,8 +147,9 @@ export default function OrderDetails() {
             </thead>
             <tbody>
               {items.map((item, idx) => {
-                const book = item.book || {};
-                const bookId = book._id || book.id || item.bookId;
+                const bookId = item.book;
+                const title = item.title || "Unknown book";
+                const coverImage = item.coverImage;
                 const qty = Number(item.quantity) || 1;
                 const price = Number(item.price) || 0;
                 return (
@@ -156,8 +157,8 @@ export default function OrderDetails() {
                     <td className="py-3 pr-4">
                       <div className="flex items-center gap-3">
                         <div className="flex h-14 w-10 shrink-0 items-center justify-center overflow-hidden rounded bg-ink-50">
-                          {book.coverImage ? (
-                            <img src={book.coverImage} alt="" className="h-full w-full object-cover" />
+                          {coverImage ? (
+                            <img src={coverImage} alt="" className="h-full w-full object-cover" />
                           ) : (
                             <span className="text-xs text-ink-300">—</span>
                           )}
@@ -167,12 +168,10 @@ export default function OrderDetails() {
                             to={`/books/${bookId}`}
                             className="font-medium text-ink-800 hover:text-brand-700"
                           >
-                            {book.title || "Unknown book"}
+                            {title}
                           </Link>
                         ) : (
-                          <span className="font-medium text-ink-800">
-                            {book.title || "Unknown book"}
-                          </span>
+                          <span className="font-medium text-ink-800">{title}</span>
                         )}
                       </div>
                     </td>

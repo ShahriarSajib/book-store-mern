@@ -3,10 +3,11 @@
  */
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { FaArrowLeft, FaShoppingCart, FaBookOpen, FaCalendarAlt, FaFileAlt } from "react-icons/fa";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { FaArrowLeft, FaShoppingCart, FaBookOpen, FaCalendarAlt, FaFileAlt, FaHeart, FaRegHeart } from "react-icons/fa";
 import toast from "react-hot-toast";
 import bookApi from "../../services/bookApi";
+import wishlistApi from "../../services/wishlistApi";
 import { formatCurrency } from "../../utils/format";
 import Button from "../../components/ui/Button";
 import Rating from "../../components/ui/Rating";
@@ -20,13 +21,35 @@ import useAuth from "../../hooks/useAuth";
 export default function BookDetails() {
   const { id } = useParams();
   const { addItem } = useCartContext();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const queryClient = useQueryClient();
   const [qty, setQty] = useState(1);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["book", id],
     queryFn: () => bookApi.get(id),
+  });
+
+  const { data: wishlistData } = useQuery({
+    queryKey: ["wishlist"],
+    queryFn: wishlistApi.get,
+    enabled: isAuthenticated,
+  });
+
+  const wishlistItems = wishlistData?.wishlist?.items || [];
+  const isWishlisted = wishlistItems.some((item) => {
+    const b = item.book;
+    return (b?._id || b?.id) === id;
+  });
+
+  const wishlistMutation = useMutation({
+    mutationFn: () => isWishlisted ? wishlistApi.remove(id) : wishlistApi.add(id),
+    onSuccess: () => {
+      toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
+      queryClient.invalidateQueries({ queryKey: ["wishlist"] });
+    },
+    onError: (err) =>
+      toast.error(err?.response?.data?.error?.message || "Could not update wishlist"),
   });
 
   if (isLoading) {
@@ -149,6 +172,21 @@ export default function BookDetails() {
               >
                 <FaShoppingCart /> {inStock ? "Add to cart" : "Out of stock"}
               </Button>
+              {isAuthenticated && (
+                <button
+                  type="button"
+                  onClick={() => wishlistMutation.mutate()}
+                  disabled={wishlistMutation.isLoading}
+                  className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border transition-colors ${
+                    isWishlisted
+                      ? "border-red-200 bg-red-50 text-red-500 hover:bg-red-100"
+                      : "border-ink-200 bg-white text-ink-400 hover:border-red-200 hover:text-red-400"
+                  }`}
+                  aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                >
+                  {isWishlisted ? <FaHeart /> : <FaRegHeart />}
+                </button>
+              )}
             </div>
           </div>
 
@@ -165,7 +203,7 @@ export default function BookDetails() {
 
       {/* Reviews */}
       <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_360px]">
-        <ReviewList bookId={id} />
+        <ReviewList bookId={id} currentUserId={user?._id || user?.id} />
         <div className="space-y-4">
           {isAuthenticated ? (
             <ReviewForm

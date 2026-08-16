@@ -15,6 +15,7 @@ import {
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 import useAuth from "../../hooks/useAuth";
+import { useCartContext } from "../../context/CartContext";
 import Button from "../ui/Button";
 
 const navLink = ({ isActive }) =>
@@ -25,6 +26,7 @@ const drawerLink = ({ isActive }) =>
 
 export default function Navbar() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { count: cartCount } = useCartContext();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -83,7 +85,7 @@ export default function Navbar() {
             >
               <FaShoppingCart />
               <span className="absolute -right-0.5 -top-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-accent-500 px-1 text-[10px] font-bold text-white">
-                0
+                {cartCount}
               </span>
             </Link>
           )}

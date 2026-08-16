@@ -1,7 +1,8 @@
 /**
  * hooks/useCart.js — convenience hook over CartContext.
  */
-// TODO
-export default function useCartStub() {
-  return { items: [], total: 0, add: () => {}, remove: () => {}, update: () => {} };
+import { useCartContext } from "../context/CartContext";
+
+export default function useCart() {
+  return useCartContext();
 }

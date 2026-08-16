@@ -1,12 +1,12 @@
 /**
- * services/searchApi.js — keyword + semantic + autocomplete.
+ * services/searchApi.js — Section 1: AI Semantic Search.
+ * Distinct from the recommendation endpoints; hits /semantic-search.
  */
 import api from "./axios";
 
 export const searchApi = {
-  keyword: (params) => api.get("/search", { params }).then((r) => r.data),
-  semantic: (params) => api.get("/search/semantic", { params }).then((r) => r.data),
-  autocomplete: (q) => api.get("/search/autocomplete", { params: { q } }).then((r) => r.data),
+  semantic: ({ q, limit = 12 } = {}) =>
+    api.get(`/semantic-search`, { params: { q, limit } }).then((r) => r.data),
 };
 
 export default searchApi;

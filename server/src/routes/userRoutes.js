@@ -21,4 +21,8 @@ router.delete("/me/addresses/:id", protect, ctrl.deleteAddress);
 
 router.get("/me/history", protect, ctrl.getHistory);
 
+router.get("/me/wishlist", protect, ctrl.getWishlist);
+router.post("/me/wishlist", protect, ctrl.addWishlistItem);
+router.delete("/me/wishlist/:bookId", protect, ctrl.removeWishlistItem);
+
 module.exports = router;

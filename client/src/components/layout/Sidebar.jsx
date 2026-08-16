@@ -13,6 +13,8 @@ import {
   FaStar,
   FaTags,
   FaRobot,
+  FaBuilding,
+  FaChartLine,
 } from "react-icons/fa";
 
 const items = [
@@ -21,10 +23,12 @@ const items = [
   { to: "/admin/books", label: "Books", icon: FaBook },
   { to: "/admin/categories", label: "Categories", icon: FaListAlt },
   { to: "/admin/authors", label: "Authors", icon: FaUserEdit },
+  { to: "/admin/publishers", label: "Publishers", icon: FaBuilding },
   { to: "/admin/orders", label: "Orders", icon: FaClipboardList },
   { to: "/admin/inventory", label: "Inventory", icon: FaBoxes },
   { to: "/admin/reviews", label: "Reviews", icon: FaStar },
   { to: "/admin/coupons", label: "Coupons", icon: FaTags },
+  { to: "/admin/analytics", label: "Analytics", icon: FaChartLine },
   { to: "/admin/ai", label: "AI Assistant", icon: FaRobot },
 ];
 

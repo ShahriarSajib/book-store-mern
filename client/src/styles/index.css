@@ -307,6 +307,260 @@
   .footer__input {
     @apply block w-full rounded-lg border border-ink-300 bg-white px-3 py-2 text-sm placeholder-ink-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-200;
   }
+
+  /* ===== Recommendation sections — four visually distinct identities ===== */
+
+  /* Shared shell */
+  .rec {
+    @apply relative overflow-hidden rounded-3xl border p-6 sm:p-8;
+    box-shadow: var(--shadow-md);
+  }
+  .rec__header { @apply flex items-start gap-4; }
+  .rec__icon {
+    @apply inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl text-xl text-white;
+    box-shadow: var(--shadow-sm);
+  }
+  .rec__eyebrow {
+    @apply text-[11px] font-bold uppercase tracking-[0.18em];
+  }
+  .rec__title { @apply mt-1 text-2xl font-extrabold tracking-tight sm:text-3xl; }
+  .rec__subtitle { @apply mt-1.5 max-w-2xl text-sm sm:text-base; }
+  .rec__body { @apply mt-6; }
+  .rec__state {
+    @apply flex items-center gap-3 rounded-xl px-4 py-3 text-sm;
+  }
+  .rec__state--loading {
+    @apply border border-dashed;
+  }
+  .rec__state--error {
+    @apply border border-red-200 bg-red-50 text-red-800;
+  }
+  .rec__footer { @apply mt-6 flex items-center justify-between text-sm; }
+  .rec__footer-link { @apply font-medium hover:underline; }
+
+  /* Section 1 — 🔎 Semantic Search (indigo → violet) */
+  .rec--semantic {
+    background-image:
+      radial-gradient(800px 400px at 0% 0%, rgba(255,255,255,0.12), transparent 60%),
+      radial-gradient(700px 400px at 100% 100%, rgba(236, 72, 153, 0.18), transparent 60%),
+      linear-gradient(135deg, #4f46e5 0%, #6366f1 55%, #8b5cf6 100%);
+    @apply border-white/10 text-white;
+  }
+  .rec--semantic .rec__eyebrow { @apply text-indigo-100/90; }
+  .rec--semantic .rec__title { @apply text-white; }
+  .rec--semantic .rec__subtitle { @apply text-indigo-100; }
+  .rec--semantic .rec__icon--semantic {
+    background-image: linear-gradient(135deg, #ffffff, #e0e7ff);
+    @apply text-brand-700;
+  }
+  .rec--semantic .semantic-input-wrap {
+    @apply relative mt-6 flex items-center rounded-2xl bg-white/95 pl-12 pr-12;
+    box-shadow: var(--shadow-lg);
+  }
+  .rec--semantic .semantic-input-wrap__icon {
+    @apply pointer-events-none absolute left-4 text-lg text-brand-600;
+  }
+  .rec--semantic .semantic-input {
+    @apply block w-full border-0 bg-transparent px-2 py-4 text-base text-ink-900 placeholder-ink-400 focus:outline-none focus:ring-0;
+  }
+  .rec--semantic .semantic-input-wrap__clear {
+    @apply absolute right-3 inline-flex h-8 w-8 items-center justify-center rounded-full text-ink-500 hover:bg-ink-100;
+  }
+  .rec--semantic .semantic-suggestions {
+    @apply mt-4 flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-3;
+  }
+  .rec--semantic .semantic-suggestions__icon { @apply mt-0.5 text-indigo-100/80; }
+  .rec--semantic .semantic-suggestions__chip {
+    @apply rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs text-white/90 transition hover:border-white/40 hover:bg-white/20;
+  }
+  .rec--semantic .semantic-results-meta {
+    @apply mb-3 flex items-center justify-between text-xs font-medium text-indigo-100;
+  }
+  .rec--semantic .semantic-results {
+    @apply flex flex-col gap-2;
+  }
+  .rec--semantic .semantic-chip {
+    @apply flex w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-left text-white backdrop-blur transition hover:border-white/30 hover:bg-white/20;
+  }
+  .rec--semantic .semantic-chip__title { @apply font-semibold; }
+  .rec--semantic .semantic-chip__author { @apply text-xs text-indigo-100; }
+  .rec--semantic .semantic-chip__price { @apply text-xs font-semibold text-white; }
+  .rec--semantic .semantic-chip__arrow { @apply text-white/70 transition group-hover:translate-x-0.5 group-hover:text-white; }
+  .rec--semantic .rec__state--loading {
+    @apply border-white/20 bg-white/5 text-indigo-100;
+  }
+  .rec--semantic .rec__state--error {
+    @apply border-red-300/40 bg-red-500/20 text-red-50;
+  }
+
+  /* Section 2 — 📚 Similar Books (warm amber/orange) */
+  .rec--similar {
+    background-image:
+      radial-gradient(700px 400px at 100% 0%, rgba(251, 191, 36, 0.18), transparent 60%),
+      linear-gradient(180deg, #fffaf0 0%, #fff5e6 100%);
+    @apply border-amber-200 text-amber-900;
+  }
+  .rec--similar .rec__eyebrow { @apply text-amber-700; }
+  .rec--similar .rec__title { @apply text-amber-900; }
+  .rec--similar .rec__subtitle { @apply text-amber-800/80; }
+  .rec--similar .rec__icon--similar {
+    background-image: linear-gradient(135deg, #f59e0b, #ea580c);
+    @apply text-white;
+  }
+  .rec--similar .rec__state--loading {
+    @apply border-amber-200 bg-amber-50 text-amber-800;
+  }
+  .rec--similar .rec__footer-link { @apply text-amber-700; }
+
+  .similar-grid {
+    @apply grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
+  }
+  .similar-card {
+    @apply flex flex-col overflow-hidden rounded-2xl border border-amber-100 bg-white transition hover:-translate-y-0.5;
+    box-shadow: var(--shadow-sm);
+  }
+  .similar-card:hover { box-shadow: var(--shadow-md); }
+  .similar-card__cover {
+    @apply relative flex aspect-[3/4] items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50;
+  }
+  .similar-card__cover img { @apply h-full w-full object-cover; }
+  .similar-card__cover-icon { @apply h-16 w-16 text-amber-300; }
+  .similar-card__score {
+    @apply absolute right-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-bold text-amber-700;
+    box-shadow: var(--shadow-sm);
+  }
+  .similar-card__body { @apply flex flex-1 flex-col gap-1.5 p-4; }
+  .similar-card__title {
+    @apply line-clamp-2 text-sm font-semibold text-ink-900 group-hover:text-amber-700;
+  }
+  .similar-card__author { @apply text-xs text-ink-500; }
+  .similar-card__meta { @apply mt-auto flex items-center justify-between text-xs; }
+  .similar-card__cat {
+    @apply rounded-full bg-amber-50 px-2 py-0.5 text-amber-700;
+  }
+  .similar-card__price { @apply font-bold text-amber-700; }
+  .similar-card__reason { @apply mt-1 text-xs italic text-amber-800/70; }
+
+  /* Section 3 — ✨ Personalized (emerald/teal) */
+  .rec--personalized {
+    background-image:
+      radial-gradient(700px 400px at 0% 0%, rgba(16, 185, 129, 0.18), transparent 60%),
+      radial-gradient(700px 400px at 100% 100%, rgba(20, 184, 166, 0.16), transparent 60%),
+      linear-gradient(180deg, #ecfdf5 0%, #f0fdfa 100%);
+    @apply border-emerald-200 text-emerald-900;
+  }
+  .rec--personalized .rec__eyebrow { @apply text-emerald-700; }
+  .rec--personalized .rec__title { @apply text-emerald-900; }
+  .rec--personalized .rec__subtitle { @apply text-emerald-800/80; }
+  .rec--personalized .rec__icon--personalized {
+    background-image: linear-gradient(135deg, #10b981, #14b8a6);
+    @apply text-white;
+  }
+  .rec--personalized .rec__state--loading {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-800;
+  }
+  .rec--personalized .rec__signin {
+    @apply rounded-2xl border border-emerald-200 bg-white/70 p-5 text-sm text-emerald-900;
+  }
+  .rec--personalized .rec__btn--solid {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700;
+  }
+  .rec--personalized .rec__btn--outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-300 bg-white px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50;
+  }
+
+  .personalized-grid {
+    @apply grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
+  }
+  .personalized-card {
+    @apply relative flex flex-col overflow-hidden rounded-2xl border border-emerald-100 bg-white transition hover:-translate-y-0.5;
+    box-shadow: var(--shadow-sm);
+  }
+  .personalized-card:hover { box-shadow: var(--shadow-md); }
+  .personalized-card__cover {
+    @apply relative flex aspect-[3/4] items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50;
+  }
+  .personalized-card__cover img { @apply h-full w-full object-cover; }
+  .personalized-card__cover-icon { @apply h-16 w-16 text-emerald-300; }
+  .personalized-card__badge {
+    @apply absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-emerald-600/95 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white;
+  }
+  .personalized-card__body { @apply flex flex-1 flex-col gap-1.5 p-4; }
+  .personalized-card__title {
+    @apply line-clamp-2 text-sm font-semibold text-ink-900 group-hover:text-emerald-700;
+  }
+  .personalized-card__author { @apply text-xs text-ink-500; }
+  .personalized-card__reason {
+    @apply mt-1 flex items-start gap-1 text-xs italic text-emerald-800/80;
+  }
+  .personalized-card__reason-dot {
+    @apply mt-1.5 inline-block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-500;
+  }
+  .personalized-card__meta { @apply mt-auto flex items-center justify-between text-xs; }
+  .personalized-card__price { @apply font-bold text-emerald-700; }
+  .personalized-card__score {
+    @apply rounded-full bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700;
+  }
+
+  /* Section 4 — 🔥 Trending (red/orange flame) */
+  .rec--trending {
+    background-image:
+      radial-gradient(700px 400px at 100% 0%, rgba(239, 68, 68, 0.16), transparent 60%),
+      radial-gradient(700px 400px at 0% 100%, rgba(249, 115, 22, 0.16), transparent 60%),
+      linear-gradient(180deg, #fff7f5 0%, #fff1ec 100%);
+    @apply border-red-200 text-red-900;
+  }
+  .rec--trending .rec__eyebrow { @apply text-red-700; }
+  .rec--trending .rec__title { @apply text-red-900; }
+  .rec--trending .rec__subtitle { @apply text-red-800/80; }
+  .rec--trending .rec__icon--trending {
+    background-image: linear-gradient(135deg, #ef4444, #f97316);
+    @apply text-white;
+  }
+  .rec--trending .rec__state--loading {
+    @apply border-red-200 bg-red-50 text-red-800;
+  }
+
+  .trending-grid {
+    @apply grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
+  }
+  .trending-card {
+    @apply relative flex flex-col overflow-hidden rounded-2xl border border-red-100 bg-white transition hover:-translate-y-0.5;
+    box-shadow: var(--shadow-sm);
+  }
+  .trending-card:hover { box-shadow: var(--shadow-md); }
+  .trending-card__rank {
+    @apply absolute left-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-extrabold text-white;
+    background-image: linear-gradient(135deg, #ef4444, #f97316);
+    box-shadow: var(--shadow-sm);
+  }
+  .trending-card__rank--1 { background-image: linear-gradient(135deg, #f59e0b, #ef4444); }
+  .trending-card__rank--2 { background-image: linear-gradient(135deg, #ef4444, #f97316); }
+  .trending-card__rank--3 { background-image: linear-gradient(135deg, #f97316, #fb923c); }
+  .trending-card__cover {
+    @apply relative flex aspect-[3/4] items-center justify-center bg-gradient-to-br from-red-50 to-orange-50;
+  }
+  .trending-card__cover img { @apply h-full w-full object-cover; }
+  .trending-card__cover-icon { @apply h-16 w-16 text-red-300; }
+  .trending-card__flame {
+    @apply absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-base text-white;
+    background-image: linear-gradient(135deg, #ef4444, #f97316);
+    box-shadow: var(--shadow-sm);
+  }
+  .trending-card__body { @apply flex flex-1 flex-col gap-1.5 p-4; }
+  .trending-card__title {
+    @apply line-clamp-2 text-sm font-semibold text-ink-900 group-hover:text-red-700;
+  }
+  .trending-card__author { @apply text-xs text-ink-500; }
+  .trending-card__stats { @apply mt-1 flex flex-wrap items-center gap-2 text-xs; }
+  .trending-card__score {
+    @apply inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 font-semibold text-red-700;
+  }
+  .trending-card__rating {
+    @apply rounded-full bg-amber-50 px-2 py-0.5 font-semibold text-amber-700;
+  }
+  .trending-card__views { @apply text-ink-500; }
+  .trending-card__price { @apply mt-auto text-sm font-bold text-red-700; }
 }
 
 /* ===== Animations ===== */

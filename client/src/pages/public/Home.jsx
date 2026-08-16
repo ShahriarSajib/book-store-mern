@@ -15,6 +15,9 @@ import {
 } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
 import Button from "../../components/ui/Button";
+import SemanticSearchBox from "../../components/recommendations/SemanticSearchBox";
+import PersonalizedForYou from "../../components/recommendations/PersonalizedForYou";
+import TrendingBooks from "../../components/recommendations/TrendingBooks";
 
 const features = [
   {
@@ -143,7 +146,7 @@ export default function Home() {
           {categories.map((c) => (
             <Link
               key={c.name}
-              to={`/books?cat=${encodeURIComponent(c.name)}`}
+              to={`/books?category=${encodeURIComponent(c.name)}`}
               className="card flex items-center justify-between p-5 transition-transform hover:-translate-y-0.5"
             >
               <div>
@@ -154,6 +157,23 @@ export default function Home() {
             </Link>
           ))}
         </div>
+      </section>
+
+      {/* AI Sections — each visually + functionally distinct */}
+
+      {/* Section 1 — � AI Semantic Search */}
+      <section className="section">
+        <SemanticSearchBox />
+      </section>
+
+      {/* Section 3 — ✨ Recommended For You (auth-aware) */}
+      <section className="section">
+        <PersonalizedForYou />
+      </section>
+
+      {/* Section 4 — � Trending Books */}
+      <section className="section">
+        <TrendingBooks limit={8} />
       </section>
 
       {/* CTA */}

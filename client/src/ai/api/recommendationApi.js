@@ -1,5 +1,7 @@
-const API_URL =
-  "http://localhost:5001/api/ai/recommendations";
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5001";
+
+const API_URL = `${API_BASE_URL}/api/ai/recommendations`;
 
 export async function getPersonalizedRecommendations(
   token,

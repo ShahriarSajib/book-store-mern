@@ -56,9 +56,9 @@ export default function Footer() {
           <h4 className="footer__title">Shop</h4>
           <div className="mt-3 space-y-2">
             <Link to="/books" className="footer__link">All books</Link>
-            <Link to="/books?sort=new" className="footer__link">New releases</Link>
-            <Link to="/books?sort=trending" className="footer__link">Trending</Link>
-            <Link to="/books?cat=ai" className="footer__link">AI-curated picks</Link>
+            <Link to="/trending" className="footer__link">Trending</Link>
+            <Link to="/recommended" className="footer__link">Recommended for you</Link>
+            <Link to="/ai-search" className="footer__link">AI search</Link>
           </div>
         </div>
 

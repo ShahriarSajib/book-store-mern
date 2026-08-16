@@ -26,7 +26,6 @@ export default function SimilarBooks({
 
         setBooks(data.results || []);
       } catch (err) {
-        console.error(err);
         setError(
           err.message ||
             "Failed to load similar books."

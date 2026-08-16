@@ -13,21 +13,29 @@ async function attachUser(req, res, next) {
     return next(new AppError("Authentication required", 401, "UNAUTHENTICATED"));
   }
 
-  const payload = verifyAccessToken(token);
-  const user = await User.findById(payload.sub).select("name email role isActive");
-  if (!user) {
-    return next(new AppError("User account no longer exists", 401, "UNAUTHENTICATED"));
-  }
-  if (!user.isActive) {
-    return next(new AppError("Your account has been disabled. Contact support.", 403, "ACCOUNT_DISABLED"));
-  }
+  try {
+    const payload = verifyAccessToken(token);
+    const user = await User.findById(payload.sub).select("name email role isActive");
+    if (!user) {
+      return next(new AppError("User account no longer exists", 401, "UNAUTHENTICATED"));
+    }
+    if (!user.isActive) {
+      return next(new AppError("Your account has been disabled. Contact support.", 403, "ACCOUNT_DISABLED"));
+    }
 
-  req.user = { id: user._id.toString(), role: user.role, email: user.email, name: user.name };
-  return next();
+    req.user = { id: user._id.toString(), role: user.role, email: user.email, name: user.name };
+    return next();
+  } catch (err) {
+    return next(err);
+  }
 }
 
-function protect(req, res, next) {
-  attachUser(req, res, next);
+async function protect(req, res, next) {
+  try {
+    await attachUser(req, res, next);
+  } catch (err) {
+    next(err);
+  }
 }
 
 async function optionalAuth(req, res, next) {

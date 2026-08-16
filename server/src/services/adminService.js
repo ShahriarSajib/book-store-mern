@@ -33,7 +33,7 @@ async function getDashboard() {
   if (typeof Order === "function" && typeof Order.aggregate === "function") {
     const [agg] = await Order.aggregate([
       { $match: { status: { $ne: "cancelled" } } },
-      { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+      { $group: { _id: null, total: { $sum: "$total" } } },
     ]);
     revenue = agg ? agg.total : 0;
   }

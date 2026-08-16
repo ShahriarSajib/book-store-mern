@@ -77,11 +77,16 @@ function normalizeBook(data) {
   return result;
 }
 
-function buildFilter({ q, category, author, minPrice, maxPrice, inStock }) {
+function escapeRegex(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function buildFilter({ q, category, author, publisher, minPrice, maxPrice, inStock }) {
   const filter = {};
   if (q) filter.$text = { $search: q };
-  if (category) filter.categories = category;
-  if (author) filter.authors = author;
+  if (category) filter.categories = new RegExp(`^${escapeRegex(category)}$`, "i");
+  if (author) filter.authors = new RegExp(`^${escapeRegex(author)}$`, "i");
+  if (publisher) filter.publisher = new RegExp(`^${escapeRegex(publisher)}$`, "i");
   if (minPrice !== undefined || maxPrice !== undefined) {
     filter.price = {};
     if (minPrice !== undefined) filter.price.$gte = Number(minPrice);

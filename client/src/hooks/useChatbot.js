@@ -1,13 +1,8 @@
 /**
- * hooks/useChatbot.js — send messages, handle streaming, handle confirmations.
+ * hooks/useChatbot.js — convenience hook over ChatbotContext.
  */
-// TODO
-export default function useChatbotStub() {
-  return {
-    messages: [],
-    send: () => {},
-    confirm: () => {},
-    isOpen: false,
-    toggle: () => {},
-  };
+import { useChatbotContext } from "../context/ChatbotContext";
+
+export default function useChatbot() {
+  return useChatbotContext();
 }

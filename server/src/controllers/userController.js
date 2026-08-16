@@ -42,6 +42,21 @@ const getHistory = catchAsync(async (req, res) => {
   res.json(await userService.getHistory(req.user.id));
 });
 
+const getWishlist = catchAsync(async (req, res) => {
+  const wishlistService = require("../services/wishlistService");
+  res.json({ wishlist: await wishlistService.getWishlist(req.user.id) });
+});
+
+const addWishlistItem = catchAsync(async (req, res) => {
+  const wishlistService = require("../services/wishlistService");
+  res.status(201).json({ wishlist: await wishlistService.add(req.user.id, req.body.bookId) });
+});
+
+const removeWishlistItem = catchAsync(async (req, res) => {
+  const wishlistService = require("../services/wishlistService");
+  res.json({ wishlist: await wishlistService.remove(req.user.id, req.params.bookId) });
+});
+
 module.exports = {
   getMe,
   updateMe,
@@ -51,4 +66,7 @@ module.exports = {
   updateAddress,
   deleteAddress,
   getHistory,
+  getWishlist,
+  addWishlistItem,
+  removeWishlistItem,
 };

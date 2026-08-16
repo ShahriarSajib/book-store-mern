@@ -1,20 +1,24 @@
 /**
  * routes/AppRouter.jsx — root route table.
- *
- * Auth milestone: public Home + full auth flows + customer Profile
- * + admin Dashboard/Users. Everything else renders a ComingSoon placeholder.
  */
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import AdminRoute from "./AdminRoute.jsx";
 import AdminLayout from "../components/layout/AdminLayout.jsx";
 import SemanticSearch from "../ai/pages/SemanticSearch.jsx";
+import TrendingBooks from "../ai/pages/TrendingBooks.jsx";
+import RecommendedForYou from "../ai/pages/RecommendedForYou.jsx";
+
 // public pages
 import Home from "../pages/public/Home.jsx";
 import Books from "../pages/public/Books.jsx";
 import BookDetails from "../pages/public/BookDetails.jsx";
-import NotFound from "../pages/public/NotFound.jsx";
+import CategoryPage from "../pages/public/CategoryPage.jsx";
+import AuthorPage from "../pages/public/AuthorPage.jsx";
+import PublisherPage from "../pages/public/PublisherPage.jsx";
+import SearchResults from "../pages/public/SearchResults.jsx";
 import ComingSoon from "../pages/public/ComingSoon.jsx";
+import NotFound from "../pages/public/NotFound.jsx";
 
 // auth pages
 import Login from "../pages/auth/Login.jsx";
@@ -25,11 +29,27 @@ import VerifyEmail from "../pages/auth/VerifyEmail.jsx";
 
 // customer pages
 import Profile from "../pages/customer/Profile.jsx";
+import Cart from "../pages/customer/Cart.jsx";
+import Checkout from "../pages/customer/Checkout.jsx";
+import Orders from "../pages/customer/Orders.jsx";
+import OrderDetails from "../pages/customer/OrderDetails.jsx";
+import Wishlist from "../pages/customer/Wishlist.jsx";
+import Addresses from "../pages/customer/Addresses.jsx";
+import ChatFullPage from "../pages/chatbot/ChatFullPage.jsx";
 
 // admin pages
 import AdminDashboard from "../pages/admin/Dashboard.jsx";
 import AdminUsers from "../pages/admin/Users.jsx";
 import AdminBooks from "../pages/admin/Books.jsx";
+import AdminCategories from "../pages/admin/Categories.jsx";
+import AdminAuthors from "../pages/admin/Authors.jsx";
+import AdminPublishers from "../pages/admin/Publishers.jsx";
+import AdminOrders from "../pages/admin/Orders.jsx";
+import AdminInventory from "../pages/admin/Inventory.jsx";
+import AdminReviews from "../pages/admin/Reviews.jsx";
+import AdminCoupons from "../pages/admin/Coupons.jsx";
+import AdminAnalytics from "../pages/admin/Analytics.jsx";
+import AdminAIAssistant from "../pages/admin/AIAssistant.jsx";
 
 export default function AppRouter() {
   return (
@@ -38,14 +58,16 @@ export default function AppRouter() {
       <Route path="/" element={<Home />} />
       <Route path="/books" element={<Books />} />
       <Route path="/books/:id" element={<BookDetails />} />
-      <Route path="/search" element={<Books />} />
-      <Route
-  path="/ai-search"
-  element={<SemanticSearch />}
-/>
-      <Route path="/categories/:id" element={<ComingSoon title="Category" />} />
-      <Route path="/authors/:id" element={<ComingSoon title="Author" />} />
-      <Route path="/publishers/:id" element={<ComingSoon title="Publisher" />} />
+      <Route path="/search" element={<SearchResults />} />
+      <Route path="/categories/:id" element={<CategoryPage />} />
+      <Route path="/authors/:id" element={<AuthorPage />} />
+      <Route path="/publishers/:id" element={<PublisherPage />} />
+      <Route path="/ai-search" element={<SemanticSearch />} />
+      <Route path="/trending" element={<TrendingBooks />} />
+      <Route path="/recommended" element={<RecommendedForYou />} />
+      <Route path="/privacy" element={<ComingSoon title="Privacy policy" />} />
+      <Route path="/terms" element={<ComingSoon title="Terms of service" />} />
+      <Route path="/contact" element={<ComingSoon title="Contact us" />} />
 
       {/* Auth */}
       <Route path="/login" element={<Login />} />
@@ -57,13 +79,13 @@ export default function AppRouter() {
       {/* Customer (protected) */}
       <Route element={<ProtectedRoute />}>
         <Route path="/profile" element={<Profile />} />
-        <Route path="/cart" element={<ComingSoon title="Shopping cart" />} />
-        <Route path="/checkout" element={<ComingSoon title="Checkout" />} />
-        <Route path="/orders" element={<ComingSoon title="Order history" />} />
-        <Route path="/orders/:id" element={<ComingSoon title="Order details" />} />
-        <Route path="/wishlist" element={<ComingSoon title="Wishlist" />} />
-        <Route path="/profile/addresses" element={<ComingSoon title="Saved addresses" />} />
-        <Route path="/chat" element={<ComingSoon title="AI Chat Assistant" />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/orders/:id" element={<OrderDetails />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/profile/addresses" element={<Addresses />} />
+        <Route path="/chat" element={<ChatFullPage />} />
       </Route>
 
       {/* Admin (admin-only) */}
@@ -72,15 +94,15 @@ export default function AppRouter() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/books" element={<AdminBooks />} />
-          <Route path="/admin/categories" element={<ComingSoon title="Admin · Categories" />} />
-          <Route path="/admin/authors" element={<ComingSoon title="Admin · Authors" />} />
-          <Route path="/admin/publishers" element={<ComingSoon title="Admin · Publishers" />} />
-          <Route path="/admin/orders" element={<ComingSoon title="Admin · Orders" />} />
-          <Route path="/admin/inventory" element={<ComingSoon title="Admin · Inventory" />} />
-          <Route path="/admin/reviews" element={<ComingSoon title="Admin · Reviews" />} />
-          <Route path="/admin/coupons" element={<ComingSoon title="Admin · Coupons" />} />
-          <Route path="/admin/analytics" element={<ComingSoon title="Admin · Analytics" />} />
-          <Route path="/admin/ai" element={<ComingSoon title="Admin · AI Assistant" />} />
+          <Route path="/admin/categories" element={<AdminCategories />} />
+          <Route path="/admin/authors" element={<AdminAuthors />} />
+          <Route path="/admin/publishers" element={<AdminPublishers />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/inventory" element={<AdminInventory />} />
+          <Route path="/admin/reviews" element={<AdminReviews />} />
+          <Route path="/admin/coupons" element={<AdminCoupons />} />
+          <Route path="/admin/analytics" element={<AdminAnalytics />} />
+          <Route path="/admin/ai" element={<AdminAIAssistant />} />
         </Route>
       </Route>
 

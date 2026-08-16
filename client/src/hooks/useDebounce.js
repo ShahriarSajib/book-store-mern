@@ -3,7 +3,7 @@
  */
 import { useEffect, useState } from "react";
 
-export default function useDebounce(value, delay = 300) {
+export function useDebounce(value, delay = 300) {
   const [debounced, setDebounced] = useState(value);
 
   useEffect(() => {
@@ -13,3 +13,5 @@ export default function useDebounce(value, delay = 300) {
 
   return debounced;
 }
+
+export default useDebounce;

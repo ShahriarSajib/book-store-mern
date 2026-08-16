@@ -15,6 +15,7 @@ const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
+const path = require("path");
 
 const env = require("./config/env");
 const apiRouter = require("./routes");
@@ -37,6 +38,8 @@ app.use(
 
 app.use(express.json({ limit: "1mb" }));
 app.use(compression());
+
+app.use(express.static(path.resolve(process.cwd(), env.UPLOAD_DIR || "uploads")));
 
 app.use(
   morgan(
@@ -68,6 +71,10 @@ app.use(
 );
 app.use(
   "/api/recommendations/personalized",
+  personalizedRecommendationRoutes
+);
+app.use(
+  "/api/ai/recommendations/personalized",
   personalizedRecommendationRoutes
 );
 app.use(

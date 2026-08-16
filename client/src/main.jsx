@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
+import { ChatbotProvider } from "./context/ChatbotContext.jsx";
 import "./styles/index.css";
 
 const queryClient = new QueryClient();
@@ -16,8 +17,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <BrowserRouter>
         <AuthProvider>
           <CartProvider>
-            <App />
-            <Toaster position="top-right" />
+            <ChatbotProvider>
+              <App />
+              <Toaster position="top-right" />
+            </ChatbotProvider>
           </CartProvider>
         </AuthProvider>
       </BrowserRouter>

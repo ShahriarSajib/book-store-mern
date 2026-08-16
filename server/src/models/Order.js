@@ -3,5 +3,81 @@
  * Responsibility: completed order records with items, totals,
  * shipping address, payment status, order status, tracking metadata.
  */
-// TODO: implement Order schema, status transitions
-module.exports = {};
+const mongoose = require("mongoose");
+
+const orderItemSchema = new mongoose.Schema(
+  {
+    book: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Book",
+      required: true,
+    },
+    title: { type: String, trim: true, maxlength: 500 },
+    coverImage: { type: String, trim: true },
+    quantity: { type: Number, required: true, min: 1 },
+    price: { type: Number, required: true, min: 0 },
+  },
+  { _id: false }
+);
+
+const addressSnapshotSchema = new mongoose.Schema(
+  {
+    label: { type: String, default: "Home" },
+    recipient: { type: String, required: true, trim: true },
+    phone: { type: String, required: true, trim: true },
+    street: { type: String, required: true, trim: true },
+    city: { type: String, required: true, trim: true },
+    state: { type: String, trim: true },
+    postalCode: { type: String, trim: true },
+    country: { type: String, default: "Bangladesh", trim: true },
+  },
+  { _id: false }
+);
+
+const orderSchema = new mongoose.Schema(
+  {
+    orderNumber: { type: String, required: true, unique: true, index: true },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
+    items: [orderItemSchema],
+    coupon: {
+      code: { type: String, trim: true, uppercase: true },
+      discount: { type: Number, min: 0, default: 0 },
+    },
+    subtotal: { type: Number, required: true, min: 0 },
+    shipping: { type: Number, min: 0, default: 0 },
+    tax: { type: Number, min: 0, default: 0 },
+    total: { type: Number, required: true, min: 0 },
+
+    status: {
+      type: String,
+      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+      default: "pending",
+      index: true,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "failed", "refunded"],
+      default: "pending",
+    },
+    paymentMethod: { type: String, trim: true, default: "cash_on_delivery" },
+
+    shippingAddress: { type: addressSnapshotSchema, required: true },
+    trackingNumber: { type: String, trim: true },
+    notes: { type: String, trim: true, maxlength: 1000 },
+
+    cancelledAt: { type: Date },
+    cancelReason: { type: String, trim: true, maxlength: 500 },
+  },
+  {
+    timestamps: true,
+    toJSON: { virtuals: true, versionKey: false },
+    toObject: { virtuals: true, versionKey: false },
+  }
+);
+
+module.exports = mongoose.model("Order", orderSchema);

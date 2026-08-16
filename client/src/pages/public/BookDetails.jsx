@@ -3,7 +3,7 @@
  */
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FaArrowLeft, FaShoppingCart, FaBookOpen, FaCalendarAlt, FaFileAlt } from "react-icons/fa";
 import toast from "react-hot-toast";
 import bookApi from "../../services/bookApi";
@@ -11,11 +11,17 @@ import { formatCurrency } from "../../utils/format";
 import Button from "../../components/ui/Button";
 import Rating from "../../components/ui/Rating";
 import Spinner from "../../components/ui/Spinner";
+import SimilarBooks from "../../components/recommendations/SimilarBooks";
+import ReviewList from "../../components/reviews/ReviewList";
+import ReviewForm from "../../components/reviews/ReviewForm";
 import { useCartContext } from "../../context/CartContext";
+import useAuth from "../../hooks/useAuth";
 
 export default function BookDetails() {
   const { id } = useParams();
   const { addItem } = useCartContext();
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
   const [qty, setQty] = useState(1);
 
   const { data, isLoading, isError, error } = useQuery({
@@ -148,6 +154,31 @@ export default function BookDetails() {
 
           {book.isbn13 && (
             <p className="mt-4 text-xs text-ink-400">ISBN-13: {book.isbn13}{book.isbn10 ? ` · ISBN-10: ${book.isbn10}` : ""}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Section 2 — AI Books Similar to This (uses bookId prop) */}
+      <div className="mt-12">
+        <SimilarBooks bookId={id} />
+      </div>
+
+      {/* Reviews */}
+      <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_360px]">
+        <ReviewList bookId={id} />
+        <div className="space-y-4">
+          {isAuthenticated ? (
+            <ReviewForm
+              bookId={id}
+              onSuccess={() => queryClient.invalidateQueries({ queryKey: ["reviews", id] })}
+            />
+          ) : (
+            <div className="rounded-2xl border border-ink-100 bg-white p-5 text-center shadow-soft">
+              <p className="text-sm text-ink-600">Share your thoughts about this book.</p>
+              <Link to="/login" className="mt-2 inline-block text-sm font-medium text-brand-600 hover:underline">
+                Log in to write a review
+              </Link>
+            </div>
           )}
         </div>
       </div>

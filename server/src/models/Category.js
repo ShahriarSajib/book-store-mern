@@ -2,5 +2,37 @@
  * models/Category.js
  * Responsibility: simple category taxonomy linked to books.
  */
-// TODO: implement Category schema
-module.exports = {};
+const mongoose = require("mongoose");
+
+function slugify(value) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+const categorySchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, trim: true, maxlength: 100, index: true },
+    slug: { type: String, trim: true, lowercase: true, index: true },
+    description: { type: String, trim: true, maxlength: 500 },
+    isActive: { type: Boolean, default: true },
+  },
+  {
+    timestamps: true,
+    toJSON: { virtuals: true, versionKey: false },
+    toObject: { virtuals: true, versionKey: false },
+  }
+);
+
+categorySchema.pre("save", function preSaveSlug(next) {
+  if (!this.slug || this.isModified("name")) {
+    this.slug = slugify(this.name);
+  }
+  next();
+});
+
+module.exports = mongoose.model("Category", categorySchema);

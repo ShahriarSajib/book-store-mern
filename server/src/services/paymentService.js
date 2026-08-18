@@ -1,6 +1,10 @@
+/**
+ * services/paymentService.js — Payment status management and Stripe refund.
+ */
 const AppError = require("../utils/AppError");
 const logger = require("../utils/logger");
 const { Order } = require("../models");
+const stripeService = require("./stripeService");
 
 const VALID_TRANSITIONS = {
   pending: ["paid", "failed"],
@@ -25,7 +29,7 @@ async function updatePaymentStatus(orderId, status, meta = {}) {
   order.paymentStatus = status;
   if (status === "paid") {
     order.paidAt = new Date();
-    order.transactionId = meta.transactionId;
+    if (meta.stripePaymentIntentId) order.stripePaymentIntentId = meta.stripePaymentIntentId;
   }
   if (status === "refunded") {
     order.refundedAt = new Date();
@@ -38,10 +42,37 @@ async function updatePaymentStatus(orderId, status, meta = {}) {
 
 async function getPaymentDetails(orderId) {
   const order = await Order.findById(orderId).select(
-    "orderNumber paymentMethod paymentStatus paidAt refundedAt transactionId refundReason total"
+    "orderNumber paymentMethod paymentStatus paidAt refundedAt stripePaymentIntentId refundReason total"
   );
   if (!order) throw new AppError("Order not found", 404, "NOT_FOUND");
   return order;
 }
 
-module.exports = { updatePaymentStatus, getPaymentDetails };
+/**
+ * Process a refund for a paid order via Stripe.
+ */
+async function refundOrder(orderId, reason = "requested_by_customer") {
+  const order = await Order.findById(orderId);
+  if (!order) throw new AppError("Order not found", 404, "NOT_FOUND");
+  if (order.paymentStatus !== "paid") {
+    throw new AppError("Order has not been paid", 400, "NOT_PAID");
+  }
+  if (order.paymentMethod !== "card") {
+    throw new AppError("Refunds are only supported for card payments", 400, "REFUND_NOT_SUPPORTED");
+  }
+  if (!order.stripePaymentIntentId) {
+    throw new AppError("No payment intent found for this order", 400, "NO_PAYMENT_INTENT");
+  }
+
+  const refund = await stripeService.refundPayment(order.stripePaymentIntentId, reason);
+
+  order.paymentStatus = "refunded";
+  order.refundedAt = new Date();
+  order.refundReason = reason;
+  await order.save();
+
+  logger.info("Order refunded", { orderId: order._id, refundId: refund.id });
+  return { order, refund };
+}
+
+module.exports = { updatePaymentStatus, getPaymentDetails, refundOrder };

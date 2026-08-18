@@ -5,8 +5,8 @@ const catchAsync = require("../utils/catchAsync");
 const orderService = require("../services/orderService");
 
 const createOrder = catchAsync(async (req, res) => {
-  const order = await orderService.createOrder(req.user.id, req.body);
-  res.status(201).json({ order });
+  const { order, isOnlinePayment } = await orderService.createOrder(req.user.id, req.body);
+  res.status(201).json({ order, isOnlinePayment });
 });
 
 const listOrders = catchAsync(async (req, res) => {

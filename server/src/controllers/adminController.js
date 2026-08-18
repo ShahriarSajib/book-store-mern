@@ -85,6 +85,12 @@ const updateOrder = catchAsync(async (req, res) => {
   res.json({ order: await orderService.updateStatus(req.params.id, req.body) });
 });
 
+const refundOrder = catchAsync(async (req, res) => {
+  const paymentService = require("../services/paymentService");
+  const result = await paymentService.refundOrder(req.params.id, req.body.reason);
+  res.json(result);
+});
+
 // ---- Analytics ----
 const analyticsSales = catchAsync(async (req, res) => {
   const analyticsService = require("../services/analyticsService");
@@ -124,6 +130,7 @@ module.exports = {
   deleteCoupon,
   listOrders,
   updateOrder,
+  refundOrder,
   analyticsSales,
   analyticsInventory,
   analyticsRecommendations,

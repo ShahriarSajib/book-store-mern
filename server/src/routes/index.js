@@ -16,6 +16,7 @@ router.use("/cart", require("./cartRoutes"));
 router.use("/orders", require("./orderRoutes"));
 router.use("/reviews", require("./reviewRoutes"));
 router.use("/coupons", require("./couponRoutes"));
+router.use("/payments", require("./paymentRoutes"));
 router.use("/chat", require("./chatbotRoutes"));
 router.use("/faq", require("./faqRoutes"));
 router.use("/admin", require("./adminRoutes"));

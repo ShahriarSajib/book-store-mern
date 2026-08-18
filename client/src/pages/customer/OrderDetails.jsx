@@ -9,7 +9,8 @@ import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
 import { formatDate, formatCurrency } from "../../utils/format";
 import { ORDER_STATUS } from "../../config/constants";
-import { FaArrowLeft, FaFileDownload, FaMapMarkerAlt } from "react-icons/fa";
+import { FaArrowLeft, FaFileDownload, FaMapMarkerAlt, FaRedo } from "react-icons/fa";
+import paymentApi from "../../services/paymentApi";
 
 const STATUS_STYLES = {
   [ORDER_STATUS.PENDING]: "bg-amber-100 text-amber-700",
@@ -17,6 +18,13 @@ const STATUS_STYLES = {
   [ORDER_STATUS.SHIPPED]: "bg-indigo-100 text-indigo-700",
   [ORDER_STATUS.DELIVERED]: "bg-green-100 text-green-700",
   [ORDER_STATUS.CANCELLED]: "bg-red-100 text-red-700",
+};
+
+const PAYMENT_STATUS_STYLES = {
+  pending: "bg-amber-100 text-amber-700",
+  paid: "bg-green-100 text-green-700",
+  failed: "bg-red-100 text-red-700",
+  refunded: "bg-purple-100 text-purple-700",
 };
 
 export default function OrderDetails() {
@@ -37,6 +45,17 @@ export default function OrderDetails() {
     },
     onError: (err) =>
       toast.error(err?.response?.data?.error?.message || "Could not cancel order"),
+  });
+
+  const retryPayment = useMutation({
+    mutationFn: async () => {
+      const sessionData = await paymentApi.createCheckoutSession(id);
+      if (sessionData?.url) {
+        window.location.href = sessionData.url;
+      }
+    },
+    onError: (err) =>
+      toast.error(err?.response?.data?.error?.message || "Could not start payment"),
   });
 
   if (isLoading) {
@@ -63,7 +82,12 @@ export default function OrderDetails() {
   const items = order.items || [];
   const address = order.shippingAddress || {};
   const cancellable =
-    order.status === ORDER_STATUS.PENDING || order.status === ORDER_STATUS.PROCESSING;
+    (order.status === ORDER_STATUS.PENDING || order.status === ORDER_STATUS.PROCESSING) &&
+    order.paymentStatus !== "paid";
+  const canRetryPayment =
+    order.paymentMethod === "card" &&
+    order.paymentStatus === "pending" &&
+    order.status === "pending";
 
   const handleCancel = () => {
     const reason = window.prompt("Reason for cancellation (optional):");
@@ -113,6 +137,15 @@ export default function OrderDetails() {
           >
             {order.status || "unknown"}
           </span>
+          {order.paymentStatus && (
+            <span
+              className={`inline-block rounded-full px-3 py-1 text-xs font-semibold capitalize ${
+                PAYMENT_STATUS_STYLES[order.paymentStatus] || "bg-ink-100 text-ink-700"
+              }`}
+            >
+              Payment: {order.paymentStatus}
+            </span>
+          )}
           <Button variant="outline" size="sm" onClick={handleInvoice}>
             <FaFileDownload /> Invoice
           </Button>
@@ -214,9 +247,30 @@ export default function OrderDetails() {
       </section>
 
       {cancellable && (
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-3">
+          {canRetryPayment && (
+            <Button
+              variant="outline"
+              loading={retryPayment.isLoading}
+              onClick={() => retryPayment.mutate()}
+            >
+              <FaRedo /> Retry payment
+            </Button>
+          )}
           <Button variant="danger" loading={cancelMutation.isLoading} onClick={handleCancel}>
             Cancel order
+          </Button>
+        </div>
+      )}
+
+      {canRetryPayment && !cancellable && (
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            loading={retryPayment.isLoading}
+            onClick={() => retryPayment.mutate()}
+          >
+            <FaRedo /> Retry payment
           </Button>
         </div>
       )}

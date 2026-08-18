@@ -21,6 +21,7 @@ const env = require("./config/env");
 const apiRouter = require("./routes");
 const semanticRoutes = require("./routes/semanticRoutes");
 const similarBookRoutes = require("./routes/similarBookRoutes");
+const paymentController = require("./controllers/paymentController");
 
 const errorHandler = require("./middleware/errorHandler");
 const notFound = require("./middleware/notFound");
@@ -34,6 +35,14 @@ app.use(
     origin: env.CLIENT_URL,
     credentials: true,
   })
+);
+
+// Stripe webhook needs the RAW body for signature verification.
+// This MUST come before express.json() so req.body is a Buffer.
+app.post(
+  "/api/payments/webhook",
+  express.raw({ type: "application/json" }),
+  paymentController.webhook
 );
 
 app.use(express.json({ limit: "1mb" }));

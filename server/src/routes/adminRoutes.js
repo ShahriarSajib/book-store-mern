@@ -31,6 +31,7 @@ router.delete("/coupons/:id", ctrl.deleteCoupon);
 
 router.get("/orders", ctrl.listOrders);
 router.put("/orders/:id", ctrl.updateOrder);
+router.post("/orders/:id/refund", ctrl.refundOrder);
 
 router.get("/analytics/sales", ctrl.analyticsSales);
 router.get("/analytics/inventory", ctrl.analyticsInventory);

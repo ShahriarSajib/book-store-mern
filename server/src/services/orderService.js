@@ -10,6 +10,7 @@ const notificationService = require("./notificationService");
 const { getPagination, buildPageMeta } = require("../utils/paginate");
 
 const CANCELLABLE = ["pending", "processing"];
+const ONLINE_PAYMENT_METHODS = ["card"];
 
 const SHIPPING_RATE = 3.99;
 const FREE_SHIPPING_THRESHOLD = 50;
@@ -106,24 +107,29 @@ async function createOrder(userId, payload = {}) {
     status: "pending",
   });
 
-  await Promise.all(
-    items.map((item) =>
-      Book.updateOne(
-        { _id: item.book, stock: { $gte: item.quantity } },
-        { $inc: { stock: -item.quantity, purchaseCount: item.quantity } }
-      )
-    )
-  );
+  const isOnlinePayment = ONLINE_PAYMENT_METHODS.includes(order.paymentMethod);
 
-  cart.items = [];
-  cart.coupon = undefined;
-  await cart.save();
+  if (!isOnlinePayment) {
+    // Cash on delivery: decrement stock immediately and clear cart
+    await Promise.all(
+      items.map((item) =>
+        Book.updateOne(
+          { _id: item.book, stock: { $gte: item.quantity } },
+          { $inc: { stock: -item.quantity, purchaseCount: item.quantity } }
+        )
+      )
+    );
+
+    cart.items = [];
+    cart.coupon = undefined;
+    await cart.save();
+  }
 
   const user = await User.findById(userId).select("name email");
   order.user = user;
   notificationService.sendOrderConfirmation(order);
 
-  return order;
+  return { order, isOnlinePayment };
 }
 
 async function listOrders(userId, query = {}) {
@@ -234,6 +240,75 @@ function invoiceRows(order) {
   return rows.map((row) => (row.length === 0 ? "" : escapeCsvRow(row))).join("\n");
 }
 
+/**
+ * Confirm payment for an order (called by Stripe webhook on checkout.session.completed).
+ * Decrements stock, clears cart, updates payment status.
+ */
+async function confirmPayment(orderId, stripeSessionId, stripePaymentIntentId) {
+  const order = await Order.findById(orderId);
+  if (!order) {
+    logger.warn("confirmPayment: order not found", { orderId });
+    return null;
+  }
+  if (order.paymentStatus === "paid") return order; // idempotent
+
+  order.paymentStatus = "paid";
+  order.paidAt = new Date();
+  if (stripePaymentIntentId) order.stripePaymentIntentId = stripePaymentIntentId;
+  if (stripeSessionId) order.stripeSessionId = stripeSessionId;
+  await order.save();
+
+  // Decrement stock and increment purchase count (deferred from order creation for online payments)
+  await Promise.all(
+    order.items.map((item) =>
+      Book.updateOne(
+        { _id: item.book, stock: { $gte: item.quantity } },
+        { $inc: { stock: -item.quantity, purchaseCount: item.quantity } }
+      )
+    )
+  );
+
+  // Clear the user's cart
+  await Cart.findOneAndUpdate({ user: order.user }, { $set: { items: [], coupon: undefined } });
+
+  logger.info("Order payment confirmed", { orderId: order._id, orderNumber: order.orderNumber });
+  return order;
+}
+
+/**
+ * Mark payment as failed (called by Stripe webhook on payment_intent.payment_failed).
+ */
+async function failPayment(orderId, reason) {
+  const order = await Order.findById(orderId);
+  if (!order) return null;
+  if (order.paymentStatus === "paid") return order; // already paid, don't downgrade
+
+  order.paymentStatus = "failed";
+  await order.save();
+
+  logger.warn("Order payment failed", { orderId: order._id, reason });
+  return order;
+}
+
+/**
+ * Handle expired Stripe checkout session.
+ * Cancels the order and releases any held resources.
+ */
+async function expireSession(orderId) {
+  const order = await Order.findById(orderId);
+  if (!order) return null;
+  if (order.paymentStatus === "paid" || order.status === "cancelled") return order;
+
+  order.paymentStatus = "failed";
+  order.status = "cancelled";
+  order.cancelledAt = new Date();
+  order.cancelReason = "Payment session expired";
+  await order.save();
+
+  logger.info("Order cancelled due to expired session", { orderId: order._id });
+  return order;
+}
+
 module.exports = {
   createOrder,
   listOrders,
@@ -241,5 +316,8 @@ module.exports = {
   cancelOrder,
   listAll,
   updateStatus,
+  confirmPayment,
+  failPayment,
+  expireSession,
   invoiceRows,
 };

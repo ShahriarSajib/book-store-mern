@@ -1,5 +1,6 @@
 /**
  * pages/customer/Checkout.jsx — address, payment, place order.
+ * For card payments, redirects to Stripe Checkout after creating the order.
  */
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,6 +8,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import userApi from "../../services/userApi";
 import orderApi from "../../services/orderApi";
+import paymentApi from "../../services/paymentApi";
 import { useCartContext } from "../../context/CartContext";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
@@ -17,8 +19,7 @@ import { formatCurrency } from "../../utils/format";
 
 const PAYMENT_METHODS = [
   { value: "cash_on_delivery", label: "Cash on delivery" },
-  { value: "card", label: "Credit / debit card" },
-  { value: "bkash", label: "bKash" },
+  { value: "card", label: "Credit / debit card (Stripe)" },
 ];
 
 export default function Checkout() {
@@ -35,12 +36,28 @@ export default function Checkout() {
   });
 
   const placeOrder = useMutation({
-    mutationFn: () =>
-      orderApi.place({ shippingAddressId, paymentMethod, notes: notes.trim() || undefined }),
-    onSuccess: (data) => {
-      toast.success("Order placed successfully");
+    mutationFn: async () => {
+      const orderData = await orderApi.place({
+        shippingAddressId,
+        paymentMethod,
+        notes: notes.trim() || undefined,
+      });
+
+      // If card payment, create Stripe checkout session and redirect
+      if (paymentMethod === "card" && orderData?.order?._id) {
+        const sessionData = await paymentApi.createCheckoutSession(orderData.order._id);
+        if (sessionData?.url) {
+          // Redirect to Stripe Checkout
+          window.location.href = sessionData.url;
+          return { redirecting: true };
+        }
+      }
+
+      // Cash on delivery — navigate directly
       clearCart();
-      navigate(`/orders/${data?.order?._id || data?.order?.id}`);
+      toast.success("Order placed successfully");
+      navigate(`/orders/${orderData?.order?._id || orderData?.order?.id}`);
+      return orderData;
     },
     onError: (err) =>
       toast.error(err?.response?.data?.error?.message || "Could not place your order"),
@@ -72,12 +89,22 @@ export default function Checkout() {
     placeOrder.mutate();
   };
 
+  const isRedirecting = placeOrder.data?.redirecting;
+
   return (
     <form onSubmit={handlePlaceOrder} className="mx-auto max-w-3xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-ink-900">Checkout</h1>
         <p className="text-sm text-ink-500">Review your order details and place it.</p>
       </div>
+
+      {isRedirecting && (
+        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 text-center">
+          <Spinner className="mx-auto mb-3 h-6 w-6 text-blue-600" />
+          <p className="font-medium text-blue-700">Redirecting to Stripe checkout...</p>
+          <p className="text-sm text-blue-600">Please do not close this page.</p>
+        </div>
+      )}
 
       <section className="rounded-2xl border border-ink-100 bg-white p-6 shadow-soft">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -172,6 +199,11 @@ export default function Checkout() {
             </label>
           ))}
         </div>
+        {paymentMethod === "card" && (
+          <p className="mt-3 text-xs text-ink-400">
+            You will be redirected to Stripe&apos;s secure checkout page to complete payment.
+          </p>
+        )}
       </section>
 
       <section className="rounded-2xl border border-ink-100 bg-white p-6 shadow-soft">
@@ -206,8 +238,15 @@ export default function Checkout() {
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Delivery instructions, gift message…"
         />
-        <Button type="submit" size="lg" fullWidth loading={placeOrder.isLoading} className="mt-4">
-          Place order · {formatCurrency(total)}
+        <Button
+          type="submit"
+          size="lg"
+          fullWidth
+          loading={placeOrder.isLoading}
+          disabled={isRedirecting}
+          className="mt-4"
+        >
+          {paymentMethod === "card" ? "Pay with card" : "Place order"} · {formatCurrency(total)}
         </Button>
       </section>
     </form>

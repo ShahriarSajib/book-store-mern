@@ -36,6 +36,8 @@ import OrderDetails from "../pages/customer/OrderDetails.jsx";
 import Wishlist from "../pages/customer/Wishlist.jsx";
 import Addresses from "../pages/customer/Addresses.jsx";
 import ChatFullPage from "../pages/chatbot/ChatFullPage.jsx";
+import PaymentSuccess from "../pages/customer/PaymentSuccess.jsx";
+import PaymentCancelled from "../pages/customer/PaymentCancelled.jsx";
 
 // admin pages
 import AdminDashboard from "../pages/admin/Dashboard.jsx";
@@ -86,6 +88,8 @@ export default function AppRouter() {
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/profile/addresses" element={<Addresses />} />
         <Route path="/chat" element={<ChatFullPage />} />
+        <Route path="/payment/success" element={<PaymentSuccess />} />
+        <Route path="/payment/cancel" element={<PaymentCancelled />} />
       </Route>
 
       {/* Admin (admin-only) */}

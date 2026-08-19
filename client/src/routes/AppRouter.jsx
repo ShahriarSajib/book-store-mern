@@ -33,6 +33,7 @@ import Cart from "../pages/customer/Cart.jsx";
 import Checkout from "../pages/customer/Checkout.jsx";
 import Orders from "../pages/customer/Orders.jsx";
 import OrderDetails from "../pages/customer/OrderDetails.jsx";
+import OrderTracking from "../pages/customer/OrderTracking.jsx";
 import Wishlist from "../pages/customer/Wishlist.jsx";
 import Addresses from "../pages/customer/Addresses.jsx";
 import ChatFullPage from "../pages/chatbot/ChatFullPage.jsx";
@@ -85,6 +86,7 @@ export default function AppRouter() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/orders/:id" element={<OrderDetails />} />
+        <Route path="/orders/:id/tracking" element={<OrderTracking />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/profile/addresses" element={<Addresses />} />
         <Route path="/chat" element={<ChatFullPage />} />

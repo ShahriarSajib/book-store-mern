@@ -9,7 +9,7 @@ import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
 import { formatDate, formatCurrency } from "../../utils/format";
 import { ORDER_STATUS } from "../../config/constants";
-import { FaArrowLeft, FaFileDownload, FaMapMarkerAlt, FaRedo } from "react-icons/fa";
+import { FaArrowLeft, FaFileDownload, FaMapMarkerAlt, FaRedo, FaTruck } from "react-icons/fa";
 import paymentApi from "../../services/paymentApi";
 
 const STATUS_STYLES = {
@@ -130,6 +130,12 @@ export default function OrderDetails() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <Link
+            to={`/orders/${id}/tracking`}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+          >
+            <FaTruck /> Track order
+          </Link>
           <span
             className={`inline-block rounded-full px-3 py-1 text-sm font-semibold capitalize ${
               STATUS_STYLES[order.status] || "bg-ink-100 text-ink-700"

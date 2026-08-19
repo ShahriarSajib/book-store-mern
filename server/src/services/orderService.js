@@ -165,6 +165,64 @@ async function getOrder(userId, orderId) {
   return order;
 }
 
+async function getTracking(userId, orderId) {
+  const order = await Order.findOne({ _id: orderId, user: userId });
+  if (!order) throw new AppError("Order not found", 404, "NOT_FOUND");
+
+  const statusSteps = [
+    { key: "pending", label: "Order placed", completed: true, date: order.createdAt },
+    { key: "processing", label: "Processing", completed: false, date: null },
+    { key: "shipped", label: "Shipped", completed: false, date: null },
+    { key: "delivered", label: "Delivered", completed: false, date: null },
+  ];
+
+  const statusOrder = ["pending", "processing", "shipped", "delivered"];
+  const currentIdx = statusOrder.indexOf(order.status);
+
+  if (order.status === "cancelled") {
+    statusSteps.forEach((s) => {
+      s.completed = false;
+      s.date = null;
+    });
+    statusSteps[0] = { key: "pending", label: "Order placed", completed: true, date: order.createdAt };
+  } else {
+    for (let i = 0; i < statusSteps.length; i++) {
+      if (i <= currentIdx) {
+        statusSteps[i].completed = true;
+        if (i === 0) statusSteps[i].date = order.createdAt;
+        else if (i === 1) statusSteps[i].date = order.paidAt || order.updatedAt;
+        else if (i === 2) statusSteps[i].date = order.status === "shipped" ? order.updatedAt : null;
+        else if (i === 3) statusSteps[i].date = order.status === "delivered" ? order.updatedAt : null;
+      }
+    }
+    if (order.status === "shipped") {
+      statusSteps[2].date = order.updatedAt;
+    }
+    if (order.status === "delivered") {
+      statusSteps[2].date = order.paidAt || order.updatedAt;
+      statusSteps[3].date = order.updatedAt;
+    }
+  }
+
+  const estimatedDelivery =
+    order.status === "shipped"
+      ? new Date(new Date(order.updatedAt).getTime() + 7 * 24 * 60 * 60 * 1000)
+      : order.status === "delivered"
+        ? order.updatedAt
+        : null;
+
+  return {
+    orderNumber: order.orderNumber,
+    status: order.status,
+    trackingNumber: order.trackingNumber || null,
+    shippingAddress: order.shippingAddress,
+    statusSteps,
+    estimatedDelivery,
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt,
+  };
+}
+
 async function cancelOrder(userId, orderId, reason) {
   const order = await Order.findOne({ _id: orderId, user: userId });
   if (!order) throw new AppError("Order not found", 404, "NOT_FOUND");
@@ -393,6 +451,7 @@ module.exports = {
   createOrder,
   listOrders,
   getOrder,
+  getTracking,
   cancelOrder,
   listAll,
   updateStatus,

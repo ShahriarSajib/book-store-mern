@@ -4,11 +4,33 @@
 const AppError = require("../utils/AppError");
 const { Cart, Book } = require("../models");
 const couponService = require("./couponService");
+const socketService = require("./socketService");
 
 const BOOK_POPULATE = {
   path: "items.book",
   select: "title coverImage price authors stock isActive",
 };
+
+function emitLowStock(book) {
+  try {
+    if (socketService.isLowStock(book.stock)) {
+      socketService.emitToAdmins("stock:low", {
+        book: { _id: book._id, title: book.title, stock: book.stock },
+        message: `Low stock alert: "${book.title}" has only ${book.stock} units left`,
+      });
+    }
+  } catch (_err) { /* socket emit is best-effort */ }
+}
+
+async function checkLowStockAfterOrder(items) {
+  try {
+    const bookIds = items.map((i) => i.book);
+    const books = await Book.find({ _id: { $in: bookIds } }).select("title stock");
+    for (const book of books) {
+      emitLowStock(book);
+    }
+  } catch (_err) { /* socket emit is best-effort */ }
+}
 
 async function getCart(userId) {
   let cart = await Cart.findOne({ user: userId });
@@ -112,4 +134,5 @@ module.exports = {
   removeItem,
   clearCart,
   applyCoupon,
+  checkLowStockAfterOrder,
 };

@@ -50,6 +50,8 @@ module.exports = {
   MAIL_PASS: process.env.MAIL_PASS || "",
   MAIL_FROM: process.env.MAIL_FROM || "AI Bookstore <no-reply@example.com>",
 
+  LOW_STOCK_THRESHOLD: Number(process.env.LOW_STOCK_THRESHOLD) || 5,
+
   ADMIN_EMAIL: process.env.ADMIN_EMAIL || "admin@bookstore.com",
   ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || "Admin@12345",
 

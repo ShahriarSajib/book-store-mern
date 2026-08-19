@@ -7,6 +7,7 @@ import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
 import { ChatbotProvider } from "./context/ChatbotContext.jsx";
+import { SocketProvider } from "./context/SocketContext.jsx";
 import "./styles/index.css";
 
 const queryClient = new QueryClient();
@@ -16,12 +17,14 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <CartProvider>
-            <ChatbotProvider>
-              <App />
-              <Toaster position="top-right" />
-            </ChatbotProvider>
-          </CartProvider>
+          <SocketProvider>
+            <CartProvider>
+              <ChatbotProvider>
+                <App />
+                <Toaster position="top-right" />
+              </ChatbotProvider>
+            </CartProvider>
+          </SocketProvider>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>

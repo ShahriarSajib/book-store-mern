@@ -3,6 +3,7 @@
  */
 const AppError = require("../utils/AppError");
 const { Book } = require("../models");
+const socketService = require("./socketService");
 
 async function list() {
   const books = await Book.find()
@@ -20,6 +21,20 @@ async function updateStock(bookId, stock) {
   if (!book) throw new AppError("Book not found", 404, "NOT_FOUND");
   book.stock = qty;
   await book.save();
+
+  try {
+    socketService.emitToInventory("stock:updated", {
+      book: { _id: book._id, title: book.title, stock: book.stock, price: book.price },
+      message: `Stock updated for "${book.title}": ${book.stock} units`,
+    });
+    if (socketService.isLowStock(book.stock)) {
+      socketService.emitToAdmins("stock:low", {
+        book: { _id: book._id, title: book.title, stock: book.stock },
+        message: `Low stock alert: "${book.title}" has only ${book.stock} units left`,
+      });
+    }
+  } catch (_err) { /* socket emit is best-effort */ }
+
   return { book };
 }
 

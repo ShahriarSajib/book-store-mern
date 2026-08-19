@@ -7,6 +7,9 @@ const AppError = require("../utils/AppError");
 const { Order, Cart, User, Book } = require("../models");
 const couponService = require("./couponService");
 const notificationService = require("./notificationService");
+const socketService = require("./socketService");
+const cartService = require("./cartService");
+const logger = require("../utils/logger");
 const { getPagination, buildPageMeta } = require("../utils/paginate");
 
 const CANCELLABLE = ["pending", "processing"];
@@ -123,11 +126,24 @@ async function createOrder(userId, payload = {}) {
     cart.items = [];
     cart.coupon = undefined;
     await cart.save();
+
+    cartService.checkLowStockAfterOrder(items);
   }
 
   const user = await User.findById(userId).select("name email");
   order.user = user;
   notificationService.sendOrderConfirmation(order);
+
+  try {
+    socketService.emitToUser(userId, "order:created", {
+      order: { _id: order._id, orderNumber: order.orderNumber, total: order.total, status: order.status },
+      message: `Order #${order.orderNumber} placed successfully`,
+    });
+    socketService.emitToAdmins("order:created", {
+      order: { _id: order._id, orderNumber: order.orderNumber, total: order.total, status: order.status, user: { name: user.name, email: user.email } },
+      message: `New order #${order.orderNumber} from ${user.name}`,
+    });
+  } catch (_err) { /* socket emit is best-effort */ }
 
   return { order, isOnlinePayment };
 }
@@ -165,6 +181,18 @@ async function cancelOrder(userId, orderId, reason) {
       Book.updateOne({ _id: item.book }, { $inc: { stock: item.quantity } })
     )
   );
+
+  try {
+    socketService.emitToUser(userId, "order:cancelled", {
+      order: { _id: order._id, orderNumber: order.orderNumber, status: "cancelled" },
+      message: `Order #${order.orderNumber} has been cancelled`,
+    });
+    socketService.emitToAdmins("order:cancelled", {
+      order: { _id: order._id, orderNumber: order.orderNumber, status: "cancelled" },
+      message: `Order #${order.orderNumber} was cancelled`,
+    });
+  } catch (_err) { /* socket emit is best-effort */ }
+
   return order;
 }
 
@@ -197,6 +225,26 @@ async function updateStatus(orderId, patch) {
     const user = await User.findById(order.user).select("name email");
     order.user = user;
     notificationService.sendOrderStatusUpdate(order, oldStatus);
+
+    try {
+      const statusLabels = {
+        processing: "is being processed",
+        shipped: "has been shipped",
+        delivered: "has been delivered",
+        cancelled: "has been cancelled",
+      };
+      const statusMsg = `Order #${order.orderNumber} ${statusLabels[order.status] || `status changed to ${order.status}`}`;
+      socketService.emitToUser(String(order.user._id || order.user), "order:statusChanged", {
+        order: { _id: order._id, orderNumber: order.orderNumber, status: order.status, trackingNumber: order.trackingNumber },
+        oldStatus,
+        message: statusMsg,
+      });
+      socketService.emitToAdmins("order:statusChanged", {
+        order: { _id: order._id, orderNumber: order.orderNumber, status: order.status },
+        oldStatus,
+        message: `Order #${order.orderNumber} status: ${oldStatus} → ${order.status}`,
+      });
+    } catch (_err) { /* socket emit is best-effort */ }
   }
   return order;
 }
@@ -268,10 +316,25 @@ async function confirmPayment(orderId, stripeSessionId, stripePaymentIntentId) {
     )
   );
 
+  cartService.checkLowStockAfterOrder(order.items);
+
   // Clear the user's cart
   await Cart.findOneAndUpdate({ user: order.user }, { $set: { items: [], coupon: undefined } });
 
   logger.info("Order payment confirmed", { orderId: order._id, orderNumber: order.orderNumber });
+
+  try {
+    const userId = String(order.user);
+    socketService.emitToUser(userId, "payment:confirmed", {
+      order: { _id: order._id, orderNumber: order.orderNumber, total: order.total, paymentStatus: "paid" },
+      message: `Payment confirmed for order #${order.orderNumber}`,
+    });
+    socketService.emitToAdmins("payment:confirmed", {
+      order: { _id: order._id, orderNumber: order.orderNumber, total: order.total, paymentStatus: "paid" },
+      message: `Payment received for order #${order.orderNumber}`,
+    });
+  } catch (_err) { /* socket emit is best-effort */ }
+
   return order;
 }
 
@@ -287,6 +350,15 @@ async function failPayment(orderId, reason) {
   await order.save();
 
   logger.warn("Order payment failed", { orderId: order._id, reason });
+
+  try {
+    socketService.emitToUser(String(order.user), "payment:failed", {
+      order: { _id: order._id, orderNumber: order.orderNumber, paymentStatus: "failed" },
+      reason,
+      message: `Payment failed for order #${order.orderNumber}`,
+    });
+  } catch (_err) { /* socket emit is best-effort */ }
+
   return order;
 }
 
@@ -306,6 +378,14 @@ async function expireSession(orderId) {
   await order.save();
 
   logger.info("Order cancelled due to expired session", { orderId: order._id });
+
+  try {
+    socketService.emitToUser(String(order.user), "payment:expired", {
+      order: { _id: order._id, orderNumber: order.orderNumber, status: "cancelled", paymentStatus: "failed" },
+      message: `Payment session for order #${order.orderNumber} has expired`,
+    });
+  } catch (_err) { /* socket emit is best-effort */ }
+
   return order;
 }
 

@@ -1,16 +1,18 @@
 /**
  * pages/customer/PaymentSuccess.jsx — shown after Stripe checkout succeeds.
- * Polls order status briefly, then shows confirmation.
+ * Listens for payment:confirmed via Socket.IO instead of polling.
  */
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { FaCheckCircle, FaSpinner } from "react-icons/fa";
 import orderApi from "../../services/orderApi";
+import { useSocket } from "../../context/SocketContext";
 import Button from "../../components/ui/Button";
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get("order_id");
+  const { socket } = useSocket();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,28 +23,62 @@ export default function PaymentSuccess() {
       return;
     }
 
-    let attempts = 0;
-    const maxAttempts = 10;
-    const interval = setInterval(async () => {
-      attempts++;
+    // Fetch initial order state
+    orderApi
+      .get(orderId)
+      .then((data) => {
+        const o = data?.order;
+        if (o?.paymentStatus === "paid") {
+          setOrder(o);
+          setLoading(false);
+        }
+      })
+      .catch(() => {});
+
+    if (!socket) return;
+
+    const handlePaymentConfirmed = (data) => {
+      if (data?.order?._id === orderId || !data?.order?._id) {
+        setOrder((prev) => ({
+          ...prev,
+          ...data.order,
+          paymentStatus: "paid",
+        }));
+        setLoading(false);
+      }
+    };
+
+    const handlePaymentFailed = (data) => {
+      if (data?.order?._id === orderId || !data?.order?._id) {
+        setError(data?.reason || "Payment could not be confirmed");
+        setLoading(false);
+      }
+    };
+
+    socket.on("payment:confirmed", handlePaymentConfirmed);
+    socket.on("payment:failed", handlePaymentFailed);
+
+    // Fallback: if socket doesn't connect within 5s, do a single fetch
+    const fallback = setTimeout(async () => {
       try {
         const data = await orderApi.get(orderId);
         const o = data?.order;
-        if (o?.paymentStatus === "paid" || attempts >= maxAttempts) {
+        if (o) {
           setOrder(o);
           setLoading(false);
-          clearInterval(interval);
         }
       } catch {
-        if (attempts >= maxAttempts) {
-          setLoading(false);
-          clearInterval(interval);
-        }
+        setError("Unable to confirm payment. Please check your orders.");
+        setLoading(false);
       }
-    }, 1500);
+    }, 5000);
 
-    return () => clearInterval(interval);
-  }, [orderId]);
+    return () => {
+      socket.off("payment:confirmed", handlePaymentConfirmed);
+      socket.off("payment:failed", handlePaymentFailed);
+      clearTimeout(fallback);
+    };
+  }, [orderId, socket]);
 
   if (loading) {
     return (

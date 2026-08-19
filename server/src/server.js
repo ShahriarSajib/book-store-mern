@@ -5,15 +5,21 @@
  *   - Register global middleware (security, parsing, rate limiting, logging)
  *   - Mount API routes under /api
  *   - Register centralized error handler
- *   - Start HTTP server
+ *   - Start HTTP server with Socket.IO
  */
+const http = require("http");
 const app = require("./app");
 const env = require("./config/env");
 const connectDB = require("./config/db");
+const socketService = require("./services/socketService");
 
 async function bootstrap() {
   await connectDB();
-  const server = app.listen(env.PORT, () => {
+
+  const server = http.createServer(app);
+  socketService.init(server, env.CLIENT_URL);
+
+  server.listen(env.PORT, () => {
     console.log(`[server] running on :${env.PORT} (${env.NODE_ENV})`);
   });
 

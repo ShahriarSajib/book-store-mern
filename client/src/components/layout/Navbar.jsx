@@ -16,6 +16,7 @@ import {
 import toast from "react-hot-toast";
 import useAuth from "../../hooks/useAuth";
 import { useCartContext } from "../../context/CartContext";
+import NotificationBell from "../notifications/NotificationBell";
 import Button from "../ui/Button";
 
 const navLink = ({ isActive }) =>
@@ -77,6 +78,8 @@ export default function Navbar() {
         </nav>
 
         <div className="navbar__actions">
+          {isAuthenticated && <NotificationBell />}
+
           {isAuthenticated && (
             <Link
               to="/cart"

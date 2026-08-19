@@ -1,18 +1,20 @@
 /**
- * pages/customer/Wishlist.jsx — saved books grid.
+ * pages/customer/Wishlist.jsx — saved books grid with move-to-cart.
  */
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import wishlistApi from "../../services/wishlistApi";
+import { useCartContext } from "../../context/CartContext";
 import BookCard from "../../components/books/BookCard";
 import Spinner from "../../components/ui/Spinner";
 import EmptyState from "../../components/ui/EmptyState";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaShoppingCart } from "react-icons/fa";
 
 export default function Wishlist() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { refresh: refreshCart } = useCartContext();
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["wishlist"],
@@ -28,6 +30,17 @@ export default function Wishlist() {
     },
     onError: (err) =>
       toast.error(err?.response?.data?.error?.message || "Could not remove book"),
+  });
+
+  const moveToCartMutation = useMutation({
+    mutationFn: (bookId) => wishlistApi.moveToCart(bookId),
+    onSuccess: (data) => {
+      toast.success("Moved to cart");
+      queryClient.setQueryData(["wishlist"], { wishlist: data.wishlist });
+      refreshCart();
+    },
+    onError: (err) =>
+      toast.error(err?.response?.data?.error?.message || "Could not move to cart"),
   });
 
   if (isLoading) {
@@ -71,23 +84,45 @@ export default function Wishlist() {
           {items.map((item) => {
             const book = item.book || {};
             const bookId = book._id || book.id;
+            const inStock = (book.stock ?? 0) > 0;
             return (
               <div key={item._id || bookId} className="relative">
                 <BookCard book={book} />
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!bookId) {
-                      toast.error("This book cannot be removed");
-                      return;
-                    }
-                    removeMutation.mutate(bookId);
-                  }}
-                  className="absolute right-2 top-2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-red-500 shadow-sm transition-colors hover:bg-red-50 hover:text-red-600"
-                  aria-label={`Remove ${book.title} from wishlist`}
-                >
-                  <FaHeart />
-                </button>
+                <div className="absolute right-2 top-2 flex flex-col gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!bookId) {
+                        toast.error("This book cannot be removed");
+                        return;
+                      }
+                      removeMutation.mutate(bookId);
+                    }}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-red-500 shadow-sm transition-colors hover:bg-red-50 hover:text-red-600"
+                    aria-label={`Remove ${book.title} from wishlist`}
+                  >
+                    <FaHeart />
+                  </button>
+                </div>
+                <div className="absolute bottom-14 left-2 right-2">
+                  <button
+                    type="button"
+                    disabled={!inStock || moveToCartMutation.isPending}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (bookId) moveToCartMutation.mutate(bookId);
+                    }}
+                    className={`flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium shadow-sm transition-colors ${
+                      inStock
+                        ? "bg-brand-600 text-white hover:bg-brand-700"
+                        : "cursor-not-allowed bg-ink-100 text-ink-400"
+                    }`}
+                  >
+                    <FaShoppingCart className="h-3 w-3" />
+                    {inStock ? "Move to cart" : "Out of stock"}
+                  </button>
+                </div>
               </div>
             );
           })}

@@ -23,6 +23,7 @@ router.get("/me/history", protect, ctrl.getHistory);
 
 router.get("/me/wishlist", protect, ctrl.getWishlist);
 router.post("/me/wishlist", protect, requireVerified, ctrl.addWishlistItem);
+router.post("/me/wishlist/:bookId/move-to-cart", protect, requireVerified, ctrl.moveWishlistToCart);
 router.delete("/me/wishlist/:bookId", protect, requireVerified, ctrl.removeWishlistItem);
 
 module.exports = router;

@@ -15,6 +15,7 @@ import {
   FaRobot,
   FaBuilding,
   FaChartLine,
+  FaLightbulb,
 } from "react-icons/fa";
 
 const items = [
@@ -29,6 +30,7 @@ const items = [
   { to: "/admin/reviews", label: "Reviews", icon: FaStar },
   { to: "/admin/coupons", label: "Coupons", icon: FaTags },
   { to: "/admin/analytics", label: "Analytics", icon: FaChartLine },
+  { to: "/admin/recommendations", label: "Recommendations", icon: FaLightbulb },
   { to: "/admin/ai", label: "AI Assistant", icon: FaRobot },
 ];
 

@@ -14,5 +14,6 @@ module.exports = {
   Coupon: require("./Coupon"),
   Conversation: require("./Conversation"),
   FaqDocument: require("./FaqDocument"),
+  RecommendationLog: require("./RecommendationLog"),
   Wishlist: require("./Wishlist"),
 };

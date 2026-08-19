@@ -52,6 +52,7 @@ import AdminInventory from "../pages/admin/Inventory.jsx";
 import AdminReviews from "../pages/admin/Reviews.jsx";
 import AdminCoupons from "../pages/admin/Coupons.jsx";
 import AdminAnalytics from "../pages/admin/Analytics.jsx";
+import AdminRecommendations from "../pages/admin/Recommendations.jsx";
 import AdminAIAssistant from "../pages/admin/AIAssistant.jsx";
 
 export default function AppRouter() {
@@ -108,6 +109,7 @@ export default function AppRouter() {
           <Route path="/admin/reviews" element={<AdminReviews />} />
           <Route path="/admin/coupons" element={<AdminCoupons />} />
           <Route path="/admin/analytics" element={<AdminAnalytics />} />
+          <Route path="/admin/recommendations" element={<AdminRecommendations />} />
           <Route path="/admin/ai" element={<AdminAIAssistant />} />
         </Route>
       </Route>

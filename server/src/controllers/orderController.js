@@ -25,6 +25,10 @@ const cancelOrder = catchAsync(async (req, res) => {
   res.json({ order: await orderService.cancelOrder(req.user.id, req.params.id, req.body.reason) });
 });
 
+const reorder = catchAsync(async (req, res) => {
+  res.json(await orderService.reorder(req.user.id, req.params.id));
+});
+
 const downloadInvoice = catchAsync(async (req, res) => {
   const order = await orderService.getOrder(req.user.id, req.params.id);
   const csv = orderService.invoiceRows(order);
@@ -33,4 +37,4 @@ const downloadInvoice = catchAsync(async (req, res) => {
   res.send(csv);
 });
 
-module.exports = { createOrder, listOrders, getOrder, getTracking, cancelOrder, downloadInvoice };
+module.exports = { createOrder, listOrders, getOrder, getTracking, cancelOrder, reorder, downloadInvoice };

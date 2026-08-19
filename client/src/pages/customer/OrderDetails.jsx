@@ -5,15 +5,17 @@ import { Link, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import orderApi from "../../services/orderApi";
+import { useCartContext } from "../../context/CartContext";
 import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
 import { formatDate, formatCurrency } from "../../utils/format";
 import { ORDER_STATUS } from "../../config/constants";
-import { FaArrowLeft, FaFileDownload, FaMapMarkerAlt, FaRedo, FaTruck } from "react-icons/fa";
+import { FaArrowLeft, FaFileDownload, FaMapMarkerAlt, FaRedo, FaShoppingCart, FaTruck } from "react-icons/fa";
 import paymentApi from "../../services/paymentApi";
 
 const STATUS_STYLES = {
   [ORDER_STATUS.PENDING]: "bg-amber-100 text-amber-700",
+  [ORDER_STATUS.CONFIRMED]: "bg-cyan-100 text-cyan-700",
   [ORDER_STATUS.PROCESSING]: "bg-blue-100 text-blue-700",
   [ORDER_STATUS.SHIPPED]: "bg-indigo-100 text-indigo-700",
   [ORDER_STATUS.DELIVERED]: "bg-green-100 text-green-700",
@@ -36,6 +38,8 @@ export default function OrderDetails() {
     queryFn: () => orderApi.get(id),
   });
 
+  const { refresh: refreshCart } = useCartContext();
+
   const cancelMutation = useMutation({
     mutationFn: (reason) => orderApi.cancel(id, reason),
     onSuccess: () => {
@@ -45,6 +49,16 @@ export default function OrderDetails() {
     },
     onError: (err) =>
       toast.error(err?.response?.data?.error?.message || "Could not cancel order"),
+  });
+
+  const reorderMutation = useMutation({
+    mutationFn: () => orderApi.reorder(id),
+    onSuccess: (data) => {
+      toast.success(data?.message || "Items added to cart");
+      refreshCart();
+    },
+    onError: (err) =>
+      toast.error(err?.response?.data?.error?.message || "Could not reorder"),
   });
 
   const retryPayment = useMutation({
@@ -82,7 +96,7 @@ export default function OrderDetails() {
   const items = order.items || [];
   const address = order.shippingAddress || {};
   const cancellable =
-    (order.status === ORDER_STATUS.PENDING || order.status === ORDER_STATUS.PROCESSING) &&
+    (order.status === ORDER_STATUS.PENDING || order.status === ORDER_STATUS.CONFIRMED || order.status === ORDER_STATUS.PROCESSING) &&
     order.paymentStatus !== "paid";
   const canRetryPayment =
     order.paymentMethod === "card" &&
@@ -277,6 +291,18 @@ export default function OrderDetails() {
             onClick={() => retryPayment.mutate()}
           >
             <FaRedo /> Retry payment
+          </Button>
+        </div>
+      )}
+
+      {(order.status === ORDER_STATUS.DELIVERED || order.status === ORDER_STATUS.CANCELLED) && (
+        <div className="flex justify-end">
+          <Button
+            variant="primary"
+            loading={reorderMutation.isLoading}
+            onClick={() => reorderMutation.mutate()}
+          >
+            <FaShoppingCart /> Reorder
           </Button>
         </div>
       )}

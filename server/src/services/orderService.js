@@ -12,12 +12,17 @@ const cartService = require("./cartService");
 const logger = require("../utils/logger");
 const { getPagination, buildPageMeta } = require("../utils/paginate");
 
-const CANCELLABLE = ["pending", "processing"];
+const CANCELLABLE = ["pending", "confirmed", "processing"];
 const ONLINE_PAYMENT_METHODS = ["card"];
 
 const SHIPPING_RATE = 3.99;
 const FREE_SHIPPING_THRESHOLD = 50;
 const TAX_RATE = 0.05;
+
+const CART_POPULATE = {
+  path: "items.book",
+  select: "title coverImage price authors stock isActive",
+};
 
 function generateOrderNumber() {
   const stamp = new Date();
@@ -165,18 +170,71 @@ async function getOrder(userId, orderId) {
   return order;
 }
 
+async function reorder(userId, orderId) {
+  const order = await Order.findOne({ _id: orderId, user: userId });
+  if (!order) throw new AppError("Order not found", 404, "NOT_FOUND");
+
+  const bookIds = order.items.map((item) => item.book);
+  const books = await Book.find({ _id: { $in: bookIds }, isActive: true });
+
+  const bookMap = new Map(books.map((b) => [String(b._id), b]));
+
+  let cart = await Cart.findOne({ user: userId });
+  if (!cart) cart = await Cart.create({ user: userId, items: [] });
+
+  let addedCount = 0;
+  let skippedCount = 0;
+
+  for (const item of order.items) {
+    const book = bookMap.get(String(item.book));
+    if (!book) {
+      skippedCount++;
+      continue;
+    }
+
+    const existing = cart.items.find((ci) => String(ci.book) === String(item.book));
+    const currentQty = existing ? existing.quantity : 0;
+    const requestedQty = Math.min(item.quantity, book.stock);
+
+    if (requestedQty <= 0) {
+      skippedCount++;
+      continue;
+    }
+
+    if (existing) {
+      existing.quantity = Math.min(currentQty + requestedQty, book.stock);
+      existing.price = book.price;
+    } else {
+      cart.items.push({ book: book._id, quantity: requestedQty, price: book.price });
+    }
+    addedCount++;
+  }
+
+  await cart.save();
+
+  return {
+    cart: await cart.populate(CART_POPULATE),
+    addedCount,
+    skippedCount,
+    message: skippedCount > 0
+      ? `${addedCount} item(s) added to cart, ${skippedCount} unavailable`
+      : `${addedCount} item(s) added to cart`,
+  };
+}
+
 async function getTracking(userId, orderId) {
   const order = await Order.findOne({ _id: orderId, user: userId });
   if (!order) throw new AppError("Order not found", 404, "NOT_FOUND");
 
   const statusSteps = [
     { key: "pending", label: "Order placed", completed: true, date: order.createdAt },
+    { key: "confirmed", label: "Order confirmed", completed: false, date: null },
     { key: "processing", label: "Processing", completed: false, date: null },
     { key: "shipped", label: "Shipped", completed: false, date: null },
     { key: "delivered", label: "Delivered", completed: false, date: null },
   ];
 
-  const statusOrder = ["pending", "processing", "shipped", "delivered"];
+  const statusOrder = ["pending", "confirmed", "processing", "shipped", "delivered"];
   const currentIdx = statusOrder.indexOf(order.status);
 
   if (order.status === "cancelled") {
@@ -190,17 +248,17 @@ async function getTracking(userId, orderId) {
       if (i <= currentIdx) {
         statusSteps[i].completed = true;
         if (i === 0) statusSteps[i].date = order.createdAt;
-        else if (i === 1) statusSteps[i].date = order.paidAt || order.updatedAt;
-        else if (i === 2) statusSteps[i].date = order.status === "shipped" ? order.updatedAt : null;
-        else if (i === 3) statusSteps[i].date = order.status === "delivered" ? order.updatedAt : null;
+        else if (i === 1) statusSteps[i].date = order.status === "confirmed" ? order.updatedAt : order.paidAt || null;
+        else if (i === 2) statusSteps[i].date = order.status === "processing" ? order.updatedAt : null;
+        else if (i === 3) statusSteps[i].date = order.status === "shipped" ? order.updatedAt : null;
+        else if (i === 4) statusSteps[i].date = order.status === "delivered" ? order.updatedAt : null;
       }
     }
-    if (order.status === "shipped") {
-      statusSteps[2].date = order.updatedAt;
+    if (currentIdx >= 3) {
+      statusSteps[3].date = statusSteps[3].date || order.updatedAt;
     }
-    if (order.status === "delivered") {
-      statusSteps[2].date = order.paidAt || order.updatedAt;
-      statusSteps[3].date = order.updatedAt;
+    if (currentIdx >= 4) {
+      statusSteps[4].date = statusSteps[4].date || order.updatedAt;
     }
   }
 
@@ -286,6 +344,7 @@ async function updateStatus(orderId, patch) {
 
     try {
       const statusLabels = {
+        confirmed: "has been confirmed",
         processing: "is being processed",
         shipped: "has been shipped",
         delivered: "has been delivered",
@@ -452,6 +511,7 @@ module.exports = {
   listOrders,
   getOrder,
   getTracking,
+  reorder,
   cancelOrder,
   listAll,
   updateStatus,

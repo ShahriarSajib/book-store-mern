@@ -11,6 +11,7 @@ import { ORDER_STATUS } from "../../config/constants";
 import {
   FaArrowLeft,
   FaBox,
+  FaCheck,
   FaCheckCircle,
   FaExclamationTriangle,
   FaShippingFast,
@@ -20,6 +21,7 @@ import {
 
 const STEP_ICONS = {
   pending: FaBox,
+  confirmed: FaCheck,
   processing: FaCheckCircle,
   shipped: FaShippingFast,
   delivered: FaHome,

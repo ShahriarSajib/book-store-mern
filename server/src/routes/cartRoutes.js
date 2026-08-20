@@ -16,4 +16,7 @@ router.put("/:bookId", requireVerified, validate(cartValidators.updateQuantityVa
 router.delete("/:bookId", requireVerified, ctrl.removeItem);
 router.delete("/", requireVerified, ctrl.clearCart);
 
+router.post("/coupon", requireVerified, ctrl.applyCoupon);
+router.delete("/coupon", requireVerified, ctrl.removeCoupon);
+
 module.exports = router;

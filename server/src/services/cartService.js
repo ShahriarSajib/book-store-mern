@@ -127,6 +127,14 @@ async function applyCoupon(userId, code) {
   return cart.populate(BOOK_POPULATE);
 }
 
+async function removeCoupon(userId) {
+  const cart = await Cart.findOne({ user: userId });
+  if (!cart) throw new AppError("Cart not found", 404, "NOT_FOUND");
+  cart.coupon = undefined;
+  await cart.save();
+  return cart.populate(BOOK_POPULATE);
+}
+
 module.exports = {
   getCart,
   addItem,
@@ -134,5 +142,6 @@ module.exports = {
   removeItem,
   clearCart,
   applyCoupon,
+  removeCoupon,
   checkLowStockAfterOrder,
 };

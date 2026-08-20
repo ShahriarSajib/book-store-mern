@@ -13,6 +13,7 @@ router.use("/publishers", require("./catalogRoutes"));
 router.use("/search", require("./searchRoutes"));
 router.use("/recommendations", require("./recommendationRoutes"));
 router.use("/cart", require("./cartRoutes"));
+router.use("/notifications", require("./notificationRoutes"));
 router.use("/orders", require("./orderRoutes"));
 router.use("/reviews", require("./reviewRoutes"));
 router.use("/coupons", require("./couponRoutes"));

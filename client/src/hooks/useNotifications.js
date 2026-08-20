@@ -1,21 +1,48 @@
 /**
  * hooks/useNotifications.js
  * Listens to Socket.IO events and manages notification state.
- * Shows toast notifications and tracks unread count.
+ * Shows toast notifications, tracks unread count, and syncs with server.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useSocket } from "../context/SocketContext";
 import { useNavigate } from "react-router-dom";
+import notificationApi from "../services/notificationApi";
+import useAuth from "./useAuth";
 
 const MAX_NOTIFICATIONS = 50;
 
 export default function useNotifications() {
   const { socket } = useSocket();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const listenersRef = useRef({});
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    notificationApi
+      .list({ limit: 20 })
+      .then((data) => {
+        if (data?.notifications) {
+          setNotifications(
+            data.notifications.map((n) => ({
+              id: n._id,
+              type: n.type,
+              title: n.title,
+              message: n.message,
+              read: n.read,
+              link: n.link,
+              data: n.data,
+              createdAt: n.createdAt,
+            }))
+          );
+          setUnreadCount(data.unreadCount || 0);
+        }
+      })
+      .catch(() => {});
+  }, [isAuthenticated]);
 
   const addNotification = useCallback((notification) => {
     const entry = {
@@ -33,16 +60,21 @@ export default function useNotifications() {
       prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );
     setUnreadCount((prev) => Math.max(0, prev - 1));
+    if (typeof id === "string" && id.length === 24) {
+      notificationApi.markAsRead(id).catch(() => {});
+    }
   }, []);
 
   const markAllAsRead = useCallback(() => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     setUnreadCount(0);
+    notificationApi.markAllAsRead().catch(() => {});
   }, []);
 
   const clearNotifications = useCallback(() => {
     setNotifications([]);
     setUnreadCount(0);
+    notificationApi.clearAll().catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -107,13 +139,15 @@ export default function useNotifications() {
   const handleNotificationClick = useCallback(
     (notification) => {
       markAsRead(notification.id);
-      if (notification.type === "order" || notification.type === "order_status") {
-        const orderId = notification.order?._id;
+      if (notification.link) {
+        navigate(notification.link);
+      } else if (notification.type === "order" || notification.type === "order_status") {
+        const orderId = notification.data?.orderId || notification.order?._id;
         if (orderId) navigate(`/orders/${orderId}`);
       } else if (notification.type === "stock" || notification.type === "stock_alert") {
         navigate("/admin/inventory");
       } else if (notification.type === "payment") {
-        const orderId = notification.order?._id;
+        const orderId = notification.data?.orderId || notification.order?._id;
         if (orderId) navigate(`/orders/${orderId}`);
       }
     },

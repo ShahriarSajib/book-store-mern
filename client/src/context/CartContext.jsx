@@ -139,6 +139,17 @@ export function CartProvider({ children }) {
     [applyServerCart]
   );
 
+  const removeCoupon = useCallback(async () => {
+    setIsUpdating(true);
+    try {
+      applyServerCart(await cartApi.removeCoupon());
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setIsUpdating(false);
+    }
+  }, [applyServerCart]);
+
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [items]
@@ -161,6 +172,7 @@ export function CartProvider({ children }) {
       updateItem,
       clearCart,
       applyCoupon,
+      removeCoupon,
       refresh,
       isUpdating,
     }),
@@ -176,6 +188,7 @@ export function CartProvider({ children }) {
       updateItem,
       clearCart,
       applyCoupon,
+      removeCoupon,
       refresh,
       isUpdating,
     ]

@@ -24,6 +24,13 @@ const CART_POPULATE = {
   select: "title coverImage price authors stock isActive",
 };
 
+async function persistNotification(userId, { type, title, message, link, data }) {
+  try {
+    const { Notification } = require("../models");
+    await Notification.create({ user: userId, type: type || "system", title, message, link: link || null, data: data || {} });
+  } catch (_err) { /* persistence is best-effort */ }
+}
+
 function generateOrderNumber() {
   const stamp = new Date();
   const date = [
@@ -148,6 +155,7 @@ async function createOrder(userId, payload = {}) {
       order: { _id: order._id, orderNumber: order.orderNumber, total: order.total, status: order.status, user: { name: user.name, email: user.email } },
       message: `New order #${order.orderNumber} from ${user.name}`,
     });
+    persistNotification(userId, { type: "order", title: "Order placed", message: `Order #${order.orderNumber} placed successfully`, link: `/orders/${order._id}`, data: { orderId: order._id } });
   } catch (_err) { /* socket emit is best-effort */ }
 
   return { order, isOnlinePayment };
@@ -307,6 +315,7 @@ async function cancelOrder(userId, orderId, reason) {
       order: { _id: order._id, orderNumber: order.orderNumber, status: "cancelled" },
       message: `Order #${order.orderNumber} was cancelled`,
     });
+    persistNotification(userId, { type: "order_status", title: "Order cancelled", message: `Order #${order.orderNumber} has been cancelled`, link: `/orders/${order._id}`, data: { orderId: order._id } });
   } catch (_err) { /* socket emit is best-effort */ }
 
   return order;
@@ -361,6 +370,7 @@ async function updateStatus(orderId, patch) {
         oldStatus,
         message: `Order #${order.orderNumber} status: ${oldStatus} → ${order.status}`,
       });
+      persistNotification(String(order.user._id || order.user), { type: "order_status", title: "Order status updated", message: statusMsg, link: `/orders/${order._id}`, data: { orderId: order._id, oldStatus, newStatus: order.status } });
     } catch (_err) { /* socket emit is best-effort */ }
   }
   return order;
@@ -450,6 +460,7 @@ async function confirmPayment(orderId, stripeSessionId, stripePaymentIntentId) {
       order: { _id: order._id, orderNumber: order.orderNumber, total: order.total, paymentStatus: "paid" },
       message: `Payment received for order #${order.orderNumber}`,
     });
+    persistNotification(userId, { type: "payment", title: "Payment confirmed", message: `Payment confirmed for order #${order.orderNumber}`, link: `/orders/${order._id}`, data: { orderId: order._id } });
   } catch (_err) { /* socket emit is best-effort */ }
 
   return order;

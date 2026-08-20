@@ -14,6 +14,7 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Spinner from "../../components/ui/Spinner";
 import EmptyState from "../../components/ui/EmptyState";
+import CouponInput from "../../components/cart/CouponInput";
 import { FaClipboardCheck, FaCreditCard, FaMapMarkerAlt } from "react-icons/fa";
 import { formatCurrency } from "../../utils/format";
 
@@ -24,7 +25,7 @@ const PAYMENT_METHODS = [
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const { items, count, subtotal, discount, total, clearCart } = useCartContext();
+  const { items, count, subtotal, discount, total, coupon, applyCoupon, isUpdating, clearCart } = useCartContext();
   const [shippingAddressId, setShippingAddressId] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cash_on_delivery");
   const [notes, setNotes] = useState("");
@@ -211,6 +212,14 @@ export default function Checkout() {
         <p className="text-sm text-ink-500">
           {count} item{count === 1 ? "" : "s"} from your cart.
         </p>
+        <div className="mt-4">
+          <CouponInput
+            onApply={applyCoupon}
+            disabled={isUpdating}
+            appliedCode={coupon?.code}
+            discount={discount}
+          />
+        </div>
         <dl className="mt-4 space-y-2 text-sm">
           <div className="flex items-center justify-between">
             <dt className="text-ink-500">Subtotal</dt>

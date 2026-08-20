@@ -21,6 +21,8 @@ router.delete("/me/addresses/:id", protect, ctrl.deleteAddress);
 
 router.get("/me/history", protect, ctrl.getHistory);
 
+router.get("/me/dashboard", protect, ctrl.getDashboard);
+
 router.get("/me/wishlist", protect, ctrl.getWishlist);
 router.post("/me/wishlist", protect, requireVerified, ctrl.addWishlistItem);
 router.post("/me/wishlist/:bookId/move-to-cart", protect, requireVerified, ctrl.moveWishlistToCart);

@@ -33,4 +33,9 @@ const applyCoupon = catchAsync(async (req, res) => {
   res.json({ cart });
 });
 
-module.exports = { getCart, addItem, updateItem, removeItem, clearCart, applyCoupon };
+const removeCoupon = catchAsync(async (req, res) => {
+  const cart = await cartService.removeCoupon(req.user.id);
+  res.json({ cart });
+});
+
+module.exports = { getCart, addItem, updateItem, removeItem, clearCart, applyCoupon, removeCoupon };

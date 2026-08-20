@@ -1,8 +1,8 @@
 /**
- * services/userService.js — profile, addresses, wishlist mutations.
+ * services/userService.js — profile, addresses, dashboard, wishlist mutations.
  */
 const AppError = require("../utils/AppError");
-const { User } = require("../models");
+const { User, Order, Wishlist, Review } = require("../models");
 
 async function getProfile(userId) {
   const user = await User.findById(userId);
@@ -100,6 +100,37 @@ async function getHistory(userId) {
   };
 }
 
+async function getDashboard(userId) {
+  const [totalOrders, completedOrders, pendingOrders, cancelledOrders, wishlist, reviewsGiven, recentOrders] =
+    await Promise.all([
+      Order.countDocuments({ user: userId }),
+      Order.countDocuments({ user: userId, status: "delivered" }),
+      Order.countDocuments({ user: userId, status: "pending" }),
+      Order.countDocuments({ user: userId, status: "cancelled" }),
+      Wishlist.countDocuments({ user: userId }),
+      Review.countDocuments({ user: userId }),
+      Order.find({ user: userId }).sort({ createdAt: -1 }).limit(5).select("orderNumber status total createdAt items"),
+    ]);
+
+  const [totalSpent] = await Order.aggregate([
+    { $match: { user: userId, status: { $ne: "cancelled" } } },
+    { $group: { _id: null, total: { $sum: "$total" } } },
+  ]);
+
+  return {
+    stats: {
+      totalOrders,
+      completedOrders,
+      pendingOrders,
+      cancelledOrders,
+      wishlistCount: wishlist,
+      reviewsGiven,
+      totalSpent: totalSpent?.total || 0,
+    },
+    recentOrders,
+  };
+}
+
 module.exports = {
   getProfile,
   updateProfile,
@@ -108,4 +139,5 @@ module.exports = {
   updateAddress,
   deleteAddress,
   getHistory,
+  getDashboard,
 };

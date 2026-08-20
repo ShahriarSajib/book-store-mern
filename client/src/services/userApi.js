@@ -6,6 +6,7 @@ import api from "./axios";
 export const userApi = {
   me: () => api.get("/users/me").then((r) => r.data),
   updateMe: (data) => api.put("/users/me", data).then((r) => r.data),
+  dashboard: () => api.get("/users/me/dashboard").then((r) => r.data),
   getAddresses: () => api.get("/users/me/addresses").then((r) => r.data),
   addAddress: (data) => api.post("/users/me/addresses", data).then((r) => r.data),
   updateAddress: (id, data) => api.put(`/users/me/addresses/${id}`, data).then((r) => r.data),

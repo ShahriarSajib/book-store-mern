@@ -34,6 +34,8 @@ import Checkout from "../pages/customer/Checkout.jsx";
 import Orders from "../pages/customer/Orders.jsx";
 import OrderDetails from "../pages/customer/OrderDetails.jsx";
 import OrderTracking from "../pages/customer/OrderTracking.jsx";
+import CustomerDashboard from "../pages/customer/CustomerDashboard.jsx";
+import NotificationPreferences from "../pages/customer/NotificationPreferences.jsx";
 import Wishlist from "../pages/customer/Wishlist.jsx";
 import Addresses from "../pages/customer/Addresses.jsx";
 import ChatFullPage from "../pages/chatbot/ChatFullPage.jsx";
@@ -82,7 +84,9 @@ export default function AppRouter() {
 
       {/* Customer (protected) */}
       <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<CustomerDashboard />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/notifications" element={<NotificationPreferences />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/orders" element={<Orders />} />

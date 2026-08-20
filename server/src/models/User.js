@@ -66,6 +66,19 @@ const userSchema = new mongoose.Schema(
     searchHistory: [{ type: String, maxlength: 200 }],
     favoriteGenres: [{ type: String }],
 
+    notificationPreferences: {
+      email: {
+        orderUpdates: { type: Boolean, default: true },
+        promotions: { type: Boolean, default: true },
+        newsletter: { type: Boolean, default: true },
+      },
+      push: {
+        orderUpdates: { type: Boolean, default: true },
+        promotions: { type: Boolean, default: false },
+        newsletter: { type: Boolean, default: false },
+      },
+    },
+
     lastLoginAt: { type: Date },
   },
   { timestamps: true }

@@ -6,7 +6,9 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   FaBars,
+  FaBell,
   FaBook,
+  FaChartLine,
   FaShieldAlt,
   FaShoppingCart,
   FaSignOutAlt,
@@ -126,6 +128,22 @@ export default function Navbar() {
                     role="menuitem"
                   >
                     <FaUser /> <span className="text-ink-400" />&nbsp;My profile
+                  </Link>
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setMenuOpen(false)}
+                    className="user-menu__item"
+                    role="menuitem"
+                  >
+                    <FaChartLine className="text-ink-400" /> Dashboard
+                  </Link>
+                  <Link
+                    to="/notifications"
+                    onClick={() => setMenuOpen(false)}
+                    className="user-menu__item"
+                    role="menuitem"
+                  >
+                    <FaBell className="text-ink-400" /> Notifications
                   </Link>
                   {isAdmin && (
                     <Link

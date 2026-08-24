@@ -10,7 +10,14 @@
     "seed:admin": "node scripts/seedAdmin.js",
     "seed:books": "node scripts/seedBooks.js",
     "test": "jest --runInBand",
-    "lint": "eslint \"src/**/*.js\""
+    "lint": "eslint \"src/**/*.js\"",
+    "test:jobs": "jest tests/jobs.test.js --runInBand"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFiles": [
+      "<rootDir>/tests/setupEnv.js"
+    ]
   },
   "dependencies": {
     "@huggingface/transformers": "^4.2.0",

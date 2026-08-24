@@ -16,8 +16,16 @@ async function seed() {
   await mongoose.connect(uri, { serverSelectionTimeoutMS: 10000 });
   console.log("[seed:admin] connected to MongoDB");
 
-  const email = (process.env.ADMIN_EMAIL || "admin@bookstore.com").toLowerCase();
-  const password = process.env.ADMIN_PASSWORD || "Admin@12345";
+  const email = process.env.ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASSWORD;
+  if (!email || !password) {
+    console.error(
+      "[seed:admin] ADMIN_EMAIL and ADMIN_PASSWORD must be set in the environment.\n" +
+        "Example: ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD='StrongPass!123' node scripts/seedAdmin.js"
+    );
+    await mongoose.disconnect();
+    process.exit(1);
+  }
   const name = process.env.ADMIN_NAME || "Store Admin";
 
   const existing = await User.findOne({ email });

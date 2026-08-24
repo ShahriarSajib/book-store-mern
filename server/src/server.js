@@ -12,16 +12,27 @@ const app = require("./app");
 const env = require("./config/env");
 const connectDB = require("./config/db");
 const socketService = require("./services/socketService");
+const scheduler = require("./jobs/scheduler");
 
 async function bootstrap() {
   await connectDB();
 
   const server = http.createServer(app);
   socketService.init(server, env.CLIENT_URL);
+  scheduler.start({ runOnStart: env.NODE_ENV !== "test" });
 
   server.listen(env.PORT, () => {
     console.log(`[server] running on :${env.PORT} (${env.NODE_ENV})`);
   });
+
+  const shutdown = async (signal) => {
+    console.log(`[server] ${signal} received — shutting down`);
+    scheduler.stop();
+    server.close(() => process.exit(0));
+    setTimeout(() => process.exit(0), 5000).unref();
+  };
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on("SIGINT", () => shutdown("SIGINT"));
 
   server.on("error", (err) => {
     console.error("[server] failed to start:", err.message);

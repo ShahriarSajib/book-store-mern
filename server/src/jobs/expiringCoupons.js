@@ -1,6 +1,29 @@
 /**
  * jobs/expiringCoupons.js
- * Responsibility: deactivates coupons past expiry, notifies admin.
+ * Responsibility: deactivate coupons whose expiry date has passed so they
+ * can no longer be applied at checkout or by the chatbot.
  */
-// TODO
-module.exports = {};
+const Coupon = require("../models/Coupon");
+const logger = require("../utils/logger");
+
+async function run() {
+  const now = new Date();
+
+  const result = await Coupon.updateMany(
+    {
+      isActive: true,
+      expiresAt: { $ne: null, $lt: now },
+    },
+    { $set: { isActive: false } }
+  );
+
+  if (result.modifiedCount > 0) {
+    logger.info(`[job:expiringCoupons] deactivated ${result.modifiedCount} expired coupon(s)`);
+  } else {
+    logger.debug("[job:expiringCoupons] no expired coupons");
+  }
+
+  return { deactivated: result.modifiedCount };
+}
+
+module.exports = { run };

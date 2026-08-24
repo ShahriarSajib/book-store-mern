@@ -52,8 +52,9 @@ module.exports = {
 
   LOW_STOCK_THRESHOLD: Number(process.env.LOW_STOCK_THRESHOLD) || 5,
 
-  ADMIN_EMAIL: process.env.ADMIN_EMAIL || "admin@bookstore.com",
-  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || "Admin@12345",
+  // Seeded by scripts/seedAdmin.js — no insecure defaults.
+  ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
 
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,

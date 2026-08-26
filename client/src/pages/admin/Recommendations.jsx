@@ -160,7 +160,7 @@ function EmbeddingsTab() {
           <Button
             size="sm"
             variant="primary"
-            loading={regenMutation.isLoading}
+            loading={regenMutation.isPending}
             onClick={() => regenMutation.mutate(regenerateIds)}
           >
             Regenerate {regenerateIds.length} selected

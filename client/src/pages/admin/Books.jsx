@@ -9,6 +9,7 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Spinner from "../../components/ui/Spinner";
 import Modal from "../../components/ui/Modal";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import { FaSearch, FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 import { formatCurrency } from "../../utils/format";
 
@@ -88,6 +89,7 @@ export default function AdminBooks() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["admin", "books", { search, page }],
@@ -140,9 +142,7 @@ export default function AdminBooks() {
   };
 
   const handleDelete = (book) => {
-    if (window.confirm(`Delete "${book.title}"? This cannot be undone.`)) {
-      deleteMutation.mutate(book.id || book._id);
-    }
+    setDeleteTarget(book);
   };
 
   const handleSubmit = (e) => {
@@ -164,8 +164,8 @@ export default function AdminBooks() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-ink-900">Book management</h1>
-          <p className="text-sm text-ink-500">Create, edit and remove catalog books.</p>
+          <h1 className="text-2xl font-bold text-slate-900">Book management</h1>
+          <p className="text-sm text-slate-500">Create, edit and remove catalog books.</p>
         </div>
         <Button onClick={openCreate}>
           <FaPlus /> Add book
@@ -173,7 +173,7 @@ export default function AdminBooks() {
       </div>
 
       <div className="relative max-w-md">
-        <FaSearch className="pointer-events-none absolute left-3 top-2.5 text-ink-400" />
+        <FaSearch className="pointer-events-none absolute left-3 top-2.5 text-slate-400" />
         <input
           value={search}
           onChange={(e) => {
@@ -181,22 +181,22 @@ export default function AdminBooks() {
             setPage(1);
           }}
           placeholder="Search books…"
-          className="w-full rounded-lg border border-ink-200 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200"
+          className="w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
         />
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-16 text-brand-600">
+        <div className="flex justify-center py-16 text-indigo-600">
           <Spinner className="h-8 w-8" />
         </div>
       ) : books.length === 0 ? (
-        <div className="rounded-xl border border-ink-200 bg-white p-10 text-center text-ink-500">
+        <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-500">
           No books match your search.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-ink-100 bg-white shadow-soft">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-left text-sm">
-            <thead className="bg-ink-50 text-xs uppercase tracking-wide text-ink-400">
+            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-400">
               <tr>
                 <th className="px-4 py-3">Book</th>
                 <th className="px-4 py-3">Author</th>
@@ -208,32 +208,32 @@ export default function AdminBooks() {
             </thead>
             <tbody>
               {books.map((book) => (
-                <tr key={book.id || book._id} className="border-t border-ink-100">
+                <tr key={book.id || book._id} className="border-t border-slate-100">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-9 shrink-0 items-center justify-center overflow-hidden rounded bg-ink-50">
+                      <div className="flex h-12 w-9 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-50">
                         {book.coverImage ? (
                           <img src={book.coverImage} alt="" className="h-full w-full object-cover" />
                         ) : (
-                          <span className="text-xs text-ink-300">—</span>
+                          <span className="text-xs text-slate-300">—</span>
                         )}
                       </div>
                       <div className="max-w-[220px]">
-                        <p className="truncate font-medium text-ink-800">{book.title}</p>
-                        <p className="truncate text-xs text-ink-500">{book.publishedYear || ""}</p>
+                        <p className="truncate font-medium text-slate-800">{book.title}</p>
+                        <p className="truncate text-xs text-slate-500">{book.publishedYear || ""}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="max-w-[180px] truncate px-4 py-3 text-ink-600">
+                  <td className="max-w-[180px] truncate px-4 py-3 text-slate-600">
                     {book.authors?.join(", ") || "—"}
                   </td>
-                  <td className="px-4 py-3 font-medium text-ink-800">{formatCurrency(book.price)}</td>
+                  <td className="px-4 py-3 font-medium text-slate-800">{formatCurrency(book.price)}</td>
                   <td className="px-4 py-3">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${(book.stock ?? 0) > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                       {book.stock ?? 0}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-ink-600">
+                  <td className="px-4 py-3 text-slate-600">
                     {book.averageRating ? book.averageRating.toFixed(1) : "—"}
                   </td>
                   <td className="px-4 py-3">
@@ -244,7 +244,7 @@ export default function AdminBooks() {
                       <Button
                         variant="danger"
                         size="sm"
-                        loading={deleteMutation.isLoading && deleteMutation.variables === (book.id || book._id)}
+                        loading={deleteMutation.isPending && deleteMutation.variables === (book.id || book._id)}
                         onClick={() => handleDelete(book)}
                         aria-label={`Delete ${book.title}`}
                       >
@@ -258,8 +258,8 @@ export default function AdminBooks() {
           </table>
 
           {pagination.pages > 1 && (
-            <div className="flex items-center justify-between border-t border-ink-100 px-4 py-3 text-sm">
-              <span className="text-ink-500">
+            <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-sm">
+              <span className="text-slate-500">
                 Page {pagination.page} of {pagination.pages} ({pagination.total} books)
               </span>
               <div className="flex gap-2">
@@ -274,7 +274,7 @@ export default function AdminBooks() {
           )}
         </div>
       )}
-      {isFetching && !isLoading && <p className="text-xs text-ink-400">Updating…</p>}
+      {isFetching && !isLoading && <p className="text-xs text-slate-400">Updating…</p>}
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? "Edit book" : "Add book"}>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -301,12 +301,12 @@ export default function AdminBooks() {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <Input label="Stock" type="number" value={form.stock} onChange={set("stock")} />
-            <label className="flex items-center gap-2 pt-6 text-sm text-ink-700">
+            <label className="flex items-center gap-2 pt-6 text-sm text-slate-700">
               <input
                 type="checkbox"
                 checked={form.isActive}
                 onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
-                className="h-4 w-4 rounded border-ink-300 text-brand-600 focus:ring-brand-500"
+                className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
               />
               Active (visible in store)
             </label>
@@ -318,12 +318,26 @@ export default function AdminBooks() {
             <Button variant="ghost" onClick={() => setModalOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" loading={saveMutation.isLoading}>
+            <Button type="submit" loading={saveMutation.isPending}>
               {editing ? "Save changes" : "Create book"}
             </Button>
           </div>
         </form>
       </Modal>
+
+      <ConfirmModal
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            deleteMutation.mutate(deleteTarget.id || deleteTarget._id);
+            setDeleteTarget(null);
+          }
+        }}
+        title="Delete book"
+        message={`Delete "${deleteTarget?.title}"? This cannot be undone.`}
+        loading={deleteMutation.isPending}
+      />
     </div>
   );
 }

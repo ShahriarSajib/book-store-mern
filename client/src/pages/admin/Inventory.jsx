@@ -143,7 +143,7 @@ export default function Inventory() {
                         size="sm"
                         disabled={editingId !== getId(book)}
                         loading={
-                          updateMutation.isLoading &&
+                          updateMutation.isPending &&
                           updateMutation.variables?.id === getId(book)
                         }
                         onClick={() => handleSave(book)}

@@ -9,6 +9,7 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Spinner from "../../components/ui/Spinner";
 import Modal from "../../components/ui/Modal";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 
 const EMPTY_FORM = { name: "", bio: "", bornYear: "", country: "" };
@@ -21,6 +22,7 @@ export default function Authors() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "authors"],
@@ -74,9 +76,7 @@ export default function Authors() {
   };
 
   const handleDelete = (author) => {
-    if (window.confirm(`Delete author "${author.name}"? This cannot be undone.`)) {
-      deleteMutation.mutate(getId(author));
-    }
+    setDeleteTarget(author);
   };
 
   const handleSubmit = (e) => {
@@ -161,7 +161,7 @@ export default function Authors() {
                         variant="danger"
                         size="sm"
                         loading={
-                          deleteMutation.isLoading && deleteMutation.variables === getId(author)
+                          deleteMutation.isPending && deleteMutation.variables === getId(author)
                         }
                         onClick={() => handleDelete(author)}
                         aria-label={`Delete ${author.name}`}
@@ -202,12 +202,26 @@ export default function Authors() {
             <Button variant="ghost" onClick={() => setModalOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" loading={saveMutation.isLoading}>
+            <Button type="submit" loading={saveMutation.isPending}>
               {editing ? "Save changes" : "Create author"}
             </Button>
           </div>
         </form>
       </Modal>
+
+      <ConfirmModal
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            deleteMutation.mutate(getId(deleteTarget));
+            setDeleteTarget(null);
+          }
+        }}
+        title="Delete author"
+        message={`Delete author "${deleteTarget?.name}"? This cannot be undone.`}
+        loading={deleteMutation.isPending}
+      />
     </div>
   );
 }

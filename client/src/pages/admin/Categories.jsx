@@ -9,6 +9,7 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Spinner from "../../components/ui/Spinner";
 import Modal from "../../components/ui/Modal";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 
 const EMPTY_FORM = { name: "", description: "" };
@@ -21,6 +22,7 @@ export default function Categories() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "categories"],
@@ -79,9 +81,7 @@ export default function Categories() {
   };
 
   const handleDelete = (cat) => {
-    if (window.confirm(`Delete category "${cat.name}"? This cannot be undone.`)) {
-      deleteMutation.mutate(getId(cat));
-    }
+    setDeleteTarget(cat);
   };
 
   const handleSubmit = (e) => {
@@ -146,7 +146,7 @@ export default function Categories() {
                       variant={cat.isActive ? "secondary" : "primary"}
                       size="sm"
                       loading={
-                        toggleMutation.isLoading &&
+                        toggleMutation.isPending &&
                         toggleMutation.variables?.id === getId(cat)
                       }
                       onClick={() =>
@@ -172,7 +172,7 @@ export default function Categories() {
                       <Button
                         variant="danger"
                         size="sm"
-                        loading={deleteMutation.isLoading && deleteMutation.variables === getId(cat)}
+                        loading={deleteMutation.isPending && deleteMutation.variables === getId(cat)}
                         onClick={() => handleDelete(cat)}
                         aria-label={`Delete ${cat.name}`}
                       >
@@ -202,12 +202,26 @@ export default function Categories() {
             <Button variant="ghost" onClick={() => setModalOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" loading={saveMutation.isLoading}>
+            <Button type="submit" loading={saveMutation.isPending}>
               {editing ? "Save changes" : "Create category"}
             </Button>
           </div>
         </form>
       </Modal>
+
+      <ConfirmModal
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            deleteMutation.mutate(getId(deleteTarget));
+            setDeleteTarget(null);
+          }
+        }}
+        title="Delete category"
+        message={`Delete category "${deleteTarget?.name}"? This cannot be undone.`}
+        loading={deleteMutation.isPending}
+      />
     </div>
   );
 }

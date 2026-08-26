@@ -8,6 +8,7 @@ import adminApi from "../../services/adminApi";
 import useAuth from "../../hooks/useAuth";
 import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import { FaSearch, FaTrash } from "react-icons/fa";
 
 const ROLES = ["customer", "book_manager", "order_manager", "admin"];
@@ -32,6 +33,7 @@ export default function Users() {
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["admin", "users", { search, role, status, page }],
@@ -64,9 +66,7 @@ export default function Users() {
       toast.error("You cannot delete your own account");
       return;
     }
-    if (window.confirm(`Delete ${user.name} (${user.email})? This cannot be undone.`)) {
-      deleteMutation.mutate(user.id);
-    }
+    setDeleteTarget(user);
   };
 
   const resetFilters = () => {
@@ -196,7 +196,7 @@ export default function Users() {
                         <Button
                           variant={u.isActive ? "secondary" : "primary"}
                           size="sm"
-                          loading={updateMutation.isLoading && updateMutation.variables?.id === u.id}
+                          loading={updateMutation.isPending && updateMutation.variables?.id === u.id}
                           onClick={() =>
                             updateMutation.mutate({ id: u.id, patch: { isActive: !u.isActive } })
                           }
@@ -207,7 +207,7 @@ export default function Users() {
                       <Button
                         variant="danger"
                         size="sm"
-                        loading={deleteMutation.isLoading && deleteMutation.variables === u.id}
+                        loading={deleteMutation.isPending && deleteMutation.variables === u.id}
                         onClick={() => handleDelete(u)}
                         aria-label={`Delete ${u.name}`}
                       >
@@ -248,6 +248,20 @@ export default function Users() {
         </div>
       )}
       {isFetching && !isLoading && <p className="text-xs text-slate-400">Updating…</p>}
+
+      <ConfirmModal
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            deleteMutation.mutate(deleteTarget.id);
+            setDeleteTarget(null);
+          }
+        }}
+        title="Delete user"
+        message={`Delete ${deleteTarget?.name} (${deleteTarget?.email})? This cannot be undone.`}
+        loading={deleteMutation.isPending}
+      />
     </div>
   );
 }

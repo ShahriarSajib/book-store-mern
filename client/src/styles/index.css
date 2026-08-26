@@ -99,14 +99,14 @@
     @apply text-ink-800;
     background-color: var(--surface-ivory);
     background-image:
-      radial-gradient(1200px 600px at -10% -10%, rgba(5, 150, 105, 0.08), transparent 60%),
+      radial-gradient(1200px 600px at -10% -10%, rgba(150, 15, 105, 0.08), transparent 60%),
       radial-gradient(1000px 500px at 110% 0%, rgba(194, 65, 12, 0.06), transparent 60%),
       radial-gradient(800px 500px at 50% 110%, rgba(6, 95, 70, 0.05), transparent 60%),
       linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
   }
   .dark h1, .dark h2, .dark h3, .dark h4 { @apply text-ink-50; }
   .dark ::selection { background: var(--brand-800); color: var(--brand-50); }
-}
+
   html {
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     -webkit-text-size-adjust: 100%;

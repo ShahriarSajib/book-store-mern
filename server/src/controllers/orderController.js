@@ -1,8 +1,8 @@
 /**
  * controllers/orderController.js — checkout, list, cancel, invoice.
  */
-const catchAsync = require("../utils/catchAsync");
-const orderService = require("../services/orderService");
+import catchAsync from "../utils/catchAsync.js";
+import orderService from "../services/orderService.js";
 
 const createOrder = catchAsync(async (req, res) => {
   const { order, isOnlinePayment } = await orderService.createOrder(req.user.id, req.body);
@@ -37,4 +37,4 @@ const downloadInvoice = catchAsync(async (req, res) => {
   res.send(csv);
 });
 
-module.exports = { createOrder, listOrders, getOrder, getTracking, cancelOrder, reorder, downloadInvoice };
+export { createOrder, listOrders, getOrder, getTracking, cancelOrder, reorder, downloadInvoice };

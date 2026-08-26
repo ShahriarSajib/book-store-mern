@@ -2,7 +2,7 @@
  * models/Author.js
  * Responsibility: author profiles (biography, image).
  */
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const authorSchema = new mongoose.Schema(
   {
@@ -20,4 +20,4 @@ const authorSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Author", authorSchema);
+export default mongoose.model("Author", authorSchema);

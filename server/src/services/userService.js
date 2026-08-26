@@ -1,8 +1,8 @@
 /**
  * services/userService.js — profile, addresses, dashboard, wishlist mutations.
  */
-const AppError = require("../utils/AppError");
-const { User, Order, Wishlist, Review } = require("../models");
+import AppError from "../utils/AppError.js";
+import { User, Order, Wishlist, Review } from "../models/index.js";
 
 async function getProfile(userId) {
   const user = await User.findById(userId);
@@ -131,7 +131,7 @@ async function getDashboard(userId) {
   };
 }
 
-module.exports = {
+export default {
   getProfile,
   updateProfile,
   listAddresses,

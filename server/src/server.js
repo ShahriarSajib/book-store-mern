@@ -7,12 +7,12 @@
  *   - Register centralized error handler
  *   - Start HTTP server with Socket.IO
  */
-const http = require("http");
-const app = require("./app");
-const env = require("./config/env");
-const connectDB = require("./config/db");
-const socketService = require("./services/socketService");
-const scheduler = require("./jobs/scheduler");
+import http from "http";
+import app from "./app.js";
+import env from "./config/env.js";
+import connectDB from "./config/db.js";
+import socketService from "./services/socketService.js";
+import scheduler from "./jobs/scheduler.js";
 
 async function bootstrap() {
   await connectDB();

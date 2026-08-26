@@ -3,12 +3,12 @@
  * Responsibility: periodically scan the catalog for books at/below the
  * low-stock threshold and alert staff (socket rooms + persisted notifications).
  */
-const Book = require("../models/Book");
-const User = require("../models/User");
-const Notification = require("../models/Notification");
-const socketService = require("../services/socketService");
-const env = require("../config/env");
-const logger = require("../utils/logger");
+import Book from "../models/Book.js";
+import User from "../models/User.js";
+import Notification from "../models/Notification.js";
+import socketService from "../services/socketService.js";
+import env from "../config/env.js";
+import logger from "../utils/logger.js";
 
 async function run() {
   const threshold = Number(env.LOW_STOCK_THRESHOLD) || 5;
@@ -61,4 +61,4 @@ async function run() {
   return { alerted: lowStockBooks.length, books: lowStockBooks };
 }
 
-module.exports = { run };
+export { run };

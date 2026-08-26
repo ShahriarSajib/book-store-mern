@@ -4,7 +4,7 @@
  * Finds books that are semantically similar to a given book.
  */
 
-const Book = require("../models/Book");
+import Book from "../models/Book.js";
 
 /**
  * Calculate cosine similarity between two vectors.
@@ -138,7 +138,7 @@ async function findSimilarBooks({
   return results.slice(0, safeLimit);
 }
 
-module.exports = {
+export {
   findSimilarBooks,
   cosineSimilarity,
 };

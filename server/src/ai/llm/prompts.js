@@ -46,7 +46,7 @@ function buildAdminPrompt() {
   return ADMIN_SYSTEM;
 }
 
-module.exports = {
+export {
   BOOKSTORE_SYSTEM,
   ADMIN_SYSTEM,
   buildBookstorePrompt,

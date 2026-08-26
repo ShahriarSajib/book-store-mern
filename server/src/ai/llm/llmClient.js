@@ -3,9 +3,9 @@
  * Thin wrapper around OpenAI-compatible API via axios.
  * Supports tool/function calling.
  */
-const axios = require("axios");
-const aiConfig = require("../../config/ai");
-const logger = require("../../utils/logger");
+import axios from "axios";
+import aiConfig from "../../config/ai.js";
+import logger from "../../utils/logger.js";
 
 const OPENAI_COMPATIBLE_URLS = {
   openai: "https://api.openai.com/v1",
@@ -79,4 +79,4 @@ function safeParse(str) {
   }
 }
 
-module.exports = { chat };
+export { chat };

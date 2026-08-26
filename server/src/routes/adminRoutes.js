@@ -3,10 +3,13 @@
  *   /dashboard, /users (admin-only user management),
  *   /inventory, /reviews, /coupons, /orders, /analytics, /ai
  */
-const router = require("express").Router();
-const { protect } = require("../middleware/auth");
-const { requireAdmin } = require("../middleware/admin");
-const ctrl = require("../controllers/adminController");
+import { Router } from "express";
+import { protect } from "../middleware/auth.js";
+import { requireAdmin } from "../middleware/admin.js";
+import * as ctrl from "../controllers/adminController.js";
+import recommendationAdminRoutes from "./recommendationAdminRoutes.js";
+
+const router = Router();
 
 router.use(protect, requireAdmin);
 
@@ -37,8 +40,8 @@ router.get("/analytics/sales", ctrl.analyticsSales);
 router.get("/analytics/inventory", ctrl.analyticsInventory);
 router.get("/analytics/recommendations", ctrl.analyticsRecommendations);
 
-router.use("/recommendations", require("./recommendationAdminRoutes"));
+router.use("/recommendations", recommendationAdminRoutes);
 
 router.post("/ai/chat", ctrl.aiChat);
 
-module.exports = router;
+export default router;

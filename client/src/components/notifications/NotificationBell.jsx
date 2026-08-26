@@ -48,7 +48,7 @@ export default function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full z-50 mt-2 rounded-xl border border-ink-100 bg-white shadow-lg">
+        <div className="absolute right-0 top-full z-50 mt-2 rounded-xl border border-ink-100 dark:border-ink-700 bg-white dark:bg-ink-800 shadow-lg">
           <NotificationDropdown
             notifications={notifications}
             onNotificationClick={(n) => {

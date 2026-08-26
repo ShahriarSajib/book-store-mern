@@ -2,7 +2,7 @@
  * services/analyticsService.js — admin dashboard metrics, sales reports,
  * recommendation analytics.
  */
-const { Order, Book, Review, User } = require("../models");
+import { Order, Book, Review, User } from "../models/index.js";
 
 async function salesReport(query = {}) {
   const days = Math.max(1, Math.min(365, Number(query.days) || 30));
@@ -88,4 +88,4 @@ async function summary() {
   };
 }
 
-module.exports = { salesReport, inventoryReport, recommendationReport, summary };
+export { salesReport, inventoryReport, recommendationReport, summary };

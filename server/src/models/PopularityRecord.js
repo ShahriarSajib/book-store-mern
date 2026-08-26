@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const popularityRecordSchema = new mongoose.Schema(
   {
@@ -35,7 +35,7 @@ const popularityRecordSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model(
+export default mongoose.model(
   "PopularityRecord",
   popularityRecordSchema
 );

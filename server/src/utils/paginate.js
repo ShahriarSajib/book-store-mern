@@ -20,4 +20,4 @@ function buildPageMeta(total, page, limit) {
   };
 }
 
-module.exports = { getPagination, buildPageMeta };
+export { getPagination, buildPageMeta };

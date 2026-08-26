@@ -2,9 +2,9 @@
  * Generate embeddings for all books that do not have one.
  */
 
-const connectDB = require("../../config/db");
-const Book = require("../../models/Book");
-const { generateEmbedding } = require("./embeddingService");
+import connectDB from "../../config/db.js";
+import Book from "../../models/Book.js";
+import { generateEmbedding } from "./embeddingService.js";
 
 async function run() {
   try {

@@ -9,15 +9,18 @@ import {
   FaBell,
   FaBook,
   FaChartLine,
+  FaMoon,
   FaShieldAlt,
   FaShoppingCart,
   FaSignOutAlt,
+  FaSun,
   FaTimes,
   FaUser,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 import useAuth from "../../hooks/useAuth";
 import { useCartContext } from "../../context/CartContext";
+import { useTheme } from "../../context/ThemeContext";
 import NotificationBell from "../notifications/NotificationBell";
 import Button from "../ui/Button";
 
@@ -30,6 +33,7 @@ const drawerLink = ({ isActive }) =>
 export default function Navbar() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { count: cartCount } = useCartContext();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -80,6 +84,15 @@ export default function Navbar() {
         </nav>
 
         <div className="navbar__actions">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="navbar__link"
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          >
+            {theme === "dark" ? <FaSun /> : <FaMoon />}
+          </button>
+
           {isAuthenticated && <NotificationBell />}
 
           {isAuthenticated && user?.role === "customer" && (

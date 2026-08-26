@@ -3,9 +3,11 @@
  *   GET /, POST /:id/read, POST /read-all, DELETE /:id, DELETE / (clear)
  *   GET /preferences, PUT /preferences
  */
-const router = require("express").Router();
-const { protect } = require("../middleware/auth");
-const ctrl = require("../controllers/notificationController");
+import { Router } from "express";
+import { protect } from "../middleware/auth.js";
+import * as ctrl from "../controllers/notificationController.js";
+
+const router = Router();
 
 router.use(protect);
 
@@ -18,4 +20,4 @@ router.delete("/", ctrl.clearAll);
 router.get("/preferences", ctrl.getPreferences);
 router.put("/preferences", ctrl.updatePreferences);
 
-module.exports = router;
+export default router;

@@ -286,7 +286,7 @@ const ALL_TOOLS = [...READ_TOOLS, ...WRITE_TOOLS];
 const WRITE_TOOL_NAMES = new Set(WRITE_TOOLS.map((t) => t.function.name));
 const CONFIRM_REQUIRED_TOOLS = new Set(["cancelOrder"]);
 
-module.exports = {
+export {
   READ_TOOLS,
   WRITE_TOOLS,
   ALL_TOOLS,

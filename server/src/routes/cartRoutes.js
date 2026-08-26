@@ -2,12 +2,14 @@
  * routes/cartRoutes.js — /api/cart/*
  *   GET /, POST /, PUT /:bookId, DELETE /:bookId, DELETE / (clear)
  */
-const router = require("express").Router();
-const validate = require("../middleware/validate");
-const { protect, requireVerified } = require("../middleware/auth");
-const { restrictTo } = require("../middleware/admin");
-const { cartValidators } = require("../validators");
-const ctrl = require("../controllers/cartController");
+import { Router } from "express";
+import validate from "../middleware/validate.js";
+import { protect, requireVerified } from "../middleware/auth.js";
+import { restrictTo } from "../middleware/admin.js";
+import { cartValidators } from "../validators/index.js";
+import * as ctrl from "../controllers/cartController.js";
+
+const router = Router();
 
 router.use(protect, restrictTo("customer"));
 
@@ -20,4 +22,4 @@ router.delete("/", requireVerified, ctrl.clearCart);
 router.post("/coupon", requireVerified, ctrl.applyCoupon);
 router.delete("/coupon", requireVerified, ctrl.removeCoupon);
 
-module.exports = router;
+export default router;

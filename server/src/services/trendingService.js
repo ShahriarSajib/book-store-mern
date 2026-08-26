@@ -1,5 +1,5 @@
-const Book = require("../models/Book");
-const PopularityRecord = require("../models/PopularityRecord");
+import Book from "../models/Book.js";
+import PopularityRecord from "../models/PopularityRecord.js";
 
 async function getTrendingBooks(limit = 10) {
   const books = await Book.find({
@@ -79,6 +79,6 @@ async function getTrendingBooks(limit = 10) {
   );
 }
 
-module.exports = {
+export default {
   getTrendingBooks,
 };

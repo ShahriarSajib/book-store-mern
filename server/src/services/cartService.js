@@ -1,10 +1,10 @@
 /**
  * services/cartService.js — add/remove/update quantity, totals, coupon validation.
  */
-const AppError = require("../utils/AppError");
-const { Cart, Book } = require("../models");
-const couponService = require("./couponService");
-const socketService = require("./socketService");
+import AppError from "../utils/AppError.js";
+import { Cart, Book } from "../models/index.js";
+import * as couponService from "./couponService.js";
+import * as socketService from "./socketService.js";
 
 const BOOK_POPULATE = {
   path: "items.book",
@@ -135,7 +135,7 @@ async function removeCoupon(userId) {
   return cart.populate(BOOK_POPULATE);
 }
 
-module.exports = {
+export {
   getCart,
   addItem,
   updateQuantity,

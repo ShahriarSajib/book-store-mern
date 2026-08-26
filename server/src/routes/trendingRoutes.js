@@ -1,11 +1,11 @@
-const express = require("express");
+import { Router } from "express";
 
-const {
+import {
   getTrending,
-} = require("../controllers/trendingController");
+} from "../controllers/trendingController.js";
 
-const router = express.Router();
+const router = Router();
 
 router.get("/", getTrending);
 
-module.exports = router;
+export default router;

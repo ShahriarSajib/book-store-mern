@@ -2,9 +2,9 @@
  * middleware/auth.js
  * Responsibility: verify JWT, attach req.user (id, role).
  */
-const { verifyAccessToken } = require("../utils/jwt");
-const AppError = require("../utils/AppError");
-const { User } = require("../models");
+import { verifyAccessToken } from "../utils/jwt.js";
+import AppError from "../utils/AppError.js";
+import { User } from "../models/index.js";
 
 async function attachUser(req, res, next) {
   const header = req.headers.authorization || "";
@@ -62,4 +62,4 @@ function requireVerified(req, res, next) {
   return next();
 }
 
-module.exports = { protect, optionalAuth, requireVerified };
+export { protect, optionalAuth, requireVerified };

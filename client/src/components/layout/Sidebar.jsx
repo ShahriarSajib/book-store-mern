@@ -49,12 +49,12 @@ function SidebarNav({ onLinkClick }) {
           className={({ isActive }) =>
             `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
               isActive
-                ? "bg-indigo-50 text-indigo-700"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                ? "bg-indigo-50 text-indigo-700 dark:bg-brand-900/40 dark:text-brand-400"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-ink-700 dark:hover:text-slate-200"
             }`
           }
         >
-          <Icon className="text-slate-400" />
+          <Icon className="text-slate-400 dark:text-slate-500" />
           {label}
         </NavLink>
       ))}
@@ -70,7 +70,7 @@ export default function Sidebar() {
       {/* Mobile hamburger button */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed bottom-4 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition hover:bg-indigo-700 md:hidden"
+        className="fixed bottom-4 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition hover:bg-indigo-700 md:hidden dark:bg-brand-500 dark:hover:bg-brand-600"
         aria-label="Open admin menu"
       >
         <FaBars />
@@ -86,15 +86,15 @@ export default function Sidebar() {
 
       {/* Mobile drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white p-4 shadow-xl transition-transform duration-200 md:hidden ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white p-4 shadow-xl transition-transform duration-200 dark:bg-ink-900 md:hidden ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="mb-4 flex items-center justify-between">
-          <span className="text-sm font-semibold text-slate-800">Admin Menu</span>
+          <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">Admin Menu</span>
           <button
             onClick={() => setMobileOpen(false)}
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100"
+            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-ink-700"
             aria-label="Close menu"
           >
             <FaTimes />
@@ -104,7 +104,7 @@ export default function Sidebar() {
       </aside>
 
       {/* Desktop sidebar */}
-      <aside className="hidden w-56 shrink-0 border-r border-slate-200 bg-white p-3 md:block">
+      <aside className="hidden w-56 shrink-0 border-r border-slate-200 bg-white p-3 dark:border-ink-700 dark:bg-ink-900 md:block">
         <SidebarNav />
       </aside>
     </>

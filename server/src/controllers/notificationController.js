@@ -1,9 +1,9 @@
 /**
  * controllers/notificationController.js — notification CRUD + preferences.
  */
-const catchAsync = require("../utils/catchAsync");
-const pick = require("../utils/pick");
-const notificationService = require("../services/notificationPersistService");
+import catchAsync from "../utils/catchAsync.js";
+import pick from "../utils/pick.js";
+import notificationService from "../services/notificationPersistService.js";
 
 const list = catchAsync(async (req, res) => {
   const query = pick(req.query, ["page", "limit", "unreadOnly", "type"]);
@@ -34,7 +34,7 @@ const updatePreferences = catchAsync(async (req, res) => {
   res.json(await notificationService.updatePreferences(req.user.id, req.body));
 });
 
-module.exports = {
+export {
   list,
   markAsRead,
   markAllAsRead,

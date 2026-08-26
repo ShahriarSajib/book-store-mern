@@ -164,8 +164,8 @@ export default function Coupons() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Coupon management</h1>
-          <p className="text-sm text-slate-500">Create, edit and remove discount coupons.</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-100">Coupon management</h1>
+          <p className="text-sm text-slate-500 dark:text-ink-500">Create, edit and remove discount coupons.</p>
         </div>
         <Button onClick={openCreate}>
           <FaPlus /> Create coupon
@@ -173,17 +173,17 @@ export default function Coupons() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-16 text-indigo-600">
+        <div className="flex justify-center py-16 text-indigo-600 dark:text-brand-400">
           <Spinner className="h-8 w-8" />
         </div>
       ) : coupons.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-500">
+        <div className="rounded-xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 p-10 text-center text-slate-500 dark:text-ink-500">
           No coupons yet.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 shadow-sm">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-400">
+            <thead className="bg-slate-50 dark:bg-ink-800 text-xs uppercase tracking-wide text-slate-400 dark:text-ink-600">
               <tr>
                 <th className="px-4 py-3">Code</th>
                 <th className="px-4 py-3">Type</th>
@@ -197,25 +197,25 @@ export default function Coupons() {
             </thead>
             <tbody>
               {coupons.map((coupon) => (
-                <tr key={getId(coupon)} className="border-t border-slate-100">
+                <tr key={getId(coupon)} className="border-t border-slate-100 dark:border-ink-700">
                   <td className="px-4 py-3">
-                    <p className="font-mono text-sm font-semibold text-slate-800">{coupon.code}</p>
-                    <p className="max-w-[200px] truncate text-xs text-slate-500">
+                    <p className="font-mono text-sm font-semibold text-slate-800 dark:text-ink-200">{coupon.code}</p>
+                    <p className="max-w-[200px] truncate text-xs text-slate-500 dark:text-ink-500">
                       {coupon.description || ""}
                     </p>
                   </td>
-                  <td className="px-4 py-3 text-slate-600">{coupon.type}</td>
-                  <td className="px-4 py-3 font-medium text-slate-800">{couponValue(coupon)}</td>
-                  <td className="px-4 py-3 text-slate-600">{formatCurrency(coupon.minOrder)}</td>
-                  <td className="px-4 py-3 text-slate-600">{couponUsage(coupon)}</td>
-                  <td className="px-4 py-3 text-slate-500">{formatDate(coupon.expiresAt)}</td>
+                  <td className="px-4 py-3 text-slate-600 dark:text-ink-400">{coupon.type}</td>
+                  <td className="px-4 py-3 font-medium text-slate-800 dark:text-ink-200">{couponValue(coupon)}</td>
+                  <td className="px-4 py-3 text-slate-600 dark:text-ink-400">{formatCurrency(coupon.minOrder)}</td>
+                  <td className="px-4 py-3 text-slate-600 dark:text-ink-400">{couponUsage(coupon)}</td>
+                  <td className="px-4 py-3 text-slate-500 dark:text-ink-500">{formatDate(coupon.expiresAt)}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <span
                         className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
                           coupon.isActive
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
+                            ? "bg-green-100 dark:bg-emerald-900/30 text-green-700 dark:text-emerald-400"
+                            : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
                         }`}
                       >
                         {coupon.isActive ? "Active" : "Inactive"}
@@ -278,11 +278,11 @@ export default function Coupons() {
           <Input label="Description" value={form.description} onChange={set("description")} />
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700">Type</span>
+              <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-ink-300">Type</span>
               <select
                 value={form.type}
                 onChange={set("type")}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="w-full rounded-lg border border-slate-300 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-200 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
               >
                 <option value="percent">Percent (%)</option>
                 <option value="fixed">Fixed ($)</option>
@@ -331,17 +331,17 @@ export default function Coupons() {
               onChange={set("expiresAt")}
             />
           </div>
-          <label className="flex items-center gap-2 text-sm text-slate-700">
+          <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-ink-300">
             <input
               type="checkbox"
               checked={form.isActive}
               onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
-              className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+              className="h-4 w-4 rounded border-slate-300 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-200 text-indigo-600 dark:text-brand-400 focus:ring-indigo-500"
             />
             Active
           </label>
 
-          {formError && <p className="text-sm text-red-600">{formError}</p>}
+          {formError && <p className="text-sm text-red-600 dark:text-red-400">{formError}</p>}
 
           <div className="flex justify-end gap-3 pt-2">
             <Button variant="ghost" onClick={() => setModalOpen(false)}>

@@ -4,11 +4,13 @@
  *   GET /me/addresses, POST /me/addresses, PUT /me/addresses/:id, DELETE /me/addresses/:id
  *   GET /me/history
  */
-const router = require("express").Router();
-const validate = require("../middleware/validate");
-const { protect, requireVerified } = require("../middleware/auth");
-const { userValidators, authValidators } = require("../validators");
-const ctrl = require("../controllers/userController");
+import { Router } from "express";
+import validate from "../middleware/validate.js";
+import { protect, requireVerified } from "../middleware/auth.js";
+import { userValidators, authValidators } from "../validators/index.js";
+import * as ctrl from "../controllers/userController.js";
+
+const router = Router();
 
 router.get("/me", protect, ctrl.getMe);
 router.put("/me", protect, validate(authValidators.updateProfileValidators), ctrl.updateMe);
@@ -28,4 +30,4 @@ router.post("/me/wishlist", protect, requireVerified, ctrl.addWishlistItem);
 router.post("/me/wishlist/:bookId/move-to-cart", protect, requireVerified, ctrl.moveWishlistToCart);
 router.delete("/me/wishlist/:bookId", protect, requireVerified, ctrl.removeWishlistItem);
 
-module.exports = router;
+export default router;

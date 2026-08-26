@@ -105,8 +105,8 @@ export default function Categories() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Category management</h1>
-          <p className="text-sm text-slate-500">Create, edit and remove catalog categories.</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-100">Category management</h1>
+          <p className="text-sm text-slate-500 dark:text-ink-500">Create, edit and remove catalog categories.</p>
         </div>
         <Button onClick={openCreate}>
           <FaPlus /> Add category
@@ -114,17 +114,17 @@ export default function Categories() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-16 text-indigo-600">
+        <div className="flex justify-center py-16 text-indigo-600 dark:text-brand-400">
           <Spinner className="h-8 w-8" />
         </div>
       ) : categories.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-500">
+        <div className="rounded-xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 p-10 text-center text-slate-500 dark:text-ink-500">
           No categories yet.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 shadow-sm">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-400">
+            <thead className="bg-slate-50 dark:bg-ink-800 text-xs uppercase tracking-wide text-slate-400 dark:text-ink-600">
               <tr>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Slug</th>
@@ -135,10 +135,10 @@ export default function Categories() {
             </thead>
             <tbody>
               {categories.map((cat) => (
-                <tr key={getId(cat)} className="border-t border-slate-100">
-                  <td className="px-4 py-3 font-medium text-slate-800">{cat.name}</td>
-                  <td className="px-4 py-3 text-xs text-slate-500">{cat.slug || "—"}</td>
-                  <td className="max-w-[280px] truncate px-4 py-3 text-slate-600">
+                <tr key={getId(cat)} className="border-t border-slate-100 dark:border-ink-700">
+                  <td className="px-4 py-3 font-medium text-slate-800 dark:text-ink-200">{cat.name}</td>
+                  <td className="px-4 py-3 text-xs text-slate-500 dark:text-ink-500">{cat.slug || "—"}</td>
+                  <td className="max-w-[280px] truncate px-4 py-3 text-slate-600 dark:text-ink-400">
                     {cat.description || "—"}
                   </td>
                   <td className="px-4 py-3">
@@ -196,7 +196,7 @@ export default function Categories() {
           <Input label="Name *" value={form.name} onChange={set("name")} placeholder="e.g. Fantasy" />
           <Input label="Description" value={form.description} onChange={set("description")} textarea />
 
-          {formError && <p className="text-sm text-red-600">{formError}</p>}
+          {formError && <p className="text-sm text-red-600 dark:text-red-400">{formError}</p>}
 
           <div className="flex justify-end gap-3 pt-2">
             <Button variant="ghost" onClick={() => setModalOpen(false)}>

@@ -5,12 +5,14 @@
  *   POST /forgot-password, /reset-password
  *   GET  /me, PUT /me, PUT /me/password
  */
-const router = require("express").Router();
-const validate = require("../middleware/validate");
-const { protect } = require("../middleware/auth");
-const { authLimiter } = require("../middleware/rateLimit");
-const { authValidators } = require("../validators");
-const ctrl = require("../controllers/authController");
+import { Router } from "express";
+import validate from "../middleware/validate.js";
+import { protect } from "../middleware/auth.js";
+import { authLimiter } from "../middleware/rateLimit.js";
+import { authValidators } from "../validators/index.js";
+import * as ctrl from "../controllers/authController.js";
+
+const router = Router();
 
 router.post("/register", authLimiter, validate(authValidators.registerValidators), ctrl.register);
 router.post("/login", authLimiter, validate(authValidators.loginValidators), ctrl.login);
@@ -27,4 +29,4 @@ router.get("/me", protect, ctrl.getMe);
 router.put("/me", protect, validate(authValidators.updateProfileValidators), ctrl.updateMe);
 router.put("/me/password", protect, validate(authValidators.changePasswordValidators), ctrl.changePassword);
 
-module.exports = router;
+export default router;

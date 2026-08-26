@@ -1,5 +1,5 @@
-const UserPreference = require("../models/UserPreference");
-const catchAsync = require("../utils/catchAsync");
+import UserPreference from "../models/UserPreference.js";
+import catchAsync from "../utils/catchAsync.js";
 
 const getMyPreferences = catchAsync(async (req, res) => {
   const userId = req.user.id;
@@ -67,7 +67,7 @@ const addFavoriteAuthor = catchAsync(async (req, res) => {
   });
 });
 
-module.exports = {
+export {
   getMyPreferences,
   addFavoriteGenre,
   addFavoriteAuthor,

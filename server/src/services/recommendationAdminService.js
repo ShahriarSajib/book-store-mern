@@ -2,9 +2,9 @@
  * services/recommendationAdminService.js — admin recommendation management:
  * embedding status, recommendation logs, most recommended/clicked, regeneration.
  */
-const { Book, RecommendationLog } = require("../models");
-const { getPagination, buildPageMeta } = require("../utils/paginate");
-const AppError = require("../utils/AppError");
+import { Book, RecommendationLog } from "../models/index.js";
+import { getPagination, buildPageMeta } from "../utils/paginate.js";
+import AppError from "../utils/AppError.js";
 
 async function embeddingStatus(query = {}) {
   const { page, limit, skip } = getPagination(query);
@@ -226,7 +226,7 @@ async function regenerateEmbeddings(bookIds) {
   };
 }
 
-module.exports = {
+export default {
   embeddingStatus,
   getMostRecommended,
   getMostClicked,

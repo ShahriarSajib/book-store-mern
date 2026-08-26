@@ -1,8 +1,8 @@
 /**
  * controllers/cartController.js — cart endpoints.
  */
-const catchAsync = require("../utils/catchAsync");
-const cartService = require("../services/cartService");
+import catchAsync from "../utils/catchAsync.js";
+import cartService from "../services/cartService.js";
 
 const getCart = catchAsync(async (req, res) => {
   res.json({ cart: await cartService.getCart(req.user.id) });
@@ -38,4 +38,4 @@ const removeCoupon = catchAsync(async (req, res) => {
   res.json({ cart });
 });
 
-module.exports = { getCart, addItem, updateItem, removeItem, clearCart, applyCoupon, removeCoupon };
+export { getCart, addItem, updateItem, removeItem, clearCart, applyCoupon, removeCoupon };

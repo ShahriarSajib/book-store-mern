@@ -4,7 +4,7 @@
  * Stores role/content messages with timestamps.
  * The LLM NEVER writes here directly — only the chatbot service does.
  */
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const bookRefSchema = new mongoose.Schema(
   {
@@ -47,4 +47,4 @@ const conversationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Conversation", conversationSchema);
+export default mongoose.model("Conversation", conversationSchema);

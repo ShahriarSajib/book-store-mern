@@ -2,10 +2,10 @@
  * services/socketService.js — Socket.IO singleton for real-time events.
  * Handles connection, JWT auth on handshake, room management, and event emission.
  */
-const { Server } = require("socket.io");
-const { verifyAccessToken } = require("../utils/jwt");
-const { User } = require("../models");
-const logger = require("../utils/logger");
+import { Server } from "socket.io";
+import { verifyAccessToken } from "../utils/jwt.js";
+import { User } from "../models/index.js";
+import logger from "../utils/logger.js";
 
 let io = null;
 
@@ -96,7 +96,7 @@ function isLowStock(stock) {
   return stock >= 0 && stock <= LOW_STOCK_THRESHOLD;
 }
 
-module.exports = {
+export default {
   init,
   getIO,
   emitToUser,

@@ -3,12 +3,14 @@
  *   Public: GET /, GET /:id
  *   Admin:  POST /, PUT /:id, DELETE /:id
  */
-const router = require("express").Router();
-const validate = require("../middleware/validate");
-const { protect, optionalAuth } = require("../middleware/auth");
-const { requireAdmin } = require("../middleware/admin");
-const { bookValidators } = require("../validators");
-const ctrl = require("../controllers/bookController");
+import { Router } from "express";
+import validate from "../middleware/validate.js";
+import { protect, optionalAuth } from "../middleware/auth.js";
+import { requireAdmin } from "../middleware/admin.js";
+import { bookValidators } from "../validators/index.js";
+import * as ctrl from "../controllers/bookController.js";
+
+const router = Router();
 
 router.get("/", validate(bookValidators.listBooksValidators), ctrl.list);
 router.get("/:id", optionalAuth, ctrl.getById);
@@ -17,4 +19,4 @@ router.post("/", protect, requireAdmin, validate(bookValidators.createBookValida
 router.put("/:id", protect, requireAdmin, validate(bookValidators.updateBookValidators), ctrl.update);
 router.delete("/:id", protect, requireAdmin, ctrl.remove);
 
-module.exports = router;
+export default router;

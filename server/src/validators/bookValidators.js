@@ -1,7 +1,7 @@
 /**
  * validators/bookValidators.js — express-validator chains for book routes.
  */
-const { body, query } = require("express-validator");
+import { body, query } from "express-validator";
 
 const title = body("title")
   .trim()
@@ -117,7 +117,7 @@ const updateBookValidators = [
 
 const listBooksValidators = [page, limit, q, minPrice, maxPrice, inStock, sort];
 
-module.exports = {
+export {
   createBookValidators,
   updateBookValidators,
   listBooksValidators,

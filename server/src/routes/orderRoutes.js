@@ -2,11 +2,13 @@
  * routes/orderRoutes.js — /api/orders/*
  *   POST /, GET /, GET /:id, PUT /:id/cancel, GET /:id/invoice
  */
-const router = require("express").Router();
-const validate = require("../middleware/validate");
-const { protect, requireVerified } = require("../middleware/auth");
-const { orderValidators } = require("../validators");
-const ctrl = require("../controllers/orderController");
+import { Router } from "express";
+import validate from "../middleware/validate.js";
+import { protect, requireVerified } from "../middleware/auth.js";
+import { orderValidators } from "../validators/index.js";
+import * as ctrl from "../controllers/orderController.js";
+
+const router = Router();
 
 router.use(protect);
 
@@ -18,4 +20,4 @@ router.get("/:id", ctrl.getOrder);
 router.put("/:id/cancel", requireVerified, ctrl.cancelOrder);
 router.post("/:id/reorder", requireVerified, ctrl.reorder);
 
-module.exports = router;
+export default router;

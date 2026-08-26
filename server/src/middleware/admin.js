@@ -2,7 +2,7 @@
  * middleware/admin.js
  * Responsibility: gate routes to admin role only.
  */
-const AppError = require("../utils/AppError");
+import AppError from "../utils/AppError.js";
 
 function restrictTo(...roles) {
   return function requireRole(req, _res, next) {
@@ -18,4 +18,4 @@ function restrictTo(...roles) {
 
 const requireAdmin = restrictTo("admin");
 
-module.exports = { restrictTo, requireAdmin };
+export { restrictTo, requireAdmin };

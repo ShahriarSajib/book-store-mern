@@ -3,7 +3,7 @@
  * Responsibility: per-user cart (items, quantities, totals).
  * One cart per user. Updated by cart service; never touched by LLM directly.
  */
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const cartItemSchema = new mongoose.Schema(
   {
@@ -47,4 +47,4 @@ cartSchema.methods.toJSON = function toJSON() {
   return obj;
 };
 
-module.exports = mongoose.model("Cart", cartSchema);
+export default mongoose.model("Cart", cartSchema);

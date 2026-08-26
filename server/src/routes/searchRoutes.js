@@ -3,11 +3,13 @@
  *   GET /                keyword + filters + sort + pagination
  *   GET /autocomplete
  */
-const router = require("express").Router();
-const { optionalAuth } = require("../middleware/auth");
-const ctrl = require("../controllers/searchController");
+import { Router } from "express";
+import { optionalAuth } from "../middleware/auth.js";
+import * as ctrl from "../controllers/searchController.js";
+
+const router = Router();
 
 router.get("/autocomplete", ctrl.autocomplete);
 router.get("/", optionalAuth, ctrl.search);
 
-module.exports = router;
+export default router;

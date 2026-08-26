@@ -1,7 +1,7 @@
 /**
  * validators/userValidators.js — express-validator chains for user profile routes.
  */
-const { body } = require("express-validator");
+import { body } from "express-validator";
 
 const addressValidators = [
   body("label").optional().trim().isLength({ max: 40 }).withMessage("Label is too long"),
@@ -15,4 +15,4 @@ const addressValidators = [
   body("isDefault").optional().isBoolean().withMessage("isDefault must be a boolean"),
 ];
 
-module.exports = { addressValidators };
+export { addressValidators };

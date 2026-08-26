@@ -42,7 +42,7 @@ export default function Pagination({ page, pages, onChange }) {
               "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
               item === page
                 ? "bg-brand-600 text-white"
-                : "text-ink-700 hover:bg-ink-100"
+                : "text-ink-700 hover:bg-ink-100 dark:text-ink-300 dark:hover:bg-ink-800"
             )}
             aria-current={item === page ? "page" : undefined}
             onClick={() => onChange(item)}

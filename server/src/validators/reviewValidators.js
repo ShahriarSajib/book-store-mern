@@ -1,7 +1,7 @@
 /**
  * validators/reviewValidators.js — express-validator chains for review routes.
  */
-const { body } = require("express-validator");
+import { body } from "express-validator";
 
 const createReviewValidators = [
   body("book").isMongoId().withMessage("A valid book id is required"),
@@ -16,4 +16,4 @@ const updateReviewValidators = [
   body("body").optional().trim().isLength({ max: 5000 }),
 ];
 
-module.exports = { createReviewValidators, updateReviewValidators };
+export { createReviewValidators, updateReviewValidators };

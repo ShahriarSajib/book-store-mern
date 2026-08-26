@@ -1,10 +1,10 @@
 /**
  * server/eslint.config.js — flat config for the Express API.
  */
-const js = require("@eslint/js");
-const globals = require("globals");
+import js from "@eslint/js";
+import globals from "globals";
 
-module.exports = [
+export default [
   {
     ignores: ["node_modules/**", "uploads/**", "coverage/**"],
   },
@@ -13,7 +13,7 @@ module.exports = [
     files: ["**/*.js"],
     languageOptions: {
       ecmaVersion: 2022,
-      sourceType: "commonjs",
+      sourceType: "module",
       globals: { ...globals.node },
     },
     rules: {

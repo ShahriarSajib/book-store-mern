@@ -1,8 +1,8 @@
 /**
  * services/wishlistService.js — per-user wishlist via the Wishlist collection.
  */
-const AppError = require("../utils/AppError");
-const { Wishlist, Book, Cart } = require("../models");
+import AppError from "../utils/AppError.js";
+import { Wishlist, Book, Cart } from "../models/index.js";
 
 const POPULATE = {
   path: "items.book",
@@ -82,4 +82,4 @@ async function moveToCart(userId, bookId) {
   };
 }
 
-module.exports = { getWishlist, add, remove, moveToCart };
+export { getWishlist, add, remove, moveToCart };

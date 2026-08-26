@@ -1,30 +1,26 @@
 /**
  * app.js — Express app composition
  */
-const trendingRoutes =
-  require("./routes/trendingRoutes");
-const userPreferenceRoutes =
-  require("./routes/userPreferenceRoutes");
+import trendingRoutes from "./routes/trendingRoutes.js";
+import userPreferenceRoutes from "./routes/userPreferenceRoutes.js";
+import personalizedRecommendationRoutes from "./routes/personalizedRecommendationRoutes.js";
 
-const personalizedRecommendationRoutes =
-  require("./routes/personalizedRecommendationRoutes");
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import compression from "compression";
+import morgan from "morgan";
+import rateLimit from "express-rate-limit";
+import path from "path";
 
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const compression = require("compression");
-const morgan = require("morgan");
-const rateLimit = require("express-rate-limit");
-const path = require("path");
+import env from "./config/env.js";
+import apiRouter from "./routes/index.js";
+import semanticRoutes from "./routes/semanticRoutes.js";
+import similarBookRoutes from "./routes/similarBookRoutes.js";
+import paymentController from "./controllers/paymentController.js";
 
-const env = require("./config/env");
-const apiRouter = require("./routes");
-const semanticRoutes = require("./routes/semanticRoutes");
-const similarBookRoutes = require("./routes/similarBookRoutes");
-const paymentController = require("./controllers/paymentController");
-
-const errorHandler = require("./middleware/errorHandler");
-const notFound = require("./middleware/notFound");
+import errorHandler from "./middleware/errorHandler.js";
+import notFound from "./middleware/notFound.js";
 
 const app = express();
 
@@ -103,4 +99,4 @@ app.use(
 app.use(notFound);
 app.use(errorHandler);
 
-module.exports = app;
+export default app;

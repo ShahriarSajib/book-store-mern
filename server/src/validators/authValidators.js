@@ -1,7 +1,7 @@
 /**
  * validators/authValidators.js — express-validator chains for auth routes.
  */
-const { body } = require("express-validator");
+import { body } from "express-validator";
 
 const name = body("name")
   .trim()
@@ -53,7 +53,7 @@ const updateProfileValidators = [
   body("favoriteGenres").optional().isArray().withMessage("Favorite genres must be a list"),
 ];
 
-module.exports = {
+export {
   registerValidators,
   loginValidators,
   forgotPasswordValidators,

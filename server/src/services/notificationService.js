@@ -1,5 +1,5 @@
-const { sendEmail } = require("../utils/email");
-const logger = require("../utils/logger");
+import { sendEmail } from "../utils/email.js";
+import logger from "../utils/logger.js";
 
 function orderConfirmationTemplate(order) {
   const items = order.items.map((i) => `<li>${i.title} x${i.quantity} — $${(i.price * i.quantity).toFixed(2)}</li>`).join("");
@@ -53,4 +53,4 @@ async function sendOrderStatusUpdate(order, oldStatus) {
   }
 }
 
-module.exports = { sendOrderConfirmation, sendOrderStatusUpdate };
+export { sendOrderConfirmation, sendOrderStatusUpdate };

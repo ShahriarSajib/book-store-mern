@@ -1,9 +1,9 @@
 /**
  * services/notificationService.js — create, list, mark read, preferences.
  */
-const { Notification, User } = require("../models");
-const { getPagination, buildPageMeta } = require("../utils/paginate");
-const AppError = require("../utils/AppError");
+import { Notification, User } from "../models/index.js";
+import { getPagination, buildPageMeta } from "../utils/paginate.js";
+import AppError from "../utils/AppError.js";
 
 async function create(userId, { type, title, message, link, data }) {
   const notification = await Notification.create({
@@ -77,7 +77,7 @@ async function updatePreferences(userId, preferences) {
   return user.notificationPreferences;
 }
 
-module.exports = {
+export {
   create,
   list,
   markAsRead,

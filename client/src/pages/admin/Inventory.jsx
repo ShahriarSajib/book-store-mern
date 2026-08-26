@@ -17,10 +17,10 @@ const getId = (item) => item?._id || item?.id;
 function StockBadge({ stock }) {
   const cls =
     stock <= 0
-      ? "bg-red-100 text-red-700"
+      ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
       : stock <= LOW_STOCK
-        ? "bg-amber-100 text-amber-700"
-        : "bg-green-100 text-green-700";
+        ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
+        : "bg-green-100 dark:bg-emerald-900/30 text-green-700 dark:text-emerald-400";
   const label = stock <= 0 ? "Out" : stock <= LOW_STOCK ? "Low" : "In stock";
   return (
     <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${cls}`}>
@@ -80,40 +80,40 @@ export default function Inventory() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Inventory</h1>
-          <p className="text-sm text-slate-500">Monitor and update stock levels.</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-100">Inventory</h1>
+          <p className="text-sm text-slate-500 dark:text-ink-500">Monitor and update stock levels.</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
         <div className="relative max-w-md flex-1">
-          <FaSearch className="pointer-events-none absolute left-3 top-2.5 text-slate-400" />
+          <FaSearch className="pointer-events-none absolute left-3 top-2.5 text-slate-400 dark:text-ink-600" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by title or author…"
-            className="w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+            className="w-full rounded-lg border border-slate-300 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-200 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
           />
         </div>
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-ink-300">
           <input
             type="checkbox"
             checked={lowOnly}
             onChange={(e) => setLowOnly(e.target.checked)}
-            className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+            className="h-4 w-4 rounded border-slate-300 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-200 text-indigo-600 dark:text-brand-400 focus:ring-indigo-500"
           />
           Show low stock only
         </label>
         {search && (
-          <span className="text-xs text-slate-400">{shown.length} result{shown.length !== 1 ? "s" : ""}</span>
+          <span className="text-xs text-slate-400 dark:text-ink-600">{shown.length} result{shown.length !== 1 ? "s" : ""}</span>
         )}
       </div>
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-16 text-indigo-600">
+        <div className="flex justify-center py-16 text-indigo-600 dark:text-brand-400">
           <Spinner className="h-8 w-8" />
         </div>
       ) : shown.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-500">
+        <div className="rounded-xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 p-10 text-center text-slate-500 dark:text-ink-500">
           {search
             ? `No books match "${search}".`
             : lowOnly
@@ -121,9 +121,9 @@ export default function Inventory() {
               : "No inventory yet."}
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 shadow-sm">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-400">
+            <thead className="bg-slate-50 dark:bg-ink-800 text-xs uppercase tracking-wide text-slate-400 dark:text-ink-600">
               <tr>
                 <th className="px-4 py-3">Book</th>
                 <th className="px-4 py-3">Price</th>
@@ -133,22 +133,22 @@ export default function Inventory() {
             </thead>
             <tbody>
               {shown.map((book) => (
-                <tr key={getId(book)} className="border-t border-slate-100">
+                <tr key={getId(book)} className="border-t border-slate-100 dark:border-ink-700">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-9 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-50">
+                      <div className="flex h-12 w-9 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-50 dark:bg-ink-800">
                         {book.coverImage ? (
                           <img src={book.coverImage} alt="" className="h-full w-full object-cover" />
                         ) : (
-                          <span className="text-xs text-slate-300">—</span>
+                          <span className="text-xs text-slate-300 dark:text-ink-600">—</span>
                         )}
                       </div>
-                      <p className="max-w-[260px] truncate font-medium text-slate-800">
+                      <p className="max-w-[260px] truncate font-medium text-slate-800 dark:text-ink-200">
                         {book.title}
                       </p>
                     </div>
                   </td>
-                  <td className="px-4 py-3 font-medium text-slate-800">
+                  <td className="px-4 py-3 font-medium text-slate-800 dark:text-ink-200">
                     {formatCurrency(book.price)}
                   </td>
                   <td className="px-4 py-3">
@@ -165,7 +165,7 @@ export default function Inventory() {
                           setEditingId(getId(book));
                           setStockValue(String(book.stock ?? 0));
                         }}
-                        className="w-24 rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                        className="w-24 rounded-md border border-slate-300 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-200 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                       />
                       <Button
                         variant="secondary"

@@ -2,8 +2,8 @@
  * middleware/validate.js
  * Responsibility: run express-validator chains and short-circuit on errors.
  */
-const { validationResult } = require("express-validator");
-const AppError = require("../utils/AppError");
+import { validationResult } from "express-validator";
+import AppError from "../utils/AppError.js";
 
 function validate(validations) {
   return async function runValidations(req, _res, next) {
@@ -19,4 +19,4 @@ function validate(validations) {
   };
 }
 
-module.exports = validate;
+export default validate;

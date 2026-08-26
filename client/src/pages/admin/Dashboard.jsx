@@ -27,7 +27,7 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center text-indigo-600">
+      <div className="flex min-h-[50vh] items-center justify-center text-indigo-600 dark:text-brand-400">
         <Spinner className="h-8 w-8" />
       </div>
     );
@@ -35,10 +35,10 @@ export default function Dashboard() {
 
   if (isError) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
-        <p className="font-medium text-red-700">Failed to load dashboard</p>
-        <p className="text-sm text-red-600">{error?.message}</p>
-        <button className="mt-3 text-sm font-medium text-red-700 underline" onClick={() => refetch()}>
+      <div className="rounded-xl border border-red-200 bg-red-50 dark:bg-red-900/30 p-6 text-center">
+        <p className="font-medium text-red-700 dark:text-red-400">Failed to load dashboard</p>
+        <p className="text-sm text-red-600 dark:text-red-400">{error?.message}</p>
+        <button className="mt-3 text-sm font-medium text-red-700 dark:text-red-400 underline" onClick={() => refetch()}>
           Retry
         </button>
       </div>
@@ -50,56 +50,56 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Admin dashboard</h1>
-        <p className="text-sm text-slate-500">Overview of your bookstore.</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-100">Admin dashboard</h1>
+        <p className="text-sm text-slate-500 dark:text-ink-500">Overview of your bookstore.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map(({ key, label, icon: Icon }) => (
-          <div key={key} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div key={key} className="rounded-2xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-500">{label}</p>
-                <p className="mt-1 text-2xl font-bold text-slate-900">
+                <p className="text-sm text-slate-500 dark:text-ink-500">{label}</p>
+                <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-ink-100">
                   {stats[key] === null || stats[key] === undefined ? "—" : formatNumber(stats[key])}
                 </p>
               </div>
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 dark:bg-brand-900/40 text-indigo-600 dark:text-brand-400">
                 <Icon />
               </span>
             </div>
           </div>
         ))}
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-500">Revenue</p>
-              <p className="mt-1 text-2xl font-bold text-slate-900">
+              <p className="text-sm text-slate-500 dark:text-ink-500">Revenue</p>
+              <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-ink-100">
                 {stats.revenue === null || stats.revenue === undefined ? "—" : formatCurrency(stats.revenue)}
               </p>
             </div>
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-600">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 dark:bg-emerald-900/30 text-green-600 dark:text-emerald-400">
               <FaDollarSign />
             </span>
           </div>
         </div>
       </div>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-2xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">Recent signups</h2>
-          <Link to="/admin/users" className="text-sm font-medium text-indigo-600 hover:underline">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-ink-100">Recent signups</h2>
+          <Link to="/admin/users" className="text-sm font-medium text-indigo-600 dark:text-brand-400 hover:underline">
             View all users
           </Link>
         </div>
         {recentUsers.length === 0 ? (
-          <p className="text-sm text-slate-500">No users yet.</p>
+          <p className="text-sm text-slate-500 dark:text-ink-500">No users yet.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-400">
+                <tr className="border-b border-slate-200 dark:border-ink-700 text-xs uppercase tracking-wide text-slate-400 dark:text-ink-600">
                   <th className="pb-2 pr-4">Name</th>
                   <th className="pb-2 pr-4">Email</th>
                   <th className="pb-2 pr-4">Role</th>
@@ -108,19 +108,19 @@ export default function Dashboard() {
               </thead>
               <tbody>
                 {recentUsers.map((u) => (
-                  <tr key={u.id} className="border-b border-slate-100 last:border-0">
-                    <td className="py-2 pr-4 font-medium text-slate-800">{u.name}</td>
-                    <td className="py-2 pr-4 text-slate-600">{u.email}</td>
+                  <tr key={u.id} className="border-b border-slate-100 dark:border-ink-700 last:border-0">
+                    <td className="py-2 pr-4 font-medium text-slate-800 dark:text-ink-200">{u.name}</td>
+                    <td className="py-2 pr-4 text-slate-600 dark:text-ink-400">{u.email}</td>
                     <td className="py-2 pr-4">
-                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs font-medium capitalize text-slate-600">
+                      <span className="rounded bg-slate-100 dark:bg-ink-700 px-1.5 py-0.5 text-xs font-medium capitalize text-slate-600 dark:text-ink-400">
                         {u.role}
                       </span>
                     </td>
                     <td className="py-2">
                       {u.isActive ? (
-                        <span className="rounded bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-700">Active</span>
+                        <span className="rounded bg-green-100 dark:bg-emerald-900/30 px-1.5 py-0.5 text-xs font-medium text-green-700 dark:text-emerald-400">Active</span>
                       ) : (
-                        <span className="rounded bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-700">Disabled</span>
+                        <span className="rounded bg-red-100 dark:bg-red-900/30 px-1.5 py-0.5 text-xs font-medium text-red-700 dark:text-red-400">Disabled</span>
                       )}
                     </td>
                   </tr>

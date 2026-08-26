@@ -100,8 +100,8 @@ export default function Publishers() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Publisher management</h1>
-          <p className="text-sm text-slate-500">Create, edit and remove catalog publishers.</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-100">Publisher management</h1>
+          <p className="text-sm text-slate-500 dark:text-ink-500">Create, edit and remove catalog publishers.</p>
         </div>
         <Button onClick={openCreate}>
           <FaPlus /> Add publisher
@@ -109,17 +109,17 @@ export default function Publishers() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-16 text-indigo-600">
+        <div className="flex justify-center py-16 text-indigo-600 dark:text-brand-400 dark:text-brand-400">
           <Spinner className="h-8 w-8" />
         </div>
       ) : publishers.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-500">
+        <div className="rounded-xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 p-10 text-center text-slate-500 dark:text-ink-500">
           No publishers yet.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 shadow-sm">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-400">
+            <thead className="bg-slate-50 dark:bg-ink-800 text-xs uppercase tracking-wide text-slate-400 dark:text-ink-600">
               <tr>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Country</th>
@@ -129,21 +129,21 @@ export default function Publishers() {
             </thead>
             <tbody>
               {publishers.map((publisher) => (
-                <tr key={getId(publisher)} className="border-t border-slate-100">
-                  <td className="px-4 py-3 font-medium text-slate-800">{publisher.name}</td>
-                  <td className="px-4 py-3 text-slate-600">{publisher.country || "—"}</td>
+                <tr key={getId(publisher)} className="border-t border-slate-100 dark:border-ink-700">
+                  <td className="px-4 py-3 font-medium text-slate-800 dark:text-ink-200">{publisher.name}</td>
+                  <td className="px-4 py-3 text-slate-600 dark:text-ink-400">{publisher.country || "—"}</td>
                   <td className="max-w-[240px] truncate px-4 py-3">
                     {publisher.website ? (
                       <a
                         href={publisher.website}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-indigo-600 hover:underline"
+                        className="text-indigo-600 dark:text-brand-400 dark:text-brand-400 hover:underline"
                       >
                         {publisher.website}
                       </a>
                     ) : (
-                      <span className="text-slate-400">—</span>
+                      <span className="text-slate-400 dark:text-ink-600">—</span>
                     )}
                   </td>
                   <td className="px-4 py-3">
@@ -189,7 +189,7 @@ export default function Publishers() {
             <Input label="Website" value={form.website} onChange={set("website")} placeholder="https://…" />
           </div>
 
-          {formError && <p className="text-sm text-red-600">{formError}</p>}
+          {formError && <p className="text-sm text-red-600 dark:text-red-400">{formError}</p>}
 
           <div className="flex justify-end gap-3 pt-2">
             <Button variant="ghost" onClick={() => setModalOpen(false)}>

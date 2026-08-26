@@ -3,8 +3,8 @@
  * Responsibility: deactivate coupons whose expiry date has passed so they
  * can no longer be applied at checkout or by the chatbot.
  */
-const Coupon = require("../models/Coupon");
-const logger = require("../utils/logger");
+import Coupon from "../models/Coupon.js";
+import logger from "../utils/logger.js";
 
 async function run() {
   const now = new Date();
@@ -26,4 +26,4 @@ async function run() {
   return { deactivated: result.modifiedCount };
 }
 
-module.exports = { run };
+export { run };

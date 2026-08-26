@@ -1,9 +1,9 @@
 /**
  * services/inventoryService.js — stock listing and stock updates.
  */
-const AppError = require("../utils/AppError");
-const { Book } = require("../models");
-const socketService = require("./socketService");
+import AppError from "../utils/AppError.js";
+import { Book } from "../models/index.js";
+import * as socketService from "./socketService.js";
 
 async function list() {
   const books = await Book.find()
@@ -38,4 +38,4 @@ async function updateStock(bookId, stock) {
   return { book };
 }
 
-module.exports = { list, updateStock };
+export { list, updateStock };

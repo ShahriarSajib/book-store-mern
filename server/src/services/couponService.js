@@ -1,8 +1,8 @@
 /**
  * services/couponService.js — validate coupon, apply to cart.
  */
-const AppError = require("../utils/AppError");
-const { Coupon } = require("../models");
+import AppError from "../utils/AppError.js";
+import { Coupon } from "../models/index.js";
 
 function discountFor(coupon, subtotal) {
   let discount = 0;
@@ -96,4 +96,4 @@ async function remove(id) {
   return { success: true };
 }
 
-module.exports = { findValid, apply, trackUsage, discountFor, listAdmin, create, update, remove };
+export { findValid, apply, trackUsage, discountFor, listAdmin, create, update, remove };

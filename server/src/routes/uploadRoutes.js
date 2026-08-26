@@ -2,12 +2,14 @@
  * routes/uploadRoutes.js — /api/upload/*
  *   POST /image   (multipart, admin+)
  */
-const router = require("express").Router();
-const { protect } = require("../middleware/auth");
-const { requireAdmin } = require("../middleware/admin");
-const { uploadImage } = require("../middleware/upload");
-const ctrl = require("../controllers/uploadController");
+import { Router } from "express";
+import { protect } from "../middleware/auth.js";
+import { requireAdmin } from "../middleware/admin.js";
+import { uploadImage } from "../middleware/upload.js";
+import * as ctrl from "../controllers/uploadController.js";
+
+const router = Router();
 
 router.post("/image", protect, requireAdmin, uploadImage.single("file"), ctrl.uploadImage);
 
-module.exports = router;
+export default router;

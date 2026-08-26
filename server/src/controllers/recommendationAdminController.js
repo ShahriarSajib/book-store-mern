@@ -2,9 +2,9 @@
  * controllers/recommendationAdminController.js — admin endpoints for
  * recommendation management: embedding status, logs, analytics, regeneration.
  */
-const catchAsync = require("../utils/catchAsync");
-const pick = require("../utils/pick");
-const recommendationAdminService = require("../services/recommendationAdminService");
+import catchAsync from "../utils/catchAsync.js";
+import pick from "../utils/pick.js";
+import recommendationAdminService from "../services/recommendationAdminService.js";
 
 const getSummary = catchAsync(async (_req, res) => {
   res.json(await recommendationAdminService.getSummary());
@@ -34,7 +34,7 @@ const regenerateEmbeddings = catchAsync(async (req, res) => {
   res.json(await recommendationAdminService.regenerateEmbeddings(req.body.bookIds));
 });
 
-module.exports = {
+export {
   getSummary,
   embeddingStatus,
   getMostRecommended,

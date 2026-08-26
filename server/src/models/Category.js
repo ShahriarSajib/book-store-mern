@@ -2,7 +2,7 @@
  * models/Category.js
  * Responsibility: simple category taxonomy linked to books.
  */
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 function slugify(value) {
   return String(value || "")
@@ -35,4 +35,4 @@ categorySchema.pre("save", function preSaveSlug(next) {
   next();
 });
 
-module.exports = mongoose.model("Category", categorySchema);
+export default mongoose.model("Category", categorySchema);

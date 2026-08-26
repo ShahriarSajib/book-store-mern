@@ -39,7 +39,7 @@ export default function Footer() {
             <span className="navbar__brand-mark">
               <FaBook />
             </span>
-            <span className="text-lg font-extrabold text-ink-900">BookVerse</span>
+            <span className="text-lg font-extrabold text-ink-900 dark:text-ink-100">BookVerse</span>
           </div>
           <p className="footer__about">
             Personalized recommendations, real reviews, and a smarter way to find your next favorite book.
@@ -100,9 +100,9 @@ export default function Footer() {
         <div className="footer__bottom-inner">
           <p>© {new Date().getFullYear()} BookVerse — MERN + Semantic Recommendations</p>
           <div className="flex items-center gap-4">
-            <Link to="/privacy" className="hover:text-brand-700">Privacy</Link>
-            <Link to="/terms" className="hover:text-brand-700">Terms</Link>
-            <Link to="/contact" className="hover:text-brand-700">Contact</Link>
+            <Link to="/privacy" className="hover:text-brand-700 dark:hover:text-brand-400">Privacy</Link>
+            <Link to="/terms" className="hover:text-brand-700 dark:hover:text-brand-400">Terms</Link>
+            <Link to="/contact" className="hover:text-brand-700 dark:hover:text-brand-400">Contact</Link>
           </div>
         </div>
       </div>

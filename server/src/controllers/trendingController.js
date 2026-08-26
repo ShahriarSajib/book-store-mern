@@ -1,6 +1,6 @@
-const {
+import {
   getTrendingBooks,
-} = require("../services/trendingService");
+} from "../services/trendingService.js";
 
 async function getTrending(req, res) {
   try {
@@ -30,6 +30,6 @@ async function getTrending(req, res) {
   }
 }
 
-module.exports = {
+export {
   getTrending,
 };

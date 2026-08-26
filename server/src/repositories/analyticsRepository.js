@@ -4,4 +4,4 @@
  * (revenue, low stock, top books, popular categories, user growth).
  */
 // TODO
-module.exports = {};
+export default {};

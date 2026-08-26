@@ -1,8 +1,8 @@
 /**
  * services/catalogService.js — categories, authors, publishers CRUD.
  */
-const AppError = require("../utils/AppError");
-const { Category, Author, Publisher, Book } = require("../models");
+import AppError from "../utils/AppError.js";
+import { Category, Author, Publisher, Book } from "../models/index.js";
 
 const RESOURCES = {
   categories: { Model: Category, label: "Category" },
@@ -70,8 +70,6 @@ function buildService(resource) {
   return { list, listAdmin, getById, create, update, remove, bookCount };
 }
 
-module.exports = {
-  categories: buildService("categories"),
-  authors: buildService("authors"),
-  publishers: buildService("publishers"),
-};
+export const categories = buildService("categories");
+export const authors = buildService("authors");
+export const publishers = buildService("publishers");

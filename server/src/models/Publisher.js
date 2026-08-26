@@ -2,7 +2,7 @@
  * models/Publisher.js
  * Responsibility: publisher profiles + website.
  */
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 function slugify(value) {
   return String(value || "")
@@ -36,4 +36,4 @@ publisherSchema.pre("save", function preSaveSlug(next) {
   next();
 });
 
-module.exports = mongoose.model("Publisher", publisherSchema);
+export default mongoose.model("Publisher", publisherSchema);

@@ -1,12 +1,12 @@
-const express = require("express");
+import { Router } from "express";
 
-const {
+import {
   getRecommendations,
-} = require("../controllers/personalizedRecommendationController");
+} from "../controllers/personalizedRecommendationController.js";
 
-const { protect } = require("../middleware/auth");
+import { protect } from "../middleware/auth.js";
 
-const router = express.Router();
+const router = Router();
 
 router.get(
   "/",
@@ -14,4 +14,4 @@ router.get(
   getRecommendations
 );
 
-module.exports = router;
+export default router;

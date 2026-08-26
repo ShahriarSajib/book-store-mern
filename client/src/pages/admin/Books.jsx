@@ -164,8 +164,8 @@ export default function AdminBooks() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Book management</h1>
-          <p className="text-sm text-slate-500">Create, edit and remove catalog books.</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-100">Book management</h1>
+          <p className="text-sm text-slate-500 dark:text-ink-500">Create, edit and remove catalog books.</p>
         </div>
         <Button onClick={openCreate}>
           <FaPlus /> Add book
@@ -173,7 +173,7 @@ export default function AdminBooks() {
       </div>
 
       <div className="relative max-w-md">
-        <FaSearch className="pointer-events-none absolute left-3 top-2.5 text-slate-400" />
+        <FaSearch className="pointer-events-none absolute left-3 top-2.5 text-slate-400 dark:text-ink-600" />
         <input
           value={search}
           onChange={(e) => {
@@ -181,22 +181,22 @@ export default function AdminBooks() {
             setPage(1);
           }}
           placeholder="Search books…"
-          className="w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+          className="w-full rounded-lg border border-slate-300 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-200 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
         />
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-16 text-indigo-600">
+        <div className="flex justify-center py-16 text-indigo-600 dark:text-brand-400">
           <Spinner className="h-8 w-8" />
         </div>
       ) : books.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-500">
+        <div className="rounded-xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 p-10 text-center text-slate-500 dark:text-ink-500">
           No books match your search.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 shadow-sm">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-400">
+            <thead className="bg-slate-50 dark:bg-ink-800 text-xs uppercase tracking-wide text-slate-400 dark:text-ink-600">
               <tr>
                 <th className="px-4 py-3">Book</th>
                 <th className="px-4 py-3">Author</th>
@@ -208,32 +208,32 @@ export default function AdminBooks() {
             </thead>
             <tbody>
               {books.map((book) => (
-                <tr key={book.id || book._id} className="border-t border-slate-100">
+                <tr key={book.id || book._id} className="border-t border-slate-100 dark:border-ink-700">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-9 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-50">
+                      <div className="flex h-12 w-9 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-50 dark:bg-ink-800">
                         {book.coverImage ? (
                           <img src={book.coverImage} alt="" className="h-full w-full object-cover" />
                         ) : (
-                          <span className="text-xs text-slate-300">—</span>
+                          <span className="text-xs text-slate-300 dark:text-ink-600">—</span>
                         )}
                       </div>
                       <div className="max-w-[220px]">
-                        <p className="truncate font-medium text-slate-800">{book.title}</p>
-                        <p className="truncate text-xs text-slate-500">{book.publishedYear || ""}</p>
+                        <p className="truncate font-medium text-slate-800 dark:text-ink-200">{book.title}</p>
+                        <p className="truncate text-xs text-slate-500 dark:text-ink-500">{book.publishedYear || ""}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="max-w-[180px] truncate px-4 py-3 text-slate-600">
+                  <td className="max-w-[180px] truncate px-4 py-3 text-slate-600 dark:text-ink-400">
                     {book.authors?.join(", ") || "—"}
                   </td>
-                  <td className="px-4 py-3 font-medium text-slate-800">{formatCurrency(book.price)}</td>
+                  <td className="px-4 py-3 font-medium text-slate-800 dark:text-ink-200">{formatCurrency(book.price)}</td>
                   <td className="px-4 py-3">
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${(book.stock ?? 0) > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${(book.stock ?? 0) > 0 ? "bg-green-100 dark:bg-emerald-900/30 text-green-700 dark:text-emerald-400" : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"}`}>
                       {book.stock ?? 0}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-slate-600">
+                  <td className="px-4 py-3 text-slate-600 dark:text-ink-400">
                     {book.averageRating ? book.averageRating.toFixed(1) : "—"}
                   </td>
                   <td className="px-4 py-3">
@@ -258,8 +258,8 @@ export default function AdminBooks() {
           </table>
 
           {pagination.pages > 1 && (
-            <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-sm">
-              <span className="text-slate-500">
+            <div className="flex items-center justify-between border-t border-slate-100 dark:border-ink-700 px-4 py-3 text-sm">
+              <span className="text-slate-500 dark:text-ink-500">
                 Page {pagination.page} of {pagination.pages} ({pagination.total} books)
               </span>
               <div className="flex gap-2">
@@ -274,7 +274,7 @@ export default function AdminBooks() {
           )}
         </div>
       )}
-      {isFetching && !isLoading && <p className="text-xs text-slate-400">Updating…</p>}
+      {isFetching && !isLoading && <p className="text-xs text-slate-400 dark:text-ink-600">Updating…</p>}
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? "Edit book" : "Add book"}>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -301,18 +301,18 @@ export default function AdminBooks() {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <Input label="Stock" type="number" value={form.stock} onChange={set("stock")} />
-            <label className="flex items-center gap-2 pt-6 text-sm text-slate-700">
+            <label className="flex items-center gap-2 pt-6 text-sm text-slate-700 dark:text-ink-300">
               <input
                 type="checkbox"
                 checked={form.isActive}
                 onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
-                className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                className="h-4 w-4 rounded border-slate-300 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-200 text-indigo-600 dark:text-brand-400 focus:ring-indigo-500"
               />
               Active (visible in store)
             </label>
           </div>
 
-          {formError && <p className="text-sm text-red-600">{formError}</p>}
+          {formError && <p className="text-sm text-red-600 dark:text-red-400">{formError}</p>}
 
           <div className="flex justify-end gap-3 pt-2">
             <Button variant="ghost" onClick={() => setModalOpen(false)}>

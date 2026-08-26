@@ -3,7 +3,7 @@
  * Responsibility: thin DB access layer for Book — find, paginate, facets,
  * create/update/delete, and stat/stock updates. Keeps services lean.
  */
-const { Book } = require("../models");
+import { Book } from "../models/index.js";
 
 const PUBLIC_SELECT = "-embedding";
 
@@ -77,7 +77,7 @@ async function decrementStock(id, quantity) {
   );
 }
 
-module.exports = {
+export {
   findById,
   findMany,
   getFacets,

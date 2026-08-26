@@ -1,8 +1,6 @@
-const {
+import {
   getPersonalizedRecommendations,
-} = require(
-  "../services/personalizedRecommendationService"
-);
+} from "../services/personalizedRecommendationService.js";
 
 const getRecommendations = async (req, res) => {
   try {
@@ -43,6 +41,6 @@ const getRecommendations = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   getRecommendations,
 };

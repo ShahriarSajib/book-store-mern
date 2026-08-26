@@ -6,9 +6,9 @@
  *   - timers are unref()'d so they never keep the process alive
  *   - start()/stop() are idempotent; runNow() triggers a job on demand
  */
-const logger = require("../utils/logger");
-const lowStockNotifier = require("./lowStockNotifier");
-const expiringCoupons = require("./expiringCoupons");
+import logger from "../utils/logger.js";
+import * as lowStockNotifier from "./lowStockNotifier.js";
+import * as expiringCoupons from "./expiringCoupons.js";
 
 const MINUTE = 60 * 1000;
 
@@ -53,7 +53,7 @@ function start({ runOnStart = false } = {}) {
     `[scheduler] started ${JOBS.length} job(s): ${JOBS.map((j) => `${j.name}(${Math.round(j.intervalMs / 60000)}m)`).join(", ")}`
   );
   if (runOnStart) {
-    JOBS.forEach((job) => module.exports.runNow(job.name).catch(() => {}));
+    JOBS.forEach((job) => runNow(job.name).catch(() => {}));
   }
 }
 
@@ -76,4 +76,4 @@ async function runNow(name) {
   }
 }
 
-module.exports = { start, stop, runNow, JOBS };
+export { start, stop, runNow, JOBS };

@@ -4,9 +4,9 @@
  * missing one, or rebuild every embedding when `force` is true.
  * Safe to run inside a live server process (no process.exit).
  */
-const Book = require("../models/Book");
-const { generateEmbedding } = require("../ai/embeddings/embeddingService");
-const logger = require("../utils/logger");
+import Book from "../models/Book.js";
+import { generateEmbedding } from "../ai/embeddings/embeddingService.js";
+import logger from "../utils/logger.js";
 
 function buildEmbeddingText(book) {
   return [
@@ -70,4 +70,4 @@ async function run({ force = false } = {}) {
   return { total: books.length, generated, skipped, failed };
 }
 
-module.exports = { run };
+export { run };

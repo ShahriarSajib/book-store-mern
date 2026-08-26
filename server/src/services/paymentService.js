@@ -1,10 +1,10 @@
 /**
  * services/paymentService.js — Payment status management and Stripe refund.
  */
-const AppError = require("../utils/AppError");
-const logger = require("../utils/logger");
-const { Order } = require("../models");
-const stripeService = require("./stripeService");
+import AppError from "../utils/AppError.js";
+import logger from "../utils/logger.js";
+import { Order } from "../models/index.js";
+import stripeService from "./stripeService.js";
 
 const VALID_TRANSITIONS = {
   pending: ["paid", "failed"],
@@ -75,4 +75,4 @@ async function refundOrder(orderId, reason = "requested_by_customer") {
   return { order, refund };
 }
 
-module.exports = { updatePaymentStatus, getPaymentDetails, refundOrder };
+export { updatePaymentStatus, getPaymentDetails, refundOrder };

@@ -6,8 +6,8 @@
  * preview URL. The auth service surfaces this preview to the API client so
  * email flows can be tested without a real SMTP provider.
  */
-const nodemailer = require("nodemailer");
-const env = require("../config/env");
+import nodemailer from "nodemailer";
+import env from "../config/env.js";
 
 function buildTransport() {
   if (env.MAIL_USER && env.MAIL_PASS) {
@@ -76,8 +76,4 @@ function passwordResetEmail(name, url) {
   };
 }
 
-module.exports = {
-  sendEmail,
-  verificationEmail,
-  passwordResetEmail,
-};
+export { sendEmail, verificationEmail, passwordResetEmail };

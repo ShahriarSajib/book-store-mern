@@ -2,15 +2,15 @@
  * services/orderService.js — checkout, place order, status transitions,
  * cancellation eligibility, invoice generation.
  */
-const crypto = require("crypto");
-const AppError = require("../utils/AppError");
-const { Order, Cart, User, Book } = require("../models");
-const couponService = require("./couponService");
-const notificationService = require("./notificationService");
-const socketService = require("./socketService");
-const cartService = require("./cartService");
-const logger = require("../utils/logger");
-const { getPagination, buildPageMeta } = require("../utils/paginate");
+import crypto from "crypto";
+import AppError from "../utils/AppError.js";
+import { Order, Cart, User, Book, Notification } from "../models/index.js";
+import couponService from "./couponService.js";
+import notificationService from "./notificationService.js";
+import socketService from "./socketService.js";
+import cartService from "./cartService.js";
+import logger from "../utils/logger.js";
+import { getPagination, buildPageMeta } from "../utils/paginate.js";
 
 const CANCELLABLE = ["pending", "confirmed", "processing"];
 const ONLINE_PAYMENT_METHODS = ["card"];
@@ -26,7 +26,6 @@ const CART_POPULATE = {
 
 async function persistNotification(userId, { type, title, message, link, data }) {
   try {
-    const { Notification } = require("../models");
     await Notification.create({ user: userId, type: type || "system", title, message, link: link || null, data: data || {} });
   } catch (_err) { /* persistence is best-effort */ }
 }
@@ -517,7 +516,7 @@ async function expireSession(orderId) {
   return order;
 }
 
-module.exports = {
+export {
   createOrder,
   listOrders,
   getOrder,

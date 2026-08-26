@@ -3,9 +3,14 @@
  */
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend,
+} from "recharts";
 import adminApi from "../../services/adminApi";
 import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
+import { useTheme } from "../../context/ThemeContext";
 import { formatCurrency, formatNumber } from "../../utils/format";
 
 const DAYS_OPTIONS = [7, 30, 90];
@@ -16,28 +21,51 @@ const TABS = [
   { key: "recommendations", label: "Recommendations" },
 ];
 
+const PIE_COLORS = ["#059669", "#ed7624", "#b45309", "#e11d48", "#6366f1", "#0891b2"];
+
 const labelize = (value) => (value ? value.charAt(0).toUpperCase() + value.slice(1) : value);
+
+function ChartTooltip({ active, payload, label }) {
+  const { theme } = useTheme();
+  const bg = theme === "dark" ? "#1e293b" : "#fff";
+  const border = theme === "dark" ? "#334155" : "#e2e8f0";
+  const text = theme === "dark" ? "#f1f5f9" : "#0f172a";
+  if (!active || !payload?.length) return null;
+  return (
+    <div
+      style={{ background: bg, border: `1px solid ${border}`, color: text }}
+      className="rounded-lg px-3 py-2 text-xs shadow-lg"
+    >
+      <p className="font-semibold">{labelize(String(label))}</p>
+      {payload.map((p) => (
+        <p key={p.dataKey}>
+          {p.dataKey === "revenue" ? formatCurrency(p.value) : formatNumber(p.value)}
+        </p>
+      ))}
+    </div>
+  );
+}
 
 function StatCard({ label, value }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{label}</p>
-      <p className="mt-1 text-2xl font-bold text-slate-900">{value}</p>
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-ink-700 dark:bg-ink-100">
+      <p className="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-ink-400">{label}</p>
+      <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-ink-50">{value}</p>
     </div>
   );
 }
 
 function Section({ title, children }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h3 className="mb-3 text-sm font-semibold text-slate-800">{title}</h3>
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-ink-700 dark:bg-ink-100">
+      <h3 className="mb-3 text-sm font-semibold text-slate-800 dark:text-ink-200">{title}</h3>
       {children}
     </div>
   );
 }
 
 function EmptyText({ children = "No data yet." }) {
-  return <p className="py-4 text-sm text-slate-400">{children}</p>;
+  return <p className="py-4 text-sm text-slate-400 dark:text-ink-400">{children}</p>;
 }
 
 export default function Analytics() {
@@ -60,8 +88,6 @@ export default function Analytics() {
   const sales = salesQuery.data;
   const inventory = inventoryQuery.data;
   const recs = recsQuery.data;
-
-  const maxRevenue = Math.max(0, ...(sales?.series || []).map((s) => s.revenue || 0));
 
   return (
     <div className="space-y-6">
@@ -114,23 +140,19 @@ export default function Analytics() {
               <div className="grid gap-6 lg:grid-cols-2">
                 <Section title="Sales over time">
                   {sales.series?.length ? (
-                    <div className="space-y-3">
-                      {sales.series.map((s) => (
-                        <div key={s._id}>
-                          <div className="mb-1 flex justify-between text-xs text-slate-500">
-                            <span>{labelize(String(s._id))}</span>
-                            <span>{formatCurrency(s.revenue)}</span>
-                          </div>
-                          <div className="h-2 w-full rounded-full bg-slate-100">
-                            <div
-                              className="h-2 rounded-full bg-brand-500"
-                              style={{
-                                width: `${maxRevenue ? (s.revenue / maxRevenue) * 100 : 0}%`,
-                              }}
-                            />
-                          </div>
-                        </div>
-                      ))}
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={sales.series} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                          <XAxis
+                            dataKey="_id"
+                            tickFormatter={(v) => labelize(String(v))}
+                            tick={{ fontSize: 11 }}
+                          />
+                          <YAxis tick={{ fontSize: 11 }} width={60} tickFormatter={(v) => `$${v}`} />
+                          <Tooltip content={<ChartTooltip />} />
+                          <Bar dataKey="revenue" fill="#059669" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
                     </div>
                   ) : (
                     <EmptyText>No sales data for this range.</EmptyText>
@@ -160,15 +182,29 @@ export default function Analytics() {
 
               <Section title="Orders by status">
                 {sales.statusBreakdown?.length ? (
-                  <div className="flex flex-wrap gap-2">
-                    {sales.statusBreakdown.map((s) => (
-                      <span
-                        key={s._id}
-                        className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700"
-                      >
-                        {labelize(s._id)} · {formatNumber(s.count)}
-                      </span>
-                    ))}
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={sales.statusBreakdown.map((s) => ({
+                            name: labelize(s._id),
+                            value: s.count,
+                          }))}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={80}
+                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        >
+                          {sales.statusBreakdown.map((_, i) => (
+                            <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip content={<ChartTooltip />} />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
                   </div>
                 ) : (
                   <EmptyText />
@@ -195,25 +231,32 @@ export default function Analytics() {
 
               <Section title="Low stock">
                 {inventory.lowStock?.length ? (
-                  <div className="space-y-2">
-                    {inventory.lowStock.map((b) => (
-                      <div
-                        key={b._id || b.id}
-                        className="flex items-center justify-between gap-3 text-sm"
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={inventory.lowStock.map((b) => ({ name: b.title, stock: b.stock }))}
+                        layout="vertical"
+                        margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
                       >
-                        <p className="truncate text-slate-700">{b.title}</p>
-                        <p className="shrink-0 text-xs font-medium text-amber-600">
-                          {b.stock} left
-                        </p>
-                      </div>
-                    ))}
+                        <XAxis type="number" tick={{ fontSize: 11 }} />
+                        <YAxis
+                          type="category"
+                          dataKey="name"
+                          tick={{ fontSize: 11 }}
+                          width={120}
+                          tickFormatter={(v) => (v.length > 18 ? v.slice(0, 18) + "…" : v)}
+                        />
+                        <Tooltip content={<ChartTooltip />} />
+                        <Bar dataKey="stock" fill="#f59e0b" radius={[0, 4, 4, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
                   </div>
                 ) : (
                   <EmptyText>All books are well stocked.</EmptyText>
                 )}
               </Section>
 
-              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800">
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
                 <strong>{formatNumber(inventory.outOfStock)}</strong> books out of stock.
               </div>
             </>
@@ -240,18 +283,25 @@ export default function Analytics() {
               <div className="grid gap-6 lg:grid-cols-2">
                 <Section title="Top rated">
                   {recs.topRated?.length ? (
-                    <div className="space-y-2">
-                      {recs.topRated.map((b) => (
-                        <div
-                          key={b._id || b.id}
-                          className="flex items-center justify-between gap-3 text-sm"
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart
+                          data={recs.topRated.map((b) => ({
+                            name: b.title,
+                            rating: b.averageRating ?? 0,
+                          }))}
+                          margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
                         >
-                          <p className="truncate text-slate-700">{b.title}</p>
-                          <p className="shrink-0 text-xs text-slate-500">
-                            {(b.averageRating ?? 0).toFixed(1)} ★ ({formatNumber(b.ratingsCount)})
-                          </p>
-                        </div>
-                      ))}
+                          <XAxis
+                            dataKey="name"
+                            tick={{ fontSize: 10 }}
+                            tickFormatter={(v) => (v.length > 12 ? v.slice(0, 12) + "…" : v)}
+                          />
+                          <YAxis domain={[0, 5]} tick={{ fontSize: 11 }} width={30} />
+                          <Tooltip content={<ChartTooltip />} />
+                          <Bar dataKey="rating" fill="#10b981" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
                     </div>
                   ) : (
                     <EmptyText />
@@ -260,18 +310,28 @@ export default function Analytics() {
 
                 <Section title="Most purchased">
                   {recs.mostPurchased?.length ? (
-                    <div className="space-y-2">
-                      {recs.mostPurchased.map((b) => (
-                        <div
-                          key={b._id || b.id}
-                          className="flex items-center justify-between gap-3 text-sm"
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart
+                          data={recs.mostPurchased.map((b) => ({
+                            name: b.title,
+                            purchases: b.purchaseCount,
+                          }))}
+                          layout="vertical"
+                          margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
                         >
-                          <p className="truncate text-slate-700">{b.title}</p>
-                          <p className="shrink-0 text-xs text-slate-500">
-                            {formatNumber(b.purchaseCount)} purchases
-                          </p>
-                        </div>
-                      ))}
+                          <XAxis type="number" tick={{ fontSize: 11 }} />
+                          <YAxis
+                            type="category"
+                            dataKey="name"
+                            tick={{ fontSize: 11 }}
+                            width={120}
+                            tickFormatter={(v) => (v.length > 18 ? v.slice(0, 18) + "…" : v)}
+                          />
+                          <Tooltip content={<ChartTooltip />} />
+                          <Bar dataKey="purchases" fill="#6366f1" radius={[0, 4, 4, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
                     </div>
                   ) : (
                     <EmptyText />

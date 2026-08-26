@@ -66,7 +66,47 @@
   --radius-xl: 1.5rem;
 }
 
+/* ===== Dark mode overrides ===== */
+.dark {
+  color-scheme: dark;
+
+  --ink-50:  #0f172a;
+  --ink-100: #1e293b;
+  --ink-200: #334155;
+  --ink-300: #475569;
+  --ink-400: #64748b;
+  --ink-500: #94a3b8;
+  --ink-600: #cbd5e1;
+  --ink-700: #e2e8f0;
+  --ink-800: #f1f5f9;
+  --ink-900: #f8fafc;
+
+  --surface-ivory:    #0f172a;
+  --surface-sand:     #1e293b;
+  --surface-clay:     #292524;
+  --surface-sage:     #052e16;
+  --surface-mint:     #064e3b;
+  --surface-gold-soft:#422006;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 20px 40px -12px rgba(0, 0, 0, 0.5), 0 8px 16px -8px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 30px 60px -20px rgba(0, 0, 0, 0.6), 0 12px 24px -10px rgba(0, 0, 0, 0.5);
+}
+
 @layer base {
+  .dark body {
+    @apply text-ink-800;
+    background-color: var(--surface-ivory);
+    background-image:
+      radial-gradient(1200px 600px at -10% -10%, rgba(5, 150, 105, 0.08), transparent 60%),
+      radial-gradient(1000px 500px at 110% 0%, rgba(194, 65, 12, 0.06), transparent 60%),
+      radial-gradient(800px 500px at 50% 110%, rgba(6, 95, 70, 0.05), transparent 60%),
+      linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  }
+  .dark h1, .dark h2, .dark h3, .dark h4 { @apply text-ink-50; }
+  .dark ::selection { background: var(--brand-800); color: var(--brand-50); }
+}
   html {
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     -webkit-text-size-adjust: 100%;
@@ -803,6 +843,129 @@
   .home-card__cat {
     @apply rounded-full bg-sand px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-ink-700;
   }
+
+  /* ===== Dark mode component overrides ===== */
+  .dark .btn-secondary { @apply bg-ink-100 border-ink-600 text-ink-200 hover:bg-ink-200; }
+  .dark .btn-ghost { @apply text-ink-200 hover:bg-ink-100; }
+  .dark .card { @apply border-ink-700 bg-ink-100; }
+  .dark .card:hover { box-shadow: var(--shadow-md); }
+  .dark .card-glass { @apply border-ink-700/40 bg-ink-100/80; }
+  .dark .input { @apply border-ink-600 bg-ink-100 text-ink-50 placeholder-ink-400; }
+  .dark .input:focus { @apply border-brand-400 ring-brand-800; }
+
+  .dark .navbar {
+    @apply border-ink-700;
+    background-image: linear-gradient(180deg, rgba(15, 23, 42, 0.94) 0%, rgba(30, 41, 59, 0.82) 100%);
+  }
+  .dark .navbar__brand { @apply text-ink-50; }
+  .dark .navbar__link { @apply text-ink-300 hover:bg-ink-100 hover:text-ink-50; }
+  .dark .navbar__link.is-active { @apply bg-ink-100 text-ink-50; }
+  .dark .navbar__burger { @apply text-ink-300 hover:bg-ink-100 hover:text-ink-50; }
+  .dark .navbar__drawer {
+    @apply border-ink-700;
+    background-image: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.98) 100%);
+  }
+  .dark .navbar__drawer-link { @apply text-ink-300 hover:bg-ink-100 hover:text-ink-50; }
+  .dark .navbar__drawer-link.is-active { @apply bg-ink-100 text-ink-50; }
+  .dark .navbar__drawer-sep { @apply via-ink-700; }
+
+  .dark .avatar-btn { @apply border-ink-600 bg-ink-100 text-ink-50 hover:bg-ink-200; }
+  .dark .user-menu { @apply border-ink-700 bg-ink-100; }
+  .dark .user-menu__head { @apply border-ink-700; }
+  .dark .user-menu__item { @apply text-ink-300 hover:bg-ink-200 hover:text-ink-50; }
+
+  .dark .modal-container { @apply border-ink-600 bg-ink-100; }
+  .dark .modal__title { @apply text-ink-50; }
+  .dark .modal__body { @apply text-ink-300; }
+  .dark .modal__close { @apply text-ink-400 hover:bg-ink-200; }
+
+  .dark .chip { @apply border-ink-600 bg-ink-100 text-ink-300; }
+
+  .dark .footer {
+    @apply border-ink-700;
+    background-image:
+      radial-gradient(900px 500px at 0% 0%, rgba(5, 150, 105, 0.08), transparent 60%),
+      radial-gradient(800px 500px at 100% 100%, rgba(180, 83, 9, 0.06), transparent 60%),
+      linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    color: #e2e8f0;
+  }
+  .dark .footer__title { @apply text-brand-300; }
+  .dark .footer__about, .dark .footer__link, .dark .footer__bottom-inner { @apply text-ink-400; }
+  .dark .footer__link:hover { @apply text-brand-300; }
+  .dark .footer__social a { @apply border-ink-600 bg-ink-100 text-ink-300 hover:border-brand-400 hover:bg-brand-600 hover:text-white; }
+  .dark .footer__badge { @apply border-ink-600 bg-ink-100 text-ink-300; }
+  .dark .footer__input { @apply border-ink-600 bg-ink-100 text-ink-50 placeholder-ink-400; }
+
+  .dark .auth-shell {
+    background:
+      radial-gradient(900px 600px at -10% -10%, rgba(5, 150, 105, 0.12), transparent 60%),
+      radial-gradient(700px 500px at 110% 110%, rgba(194, 65, 12, 0.08), transparent 60%),
+      linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  }
+  .dark .auth-card { @apply border-ink-600 bg-ink-100/90; }
+  .dark .auth-card__title { @apply text-ink-50; }
+  .dark .auth-card__subtitle, .dark .auth-card__footer { @apply text-ink-400; }
+  .dark .auth-form-wrap { @apply text-ink-200; }
+
+  .dark .lp-hero {
+    @apply border-ink-700 text-ink-50;
+    background-image:
+      radial-gradient(900px 520px at -10% 0%, rgba(255, 255, 255, 0.05), transparent 60%),
+      radial-gradient(700px 420px at 110% 100%, rgba(5, 150, 105, 0.12), transparent 60%),
+      linear-gradient(135deg, #0f172a 0%, #1e293b 45%, #292524 100%);
+  }
+  .dark .lp-hero__eyebrow { @apply border-ink-600 bg-ink-100/80; }
+  .dark .lp-hero__title { @apply text-ink-50; }
+  .dark .lp-hero__sub, .dark .lp-hero__trust { @apply text-ink-400; }
+  .dark .lp-hero__book { @apply border-ink-600/20 bg-ink-100/90; }
+
+  .dark .lp-stat { @apply border-ink-700 bg-ink-100/90 text-ink-50; }
+  .dark .lp-stat:hover { background-color: var(--surface-sand); }
+  .dark .lp-stat__value { @apply text-ink-50; }
+  .dark .lp-stat__label { @apply text-ink-400; }
+
+  .dark .lp-cat { @apply border-ink-700 text-ink-50; background-image: linear-gradient(160deg, #1e293b 0%, #0f172a 100%); }
+  .dark .lp-cat__name { @apply text-ink-50; }
+  .dark .lp-cat__count { @apply text-ink-400; }
+
+  .dark .home-card { @apply border-ink-700 bg-ink-100; background-image: linear-gradient(165deg, #1e293b 0%, #0f172a 55%, #292524 100%); }
+  .dark .home-card__placeholder { @apply text-ink-600; }
+  .dark .home-card__rating { @apply bg-ink-100/95; }
+  .dark .home-card__body { @apply text-ink-50; }
+  .dark .home-card__title { @apply text-ink-50; }
+  .dark .home-card__author { @apply text-ink-400; }
+  .dark .home-card__cat { @apply bg-ink-200 text-ink-300; }
+
+  .dark .lp-prop { @apply border-ink-700 bg-ink-100; background-image: linear-gradient(160deg, #1e293b 0%, #0f172a 100%); }
+  .dark .lp-prop__title { @apply text-ink-50; }
+  .dark .lp-prop__text, .dark .lp-prop__list { @apply text-ink-400; }
+
+  .dark .lp-quote { @apply border-ink-700 text-ink-50; background-image: linear-gradient(135deg, #1e293b 0%, #292524 50%, #0f172a 100%); }
+  .dark .lp-quote__body { @apply text-ink-400; }
+
+  .dark .lp-final { @apply border-ink-700 text-ink-50; background-image: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #292524 100%); }
+  .dark .lp-final__title { @apply text-ink-50; }
+  .dark .lp-final__text { @apply text-ink-400; }
+
+  .dark .similar-card { @apply border-amber-900 bg-ink-100; }
+  .dark .similar-card__cover { @apply bg-gradient-to-br from-amber-950 to-orange-950; }
+  .dark .similar-card__title { @apply text-ink-50; }
+  .dark .similar-card__author { @apply text-ink-400; }
+  .dark .similar-card__cat { @apply bg-amber-950 text-amber-300; }
+  .dark .similar-card__score { @apply bg-ink-100/90; }
+
+  .dark .personalized-card { @apply border-emerald-900 bg-ink-100; }
+  .dark .personalized-card__cover { @apply bg-gradient-to-br from-emerald-950 to-teal-950; }
+  .dark .personalized-card__title { @apply text-ink-50; }
+  .dark .personalized-card__author { @apply text-ink-400; }
+  .dark .personalized-card__score { @apply bg-emerald-950 text-emerald-300; }
+
+  .dark .trending-card { @apply border-red-900 bg-ink-100; }
+  .dark .trending-card__cover { @apply bg-gradient-to-br from-red-950 to-orange-950; }
+  .dark .trending-card__title { @apply text-ink-50; }
+  .dark .trending-card__author { @apply text-ink-400; }
+  .dark .trending-card__score { @apply bg-red-950 text-red-300; }
+  .dark .trending-card__rating { @apply bg-amber-950 text-amber-300; }
 
   /* Value / benefits section */
   .lp-prop {

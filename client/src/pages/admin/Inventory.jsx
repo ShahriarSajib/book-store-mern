@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import adminApi from "../../services/adminApi";
 import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
+import { FaSearch } from "react-icons/fa";
 import { formatCurrency } from "../../utils/format";
 
 const LOW_STOCK = 10;
@@ -31,6 +32,7 @@ function StockBadge({ stock }) {
 export default function Inventory() {
   const queryClient = useQueryClient();
   const [lowOnly, setLowOnly] = useState(false);
+  const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [stockValue, setStockValue] = useState("");
 
@@ -54,7 +56,16 @@ export default function Inventory() {
   });
 
   const items = data?.items || [];
-  const shown = lowOnly ? items.filter((b) => b.stock <= LOW_STOCK) : items;
+  const shown = items.filter((b) => {
+    if (lowOnly && b.stock > LOW_STOCK) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      const matchTitle = b.title?.toLowerCase().includes(q);
+      const matchAuthor = b.authors?.some((a) => a.toLowerCase().includes(q));
+      if (!matchTitle && !matchAuthor) return false;
+    }
+    return true;
+  });
 
   const handleSave = (book) => {
     const stock = Number(stockValue);
@@ -72,6 +83,16 @@ export default function Inventory() {
           <h1 className="text-2xl font-bold text-slate-900">Inventory</h1>
           <p className="text-sm text-slate-500">Monitor and update stock levels.</p>
         </div>
+        <div className="flex flex-wrap items-center gap-3">
+        <div className="relative max-w-md flex-1">
+          <FaSearch className="pointer-events-none absolute left-3 top-2.5 text-slate-400" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by title or author…"
+            className="w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+          />
+        </div>
         <label className="flex items-center gap-2 text-sm text-slate-700">
           <input
             type="checkbox"
@@ -81,6 +102,10 @@ export default function Inventory() {
           />
           Show low stock only
         </label>
+        {search && (
+          <span className="text-xs text-slate-400">{shown.length} result{shown.length !== 1 ? "s" : ""}</span>
+        )}
+      </div>
       </div>
 
       {isLoading ? (
@@ -89,7 +114,11 @@ export default function Inventory() {
         </div>
       ) : shown.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-500">
-          {lowOnly ? "No low stock books." : "No inventory yet."}
+          {search
+            ? `No books match "${search}".`
+            : lowOnly
+              ? "No low stock books."
+              : "No inventory yet."}
         </div>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">

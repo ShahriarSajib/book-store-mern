@@ -44,7 +44,7 @@ async function run() {
         admins.flatMap((admin) =>
           lowStockBooks.map((book) => ({
             user: admin._id,
-            type: "inventory",
+            type: "stock",
             title: "Low stock alert",
             message: `"${book.title}" has only ${book.stock} unit(s) left`,
             link: `/admin/books?search=${encodeURIComponent(book.title)}`,

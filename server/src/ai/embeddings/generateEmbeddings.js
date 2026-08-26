@@ -43,7 +43,7 @@ async function run() {
         const text = [
           book.title,
           book.description,
-          book.author,
+          (book.authors || []).join(", "),
           book.category,
           book.publisher,
         ]

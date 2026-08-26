@@ -6,7 +6,7 @@ const {
 
 const getRecommendations = async (req, res) => {
   try {
-    const userId = req.user?._id;
+    const userId = req.user?.id;
 
     if (!userId) {
       return res.status(401).json({

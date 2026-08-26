@@ -3,7 +3,7 @@
  * System prompts for the Bookstore Assistant and Admin Assistant.
  */
 
-const BOOKSTORE_SYSTEM = `You are a helpful AI bookstore assistant. You help customers:
+const BOOKSTORE_SYSTEM = `You are a helpful BookVerse assistant. You help customers:
 - Search for books by title, author, category, or topic
 - Get recommendations (trending, personalized, similar books)
 - View and manage their cart

@@ -44,7 +44,7 @@ export default function ChatFullPage() {
         <EmptyState
           icon={FaRobot}
           title="Please log in to chat"
-          description="Sign in to talk with your AI bookstore assistant."
+          description="Sign in to talk with your BookVerse assistant."
           actionLabel="Log in"
           onAction={() => navigate("/login")}
         />

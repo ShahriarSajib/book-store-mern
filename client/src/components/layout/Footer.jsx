@@ -40,7 +40,7 @@ export default function Footer() {
             <span className="navbar__brand-mark">
               <FaBook />
             </span>
-            <span className="text-lg font-extrabold text-ink-900">AI Bookstore</span>
+            <span className="text-lg font-extrabold text-ink-900">BookVerse</span>
           </div>
           <p className="footer__about">
             Personalized recommendations, real reviews, and a smarter way to find your next favorite book.
@@ -103,7 +103,7 @@ export default function Footer() {
 
       <div className="footer__bottom">
         <div className="footer__bottom-inner">
-          <p>© {new Date().getFullYear()} AI Bookstore — MERN + Semantic Recommendations</p>
+          <p>© {new Date().getFullYear()} BookVerse — MERN + Semantic Recommendations</p>
           <div className="flex items-center gap-4">
             <span className="inline-flex items-center gap-1">
               Made with <FaHeart className="text-rose-500" /> for readers

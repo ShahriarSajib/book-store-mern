@@ -50,7 +50,7 @@ export default function ValueProps() {
     <section className="section" aria-labelledby="lp-props-title" ref={ref}>
       <div className="lp-reveal mx-auto max-w-2xl text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-600">
-          Why AI Bookstore
+          Why BookVerse
         </p>
         <h2
           id="lp-props-title"

@@ -12,7 +12,7 @@ import app from "./app.js";
 import env from "./config/env.js";
 import connectDB from "./config/db.js";
 import socketService from "./services/socketService.js";
-import scheduler from "./jobs/scheduler.js";
+import * as scheduler from "./jobs/scheduler.js";
 
 async function bootstrap() {
   await connectDB();

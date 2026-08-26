@@ -17,7 +17,7 @@ import env from "./config/env.js";
 import apiRouter from "./routes/index.js";
 import semanticRoutes from "./routes/semanticRoutes.js";
 import similarBookRoutes from "./routes/similarBookRoutes.js";
-import paymentController from "./controllers/paymentController.js";
+import * as paymentController from "./controllers/paymentController.js";
 
 import errorHandler from "./middleware/errorHandler.js";
 import notFound from "./middleware/notFound.js";

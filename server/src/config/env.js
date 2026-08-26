@@ -2,7 +2,7 @@
  * config/env.js — Single source of truth for environment variables.
  * Validates required vars on boot and exposes a typed object.
  */
-require("dotenv").config();
+require("dotenv").config({ path: require("path").resolve(__dirname, "../../.env") });
 
 const required = ["MONGO_URI", "JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET"];
 for (const key of required) {

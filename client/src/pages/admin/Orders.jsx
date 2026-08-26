@@ -96,7 +96,7 @@ export default function Orders() {
                 setPage(1);
               }}
               placeholder="Search order number…"
-              className="w-64 rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+              className="w-64 rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200"
             />
           </div>
         </form>
@@ -107,7 +107,7 @@ export default function Orders() {
             setStatus(e.target.value);
             setPage(1);
           }}
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none"
+          className="rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none"
         >
           <option value="">All statuses</option>
           {Object.values(ORDER_STATUS).map((value) => (
@@ -125,7 +125,7 @@ export default function Orders() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-16 text-indigo-600">
+        <div className="flex justify-center py-16 text-brand-600">
           <Spinner className="h-8 w-8" />
         </div>
       ) : orders.length === 0 ? (
@@ -169,7 +169,7 @@ export default function Orders() {
                           patch: { status: e.target.value },
                         })
                       }
-                      className="rounded-md border border-slate-300 px-2 py-1 text-sm capitalize focus:border-indigo-500 focus:outline-none"
+                      className="rounded-md border border-slate-300 px-2 py-1 text-sm capitalize focus:border-brand-500 focus:outline-none"
                     >
                       {Object.values(ORDER_STATUS).map((value) => (
                         <option key={value} value={value}>

@@ -11,6 +11,7 @@ import {
   FaShieldAlt,
   FaTwitter,
   FaYoutube,
+  FaHeart,
 } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
 import Button from "../ui/Button";
@@ -49,6 +50,10 @@ export default function Footer() {
             <a href="#" aria-label="Instagram"><FaInstagram /></a>
             <a href="#" aria-label="Facebook"><FaFacebookF /></a>
             <a href="#" aria-label="YouTube"><FaYoutube /></a>
+          </div>
+          <div className="footer__badges">
+            <span className="footer__badge"><FaShieldAlt /> Secure checkout</span>
+            <span className="footer__badge">⭐ 4.8 from 12k+ readers</span>
           </div>
         </div>
 
@@ -100,6 +105,10 @@ export default function Footer() {
         <div className="footer__bottom-inner">
           <p>© {new Date().getFullYear()} AI Bookstore — MERN + Semantic Recommendations</p>
           <div className="flex items-center gap-4">
+            <span className="inline-flex items-center gap-1">
+              Made with <FaHeart className="text-rose-500" /> for readers
+            </span>
+            <span className="hidden h-1 w-1 rounded-full bg-ink-300 sm:inline-block" />
             <Link to="/privacy" className="hover:text-brand-700">Privacy</Link>
             <Link to="/terms" className="hover:text-brand-700">Terms</Link>
             <Link to="/contact" className="hover:text-brand-700">Contact</Link>

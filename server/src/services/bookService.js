@@ -102,8 +102,8 @@ async function listBooks(query = {}) {
   const { page, limit, skip } = getPagination(query);
   const filter = buildFilter(query);
 
-  let sort = SORT_OPTIONS[query.sort] || DEFAULT_SORT;
-  if (query.q && (!query.sort || query.sort === "relevance")) {
+  let sort = SORT_OPTIONS[String(query.sort || "").replace(/^-/, "")] || DEFAULT_SORT;
+  if (query.q && (!query.sort || query.sort === "relevance" || query.sort === "-relevance")) {
     sort = { score: { $meta: "textScore" } };
   }
 

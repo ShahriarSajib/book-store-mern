@@ -33,7 +33,7 @@ export default function VerifyEmail() {
     return (
       <AuthShell title="Verifying your email…" subtitle="Please wait a moment.">
         <div className="flex justify-center py-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-600 border-t-transparent" />
         </div>
       </AuthShell>
     );
@@ -45,7 +45,7 @@ export default function VerifyEmail() {
       subtitle="The link is invalid or has expired."
       footer={
         <>
-          <Link className="font-medium text-indigo-600 hover:underline" to="/register">
+          <Link className="font-medium text-brand-600 hover:underline" to="/register">
             Create a new account
           </Link>
         </>

@@ -24,7 +24,7 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center text-indigo-600">
+      <div className="flex min-h-[50vh] items-center justify-center text-brand-600">
         <Spinner className="h-8 w-8" />
       </div>
     );
@@ -61,7 +61,7 @@ export default function Dashboard() {
                   {stats[key] === null || stats[key] === undefined ? "—" : formatNumber(stats[key])}
                 </p>
               </div>
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
                 <Icon />
               </span>
             </div>
@@ -86,7 +86,7 @@ export default function Dashboard() {
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Recent signups</h2>
-          <Link to="/admin/users" className="text-sm font-medium text-indigo-600 hover:underline">
+          <Link to="/admin/users" className="text-sm font-medium text-brand-600 hover:underline">
             View all users
           </Link>
         </div>

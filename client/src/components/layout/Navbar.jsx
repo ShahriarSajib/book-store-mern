@@ -7,6 +7,8 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   FaBars,
   FaBook,
+  FaBrain,
+  FaFire,
   FaShieldAlt,
   FaShoppingCart,
   FaSignOutAlt,
@@ -68,6 +70,14 @@ export default function Navbar() {
           </NavLink>
           <NavLink to="/books" className={navLink}>
             Books
+          </NavLink>
+          <NavLink to="/trending" className={navLink}>
+            <FaFire className="text-orange-500" /> Trending
+          </NavLink>
+          <NavLink to="/ai-search" className={navLink}>
+            <FaBrain className="text-brand-500" />
+            <span>AI Search</span>
+            <span className="navbar__pill">NEW</span>
           </NavLink>
           {isAdmin && (
             <NavLink to="/admin" className={navLink}>
@@ -176,17 +186,24 @@ export default function Navbar() {
           <NavLink to="/books" className={drawerLink} onClick={() => setDrawerOpen(false)}>
             Books
           </NavLink>
+          <NavLink to="/trending" className={drawerLink} onClick={() => setDrawerOpen(false)}>
+            Trending
+          </NavLink>
+          <NavLink to="/ai-search" className={drawerLink} onClick={() => setDrawerOpen(false)}>
+            AI Search
+          </NavLink>
           {isAdmin && (
             <NavLink to="/admin" className={drawerLink} onClick={() => setDrawerOpen(false)}>
               Admin
             </NavLink>
           )}
+          <div className="navbar__drawer-sep" />
           {!isAuthenticated && (
             <>
               <Link to="/login" className="navbar__drawer-link" onClick={() => setDrawerOpen(false)}>
                 Log in
               </Link>
-              <Link to="/register" className="navbar__drawer-link" onClick={() => setDrawerOpen(false)}>
+              <Link to="/register" className="navbar__drawer-link navbar__drawer-link--cta" onClick={() => setDrawerOpen(false)}>
                 Sign up
               </Link>
             </>

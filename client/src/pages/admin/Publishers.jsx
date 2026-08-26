@@ -109,7 +109,7 @@ export default function Publishers() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-16 text-indigo-600">
+        <div className="flex justify-center py-16 text-brand-600">
           <Spinner className="h-8 w-8" />
         </div>
       ) : publishers.length === 0 ? (
@@ -138,7 +138,7 @@ export default function Publishers() {
                         href={publisher.website}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-indigo-600 hover:underline"
+                        className="text-brand-600 hover:underline"
                       >
                         {publisher.website}
                       </a>

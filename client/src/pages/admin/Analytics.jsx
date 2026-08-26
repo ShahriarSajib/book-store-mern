@@ -100,7 +100,7 @@ export default function Analytics() {
           </div>
 
           {salesQuery.isLoading ? (
-            <div className="flex justify-center py-16 text-indigo-600">
+            <div className="flex justify-center py-16 text-brand-600">
               <Spinner className="h-8 w-8" />
             </div>
           ) : (
@@ -123,7 +123,7 @@ export default function Analytics() {
                           </div>
                           <div className="h-2 w-full rounded-full bg-slate-100">
                             <div
-                              className="h-2 rounded-full bg-indigo-500"
+                              className="h-2 rounded-full bg-brand-500"
                               style={{
                                 width: `${maxRevenue ? (s.revenue / maxRevenue) * 100 : 0}%`,
                               }}
@@ -164,7 +164,7 @@ export default function Analytics() {
                     {sales.statusBreakdown.map((s) => (
                       <span
                         key={s._id}
-                        className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700"
+                        className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700"
                       >
                         {labelize(s._id)} · {formatNumber(s.count)}
                       </span>
@@ -182,7 +182,7 @@ export default function Analytics() {
       {tab === "inventory" && (
         <div className="space-y-6">
           {inventoryQuery.isLoading ? (
-            <div className="flex justify-center py-16 text-indigo-600">
+            <div className="flex justify-center py-16 text-brand-600">
               <Spinner className="h-8 w-8" />
             </div>
           ) : (
@@ -224,7 +224,7 @@ export default function Analytics() {
       {tab === "recommendations" && (
         <div className="space-y-6">
           {recsQuery.isLoading ? (
-            <div className="flex justify-center py-16 text-indigo-600">
+            <div className="flex justify-center py-16 text-brand-600">
               <Spinner className="h-8 w-8" />
             </div>
           ) : (

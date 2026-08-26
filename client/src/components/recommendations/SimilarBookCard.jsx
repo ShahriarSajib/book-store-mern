@@ -1,7 +1,7 @@
 /**
  * components/recommendations/SimilarBookCard.jsx
  * Section 2 — "Books Similar to This" individual card.
- * Visual identity: warm amber/orange theme — distinct from Search (indigo)
+ * Visual identity: warm amber/orange theme — distinct from Search (brand)
  * and Trending (flame).
  */
 import { Link } from "react-router-dom";

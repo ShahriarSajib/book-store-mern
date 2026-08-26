@@ -74,7 +74,7 @@ export default function AIAssistant() {
             type="button"
             disabled={isSending}
             onClick={() => handleSend(s)}
-            className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 transition-colors hover:bg-indigo-100 disabled:opacity-50"
+            className="rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700 transition-colors hover:bg-brand-100 disabled:opacity-50"
           >
             {s}
           </button>
@@ -94,7 +94,7 @@ export default function AIAssistant() {
             <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
               <div
                 className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${
-                  m.role === "user" ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-800"
+                  m.role === "user" ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-800"
                 }`}
               >
                 <p className="whitespace-pre-wrap">{m.content}</p>
@@ -104,7 +104,7 @@ export default function AIAssistant() {
                       <Link
                         key={b.id || b._id}
                         to={`/books/${b.id || b._id}`}
-                        className="flex items-center gap-2 text-xs font-medium text-indigo-600 hover:underline"
+                        className="flex items-center gap-2 text-xs font-medium text-brand-600 hover:underline"
                       >
                         <FaBook /> {b.title}
                       </Link>

@@ -15,7 +15,7 @@ import paymentApi from "../../services/paymentApi";
 const STATUS_STYLES = {
   [ORDER_STATUS.PENDING]: "bg-amber-100 text-amber-700",
   [ORDER_STATUS.PROCESSING]: "bg-blue-100 text-blue-700",
-  [ORDER_STATUS.SHIPPED]: "bg-indigo-100 text-indigo-700",
+  [ORDER_STATUS.SHIPPED]: "bg-brand-100 text-brand-700",
   [ORDER_STATUS.DELIVERED]: "bg-green-100 text-green-700",
   [ORDER_STATUS.CANCELLED]: "bg-red-100 text-red-700",
 };
@@ -24,7 +24,7 @@ const PAYMENT_STATUS_STYLES = {
   pending: "bg-amber-100 text-amber-700",
   paid: "bg-green-100 text-green-700",
   failed: "bg-red-100 text-red-700",
-  refunded: "bg-purple-100 text-purple-700",
+  refunded: "bg-accent-100 text-accent-700",
 };
 
 export default function OrderDetails() {

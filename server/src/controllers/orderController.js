@@ -2,7 +2,7 @@
  * controllers/orderController.js — checkout, list, cancel, invoice.
  */
 import catchAsync from "../utils/catchAsync.js";
-import orderService from "../services/orderService.js";
+import * as orderService from "../services/orderService.js";
 
 const createOrder = catchAsync(async (req, res) => {
   const { order, isOnlinePayment } = await orderService.createOrder(req.user.id, req.body);

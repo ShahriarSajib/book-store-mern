@@ -2,7 +2,7 @@
  * controllers/cartController.js — cart endpoints.
  */
 import catchAsync from "../utils/catchAsync.js";
-import cartService from "../services/cartService.js";
+import * as cartService from "../services/cartService.js";
 
 const getCart = catchAsync(async (req, res) => {
   res.json({ cart: await cartService.getCart(req.user.id) });

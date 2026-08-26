@@ -3,15 +3,15 @@
  * inventory, reviews, coupons, orders, analytics, and AI assistant.
  */
 import catchAsync from "../utils/catchAsync.js";
-import adminService from "../services/adminService.js";
-import inventoryService from "../services/inventoryService.js";
+import * as adminService from "../services/adminService.js";
+import * as inventoryService from "../services/inventoryService.js";
 import pick from "../utils/pick.js";
 import reviewService from "../services/reviewService.js";
-import couponService from "../services/couponService.js";
-import orderService from "../services/orderService.js";
-import paymentService from "../services/paymentService.js";
-import analyticsService from "../services/analyticsService.js";
-import chatbotService from "../services/chatbotService.js";
+import * as couponService from "../services/couponService.js";
+import * as orderService from "../services/orderService.js";
+import * as paymentService from "../services/paymentService.js";
+import * as analyticsService from "../services/analyticsService.js";
+import * as chatbotService from "../services/chatbotService.js";
 
 const getDashboard = catchAsync(async (_req, res) => {
   res.json(await adminService.getDashboard());

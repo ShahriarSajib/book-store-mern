@@ -3,8 +3,8 @@
  */
 import catchAsync from "../utils/catchAsync.js";
 import trendingService from "../services/trendingService.js";
-import similarBookService from "../services/similarBookService.js";
-import personalizedRecommendationService from "../services/personalizedRecommendationService.js";
+import * as similarBookService from "../services/similarBookService.js";
+import * as personalizedRecommendationService from "../services/personalizedRecommendationService.js";
 import userService from "../services/userService.js";
 
 const trending = catchAsync(async (req, res) => {

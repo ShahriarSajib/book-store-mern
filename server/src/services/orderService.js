@@ -5,10 +5,10 @@
 import crypto from "crypto";
 import AppError from "../utils/AppError.js";
 import { Order, Cart, User, Book, Notification } from "../models/index.js";
-import couponService from "./couponService.js";
-import notificationService from "./notificationService.js";
+import * as couponService from "./couponService.js";
+import * as notificationService from "./notificationService.js";
 import socketService from "./socketService.js";
-import cartService from "./cartService.js";
+import * as cartService from "./cartService.js";
 import logger from "../utils/logger.js";
 import { getPagination, buildPageMeta } from "../utils/paginate.js";
 

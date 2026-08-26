@@ -3,7 +3,7 @@
  * Validates user + delegates to chatbotService. Never calls LLM directly.
  */
 import catchAsync from "../utils/catchAsync.js";
-import chatbotService from "../services/chatbotService.js";
+import * as chatbotService from "../services/chatbotService.js";
 
 const send = catchAsync(async (req, res) => {
   res.json(await chatbotService.sendMessage(req.user.id, req.body));

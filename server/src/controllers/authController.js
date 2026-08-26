@@ -3,7 +3,7 @@
  * Delegates to authService.
  */
 import catchAsync from "../utils/catchAsync.js";
-import authService from "../services/authService.js";
+import * as authService from "../services/authService.js";
 
 const register = catchAsync(async (req, res) => {
   const result = await authService.register(req.body);

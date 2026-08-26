@@ -3,8 +3,8 @@
  */
 import catchAsync from "../utils/catchAsync.js";
 import userService from "../services/userService.js";
-import authService from "../services/authService.js";
-import wishlistService from "../services/wishlistService.js";
+import * as authService from "../services/authService.js";
+import * as wishlistService from "../services/wishlistService.js";
 
 const getMe = catchAsync(async (req, res) => {
   res.json({ user: await userService.getProfile(req.user.id) });

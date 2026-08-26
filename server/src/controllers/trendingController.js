@@ -1,6 +1,6 @@
-import {
-  getTrendingBooks,
-} from "../services/trendingService.js";
+import trendingService from "../services/trendingService.js";
+
+const { getTrendingBooks } = trendingService;
 
 async function getTrending(req, res) {
   try {

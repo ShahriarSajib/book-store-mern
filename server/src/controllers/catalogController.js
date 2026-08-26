@@ -2,7 +2,7 @@
  * controllers/catalogController.js — categories/authors/publishers endpoints.
  */
 import catchAsync from "../utils/catchAsync.js";
-import catalogService from "../services/catalogService.js";
+import * as catalogService from "../services/catalogService.js";
 
 function serviceFor(req) {
   const base = req.baseUrl.split("/").pop();

@@ -4,7 +4,7 @@
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/AppError.js";
 import stripeService from "../services/stripeService.js";
-import orderService from "../services/orderService.js";
+import * as orderService from "../services/orderService.js";
 import logger from "../utils/logger.js";
 import { Order } from "../models/index.js";
 

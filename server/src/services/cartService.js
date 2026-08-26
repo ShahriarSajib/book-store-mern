@@ -4,7 +4,7 @@
 import AppError from "../utils/AppError.js";
 import { Cart, Book } from "../models/index.js";
 import * as couponService from "./couponService.js";
-import * as socketService from "./socketService.js";
+import socketService from "./socketService.js";
 
 const BOOK_POPULATE = {
   path: "items.book",

@@ -3,7 +3,7 @@
  */
 import AppError from "../utils/AppError.js";
 import { Book } from "../models/index.js";
-import * as socketService from "./socketService.js";
+import socketService from "./socketService.js";
 
 async function list() {
   const books = await Book.find()

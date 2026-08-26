@@ -2,7 +2,7 @@
  * controllers/couponController.js — coupon apply + admin CRUD.
  */
 import catchAsync from "../utils/catchAsync.js";
-import couponService from "../services/couponService.js";
+import * as couponService from "../services/couponService.js";
 
 const apply = catchAsync(async (req, res) => {
   const { code, subtotal } = req.body;

@@ -3,7 +3,7 @@
  * Reuses the catalog book service so filters/sort/pagination stay consistent.
  */
 import catchAsync from "../utils/catchAsync.js";
-import bookService from "../services/bookService.js";
+import * as bookService from "../services/bookService.js";
 import { Book, User } from "../models/index.js";
 
 const search = catchAsync(async (req, res) => {

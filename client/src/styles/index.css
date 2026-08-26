@@ -673,7 +673,7 @@
     @apply line-clamp-2 text-sm font-semibold text-ink-900 group-hover:text-red-700;
   }
   .dark .trending-card__title {
-    @apply text-ink-100 group-hover:text-red-40;
+    @apply text-ink-100 group-hover:text-red-400;
   }
   .trending-card__author { @apply text-xs text-ink-500; }
   .trending-card__stats { @apply mt-1 flex flex-wrap items-center gap-2 text-xs; }

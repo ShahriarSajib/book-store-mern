@@ -2,7 +2,7 @@
  * controllers/analyticsController.js — admin analytics endpoints.
  */
 import catchAsync from "../utils/catchAsync.js";
-import analyticsService from "../services/analyticsService.js";
+import * as analyticsService from "../services/analyticsService.js";
 
 const sales = catchAsync(async (req, res) => {
   res.json(await analyticsService.salesReport(req.query));

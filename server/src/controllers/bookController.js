@@ -3,7 +3,7 @@
  * Delegates to bookService.
  */
 import catchAsync from "../utils/catchAsync.js";
-import bookService from "../services/bookService.js";
+import * as bookService from "../services/bookService.js";
 import { User } from "../models/index.js";
 
 const list = catchAsync(async (req, res) => {

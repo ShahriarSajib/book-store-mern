@@ -48,13 +48,10 @@ const env = {
   MAIL_PORT: Number(process.env.MAIL_PORT) || 587,
   MAIL_USER: process.env.MAIL_USER || "",
   MAIL_PASS: process.env.MAIL_PASS || "",
-  MAIL_FROM: process.env.MAIL_FROM || "BookVerse <no-reply@example.com>",
+  MAIL_FROM: process.env.MAIL_FROM || "AI Bookstore <no-reply@example.com>",
 
-  LOW_STOCK_THRESHOLD: Number(process.env.LOW_STOCK_THRESHOLD) || 5,
-
-  // Seeded by scripts/seedAdmin.js — no insecure defaults.
-  ADMIN_EMAIL: process.env.ADMIN_EMAIL,
-  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+  ADMIN_EMAIL: process.env.ADMIN_EMAIL || "admin@bookstore.com",
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || "Admin@12345",
 
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,

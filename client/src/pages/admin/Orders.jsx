@@ -20,12 +20,12 @@ const getId = (item) => item?._id || item?.id;
 function PaymentBadge({ status }) {
   const cls =
     status === "paid"
-      ? "bg-green-100 dark:bg-emerald-900/30 text-green-700 dark:text-emerald-400"
+      ? "bg-green-100 text-green-700"
       : status === "refunded"
-        ? "bg-slate-100 dark:bg-ink-700 text-slate-600 dark:text-ink-400"
+        ? "bg-slate-100 text-slate-600"
         : status === "failed"
-          ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
-          : "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400";
+          ? "bg-red-100 text-red-700"
+          : "bg-amber-100 text-amber-700";
   return (
     <span className={`inline-block rounded px-1.5 py-0.5 text-xs font-medium ${cls}`}>
       {status ? labelize(status) : "—"}
@@ -75,8 +75,8 @@ export default function Orders() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-100">Order management</h1>
-        <p className="text-sm text-slate-500 dark:text-ink-500">View, filter and update customer orders.</p>
+        <h1 className="text-2xl font-bold text-slate-900">Order management</h1>
+        <p className="text-sm text-slate-500">View, filter and update customer orders.</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -88,7 +88,7 @@ export default function Orders() {
           }}
         >
           <div className="relative">
-            <FaSearch className="pointer-events-none absolute left-3 top-2.5 text-slate-400 dark:text-ink-600" />
+            <FaSearch className="pointer-events-none absolute left-3 top-2.5 text-slate-400" />
             <input
               value={search}
               onChange={(e) => {
@@ -96,7 +96,7 @@ export default function Orders() {
                 setPage(1);
               }}
               placeholder="Search order number…"
-              className="w-64 rounded-lg border border-slate-300 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-200 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+              className="w-64 rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200"
             />
           </div>
         </form>
@@ -107,7 +107,7 @@ export default function Orders() {
             setStatus(e.target.value);
             setPage(1);
           }}
-          className="rounded-lg border border-slate-300 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-200 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none"
+          className="rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none"
         >
           <option value="">All statuses</option>
           {Object.values(ORDER_STATUS).map((value) => (
@@ -125,17 +125,17 @@ export default function Orders() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-16 text-indigo-600 dark:text-brand-400">
+        <div className="flex justify-center py-16 text-brand-600">
           <Spinner className="h-8 w-8" />
         </div>
       ) : orders.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 p-10 text-center text-slate-500 dark:text-ink-500">
+        <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-500">
           No orders match your filters.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 shadow-sm">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 dark:bg-ink-800 text-xs uppercase tracking-wide text-slate-400 dark:text-ink-600">
+            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-400">
               <tr>
                 <th className="px-4 py-3">Order</th>
                 <th className="px-4 py-3">Customer</th>
@@ -148,16 +148,16 @@ export default function Orders() {
             </thead>
             <tbody>
               {orders.map((order) => (
-                <tr key={getId(order)} className="border-t border-slate-100 dark:border-ink-700">
-                  <td className="px-4 py-3 font-medium text-slate-800 dark:text-ink-200">
+                <tr key={getId(order)} className="border-t border-slate-100">
+                  <td className="px-4 py-3 font-medium text-slate-800">
                     {order.orderNumber || getId(order)}
                   </td>
-                  <td className="max-w-[200px] px-4 py-3 text-slate-600 dark:text-ink-400">
+                  <td className="max-w-[200px] px-4 py-3 text-slate-600">
                     {order.user?.name || order.shippingAddress?.recipient || "—"}
                   </td>
-                  <td className="px-4 py-3 text-slate-500 dark:text-ink-500">{formatDate(order.createdAt)}</td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-ink-400">{order.items?.length || 0}</td>
-                  <td className="px-4 py-3 font-medium text-slate-800 dark:text-ink-200">
+                  <td className="px-4 py-3 text-slate-500">{formatDate(order.createdAt)}</td>
+                  <td className="px-4 py-3 text-slate-600">{order.items?.length || 0}</td>
+                  <td className="px-4 py-3 font-medium text-slate-800">
                     {formatCurrency(order.total)}
                   </td>
                   <td className="px-4 py-3">
@@ -169,7 +169,7 @@ export default function Orders() {
                           patch: { status: e.target.value },
                         })
                       }
-                      className="rounded-md border border-slate-300 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-200 px-2 py-1 text-sm capitalize focus:border-indigo-500 focus:outline-none"
+                      className="rounded-md border border-slate-300 px-2 py-1 text-sm capitalize focus:border-brand-500 focus:outline-none"
                     >
                       {Object.values(ORDER_STATUS).map((value) => (
                         <option key={value} value={value}>
@@ -180,7 +180,7 @@ export default function Orders() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="space-y-1">
-                      <span className="block text-xs text-slate-500 dark:text-ink-500">
+                      <span className="block text-xs text-slate-500">
                         {order.paymentMethod || "—"}
                       </span>
                       <PaymentBadge status={order.paymentStatus} />
@@ -192,8 +192,8 @@ export default function Orders() {
           </table>
 
           {pagination.pages > 1 && (
-            <div className="flex items-center justify-between border-t border-slate-100 dark:border-ink-700 px-4 py-3 text-sm">
-              <span className="text-slate-500 dark:text-ink-500">
+            <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-sm">
+              <span className="text-slate-500">
                 Page {pagination.page} of {pagination.pages} ({pagination.total} orders)
               </span>
               <div className="flex gap-2">
@@ -218,7 +218,7 @@ export default function Orders() {
           )}
         </div>
       )}
-      {isFetching && !isLoading && <p className="text-xs text-slate-400 dark:text-ink-600">Updating…</p>}
+      {isFetching && !isLoading && <p className="text-xs text-slate-400">Updating…</p>}
     </div>
   );
 }

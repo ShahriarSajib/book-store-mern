@@ -5,23 +5,33 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Primary — Emerald (knowledge, trust, books)
         brand: {
-          50:  "#eef2ff",
-          100: "#e0e7ff",
-          200: "#c7d2fe",
-          300: "#a5b4fc",
-          400: "#818cf8",
-          500: "#6366f1",
-          600: "#4f46e5",
-          700: "#4338ca",
-          800: "#3730a3",
-          900: "#1e1b4b",
+          50:  "#ecfdf5",
+          100: "#d1fae5",
+          200: "#a7f3d0",
+          300: "#6ee7b7",
+          400: "#34d399",
+          500: "#10b981",
+          600: "#059669",
+          700: "#047857",
+          800: "#065f46",
+          900: "#064e3b",
         },
+        // Accent — Terracotta (warm, editorial, restrained)
         accent: {
-          400: "#f472b6",
-          500: "#ec4899",
-          600: "#db2777",
+          50:  "#fef7ee",
+          100: "#fdedd6",
+          200: "#fad7ac",
+          300: "#f6ba78",
+          400: "#f19346",
+          500: "#ed7624",
+          600: "#c2410c",
+          700: "#9a3412",
+          800: "#7c2d12",
+          900: "#431407",
         },
+        // Ink — Slate (professional, neutral, editorial)
         ink: {
           50:  "#f8fafc",
           100: "#f1f5f9",
@@ -33,7 +43,17 @@ export default {
           700: "#334155",
           800: "#1e293b",
           900: "#0f172a",
+          950: "#020617",
         },
+        // Surfaces — warm ivory family (paper-like)
+        ivory:    "#fafaf7",
+        sand:     "#f5efe6",
+        clay:     "#fbeae0",
+        sage:     "#ecfdf5",
+        mint:     "#d1fae5",
+        // Emphasis — gold for highlights/CTAs
+        gold:     "#b45309",
+        goldSoft: "#fef3c7",
       },
       fontFamily: {
         sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],

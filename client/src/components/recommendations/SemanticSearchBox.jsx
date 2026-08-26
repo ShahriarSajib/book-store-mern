@@ -3,7 +3,7 @@
  * Section 1 — 🔎 AI Semantic Search.
  *
  * Visual identity:
- *   - Indigo → violet gradient panel with a soft inner glow
+ *   - brand → violet gradient panel with a soft inner glow
  *   - Magnifier icon, "What am I looking for?" framing
  *   - Standalone: it owns the search experience and its results
  *
@@ -120,7 +120,7 @@ export default function SemanticSearchBox({ onPickBook, initialQuery = "" }) {
       <div className="semantic-suggestions">
         <FaQuoteLeft className="semantic-suggestions__icon" aria-hidden />
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-indigo-100/80">Try:</span>
+          <span className="text-xs font-medium text-brand-100/80">Try:</span>
           {EXAMPLES.map((ex) => (
             <button
               key={ex}
@@ -138,7 +138,7 @@ export default function SemanticSearchBox({ onPickBook, initialQuery = "" }) {
         {/* Loading (only after a query exists) */}
         {enabled && isLoading && (
           <div className="rec__state rec__state--loading" role="status">
-            <FaSpinner className="spin-slow text-indigo-200" />
+            <FaSpinner className="spin-slow text-brand-200" />
             <span>Reading your query and finding the closest books…</span>
           </div>
         )}

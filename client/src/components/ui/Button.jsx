@@ -5,11 +5,11 @@ import cn from "../../utils/cn";
 import Spinner from "./Spinner";
 
 const variants = {
-  primary: "bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-indigo-500",
-  secondary: "bg-slate-200 text-slate-800 hover:bg-slate-300 focus-visible:ring-slate-400 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600",
-  outline: "border border-slate-300 text-slate-700 hover:bg-slate-50 focus-visible:ring-slate-400 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800",
+  primary: "bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-brand-500",
+  secondary: "bg-slate-200 text-slate-800 hover:bg-slate-300 focus-visible:ring-slate-400",
+  outline: "border border-slate-300 text-slate-700 hover:bg-slate-50 focus-visible:ring-slate-400",
   danger: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500",
-  ghost: "text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-400 dark:text-slate-400 dark:hover:bg-slate-800",
+  ghost: "text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-400",
 };
 
 const sizes = {

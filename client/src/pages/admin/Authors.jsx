@@ -9,7 +9,6 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Spinner from "../../components/ui/Spinner";
 import Modal from "../../components/ui/Modal";
-import ConfirmModal from "../../components/ui/ConfirmModal";
 import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 
 const EMPTY_FORM = { name: "", bio: "", bornYear: "", country: "" };
@@ -22,7 +21,6 @@ export default function Authors() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState("");
-  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "authors"],
@@ -76,7 +74,9 @@ export default function Authors() {
   };
 
   const handleDelete = (author) => {
-    setDeleteTarget(author);
+    if (window.confirm(`Delete author "${author.name}"? This cannot be undone.`)) {
+      deleteMutation.mutate(getId(author));
+    }
   };
 
   const handleSubmit = (e) => {
@@ -102,8 +102,8 @@ export default function Authors() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-ink-100">Author management</h1>
-          <p className="text-sm text-slate-500 dark:text-ink-500">Create, edit and remove catalog authors.</p>
+          <h1 className="text-2xl font-bold text-slate-900">Author management</h1>
+          <p className="text-sm text-slate-500">Create, edit and remove catalog authors.</p>
         </div>
         <Button onClick={openCreate}>
           <FaPlus /> Add author
@@ -111,17 +111,17 @@ export default function Authors() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-16 text-indigo-600 dark:text-brand-400 dark:text-brand-400">
+        <div className="flex justify-center py-16 text-brand-600">
           <Spinner className="h-8 w-8" />
         </div>
       ) : authors.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 p-10 text-center text-slate-500 dark:text-ink-500">
+        <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-500">
           No authors yet.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-800 shadow-sm">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 dark:bg-ink-800 text-xs uppercase tracking-wide text-slate-400 dark:text-ink-600">
+            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-400">
               <tr>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Born</th>
@@ -131,22 +131,22 @@ export default function Authors() {
             </thead>
             <tbody>
               {authors.map((author) => (
-                <tr key={getId(author)} className="border-t border-slate-100 dark:border-ink-700">
+                <tr key={getId(author)} className="border-t border-slate-100">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-600 text-sm font-semibold text-white">
                         {author.name.charAt(0).toUpperCase()}
                       </span>
                       <div>
-                        <p className="font-medium text-slate-800 dark:text-ink-200">{author.name}</p>
-                        <p className="max-w-[260px] truncate text-xs text-slate-500 dark:text-ink-500">
+                        <p className="font-medium text-slate-800">{author.name}</p>
+                        <p className="max-w-[260px] truncate text-xs text-slate-500">
                           {author.bio || "—"}
                         </p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-ink-400">{author.bornYear ?? "—"}</td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-ink-400">{author.country || "—"}</td>
+                  <td className="px-4 py-3 text-slate-600">{author.bornYear ?? "—"}</td>
+                  <td className="px-4 py-3 text-slate-600">{author.country || "—"}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
                       <Button
@@ -161,7 +161,7 @@ export default function Authors() {
                         variant="danger"
                         size="sm"
                         loading={
-                          deleteMutation.isPending && deleteMutation.variables === getId(author)
+                          deleteMutation.isLoading && deleteMutation.variables === getId(author)
                         }
                         onClick={() => handleDelete(author)}
                         aria-label={`Delete ${author.name}`}
@@ -196,32 +196,18 @@ export default function Authors() {
             <Input label="Country" value={form.country} onChange={set("country")} placeholder="e.g. United Kingdom" />
           </div>
 
-          {formError && <p className="text-sm text-red-600 dark:text-red-400">{formError}</p>}
+          {formError && <p className="text-sm text-red-600">{formError}</p>}
 
           <div className="flex justify-end gap-3 pt-2">
             <Button variant="ghost" onClick={() => setModalOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" loading={saveMutation.isPending}>
+            <Button type="submit" loading={saveMutation.isLoading}>
               {editing ? "Save changes" : "Create author"}
             </Button>
           </div>
         </form>
       </Modal>
-
-      <ConfirmModal
-        open={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
-        onConfirm={() => {
-          if (deleteTarget) {
-            deleteMutation.mutate(getId(deleteTarget));
-            setDeleteTarget(null);
-          }
-        }}
-        title="Delete author"
-        message={`Delete author "${deleteTarget?.name}"? This cannot be undone.`}
-        loading={deleteMutation.isPending}
-      />
     </div>
   );
 }

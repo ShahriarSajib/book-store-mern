@@ -18,7 +18,7 @@ function Badge({ children, tone = "slate" }) {
     slate: "bg-slate-100 text-slate-700",
     green: "bg-green-100 text-green-700",
     amber: "bg-amber-100 text-amber-700",
-    indigo: "bg-indigo-100 text-indigo-700",
+    brand: "bg-brand-100 text-brand-700",
   };
   return (
     <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${tones[tone]}`}>
@@ -76,7 +76,7 @@ export default function Profile() {
           <h1 className="text-2xl font-bold text-slate-900">My profile</h1>
           <p className="text-sm text-slate-500">Manage your account details and security.</p>
         </div>
-        <Badge tone="indigo">{user.role}</Badge>
+        <Badge tone="brand">{user.role}</Badge>
       </div>
 
       {!user.isEmailVerified && (
@@ -110,7 +110,7 @@ export default function Profile() {
               <label className="mb-1 block text-sm font-medium text-slate-700">Bio</label>
               <textarea
                 rows={3}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200"
                 {...profileForm.register("bio")}
               />
               {profileForm.formState.errors.bio?.message && (

@@ -44,7 +44,7 @@ export default function Login() {
       footer={
         <>
           Don't have an account?{" "}
-          <Link className="font-medium text-indigo-600 hover:underline" to="/register">
+          <Link className="font-medium text-brand-600 hover:underline" to="/register">
             Create one
           </Link>
         </>
@@ -63,13 +63,13 @@ export default function Login() {
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
-            className="absolute right-3 top-8 text-xs font-medium text-indigo-600 hover:underline"
+            className="absolute right-3 top-8 text-xs font-medium text-brand-600 hover:underline"
           >
             {showPassword ? "Hide" : "Show"}
           </button>
         </div>
         <div className="flex items-center justify-end">
-          <Link className="text-sm text-indigo-600 hover:underline" to="/forgot-password">
+          <Link className="text-sm text-brand-600 hover:underline" to="/forgot-password">
             Forgot password?
           </Link>
         </div>

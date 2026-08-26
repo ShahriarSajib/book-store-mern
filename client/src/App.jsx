@@ -18,11 +18,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {!isAdmin && <Navbar />}
+      <Navbar />
       <main className={`flex-1 ${isAdmin ? "" : "container mx-auto px-4 py-6"}`}>
         <AppRouter />
       </main>
-      {!isAdmin && <Footer />}
+      <Footer />
       <ChatbotWidget />
     </div>
   );

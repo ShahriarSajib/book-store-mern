@@ -119,7 +119,7 @@ export default function Home() {
         <div className="mb-8 flex items-end justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-brand-600">
-              Why AI Bookstore
+              Why BookVerse
             </p>
             <h2 className="mt-1 text-2xl font-bold text-ink-900 sm:text-3xl">
               Built for how readers actually shop

@@ -62,7 +62,7 @@ export default function Navbar() {
           <span className="navbar__brand-mark">
             <FaBook />
           </span>
-          <span>AI Bookstore</span>
+          <span>BookVerse</span>
         </Link>
 
         <nav className="navbar__menu" aria-label="Primary">

@@ -390,7 +390,7 @@ function escapeCsvRow(row) {
 
 function invoiceRows(order) {
   const rows = [
-    ["AI Bookstore — Invoice"],
+    ["BookVerse — Invoice"],
     ["Order number", order.orderNumber],
     ["Placed at", new Date(order.createdAt).toISOString()],
     ["Status", order.status],

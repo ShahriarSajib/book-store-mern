@@ -48,7 +48,7 @@ module.exports = {
   MAIL_PORT: Number(process.env.MAIL_PORT) || 587,
   MAIL_USER: process.env.MAIL_USER || "",
   MAIL_PASS: process.env.MAIL_PASS || "",
-  MAIL_FROM: process.env.MAIL_FROM || "AI Bookstore <no-reply@example.com>",
+  MAIL_FROM: process.env.MAIL_FROM || "BookVerse <no-reply@example.com>",
 
   LOW_STOCK_THRESHOLD: Number(process.env.LOW_STOCK_THRESHOLD) || 5,
 

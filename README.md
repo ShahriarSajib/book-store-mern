@@ -1,4 +1,4 @@
-# AI Bookstore — Full-Stack MERN Application
+# BookVerse — Full-Stack MERN Application
 
 An AI-powered online bookstore built with the MERN stack (MongoDB, Express, React, Node.js) featuring semantic search, personalized recommendations, an AI chatbot, real-time notifications, Stripe payments, and a comprehensive admin panel.
 
@@ -256,7 +256,7 @@ cp client/.env.example client/.env
 | `NODE_ENV` | development | Environment mode |
 | `PORT` | 5000 | Server port |
 | `CLIENT_URL` | http://localhost:5173 | CORS origin |
-| `MONGO_URI` | mongodb://admin:admin@localhost:27017/ai_bookstore?authSource=admin | MongoDB connection string |
+| `MONGO_URI` | mongodb://admin:admin@localhost:27017/bookverse?authSource=admin | MongoDB connection string |
 | `JWT_ACCESS_SECRET` | — | Access token secret (use a long random string) |
 | `JWT_REFRESH_SECRET` | — | Refresh token secret |
 | `JWT_ACCESS_EXPIRES` | 15m | Access token TTL |
@@ -268,7 +268,7 @@ cp client/.env.example client/.env
 | `MAIL_PORT` | 587 | SMTP port |
 | `MAIL_USER` | — | SMTP username (email) |
 | `MAIL_PASS` | — | SMTP password (app password for Gmail) |
-| `MAIL_FROM` | "AI Bookstore" | Sender name |
+| `MAIL_FROM` | "BookVerse" | Sender name |
 | `LLM_PROVIDER` | openai | LLM provider |
 | `LLM_API_KEY` | — | API key for chatbot LLM |
 | `LLM_MODEL` | gpt-4o-mini | Model name |
@@ -298,7 +298,7 @@ Choose one option:
 
 Install MongoDB 7 locally. If your instance has no auth, update `MONGO_URI` to:
 ```
-mongodb://localhost:27017/ai_bookstore
+mongodb://localhost:27017/bookverse
 ```
 
 #### Option 2: Docker (Database Only)
@@ -316,7 +316,7 @@ Starts MongoDB with root user `admin`/`admin` on port 27017.
 3. **Network Access** — Allow access from anywhere (`0.0.0.0/0`) for development
 4. Copy the connection string and set `MONGO_URI`:
    ```
-   mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/ai_bookstore
+   mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/bookverse
    ```
 
 ### Running the Application

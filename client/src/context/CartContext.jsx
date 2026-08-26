@@ -4,8 +4,9 @@
  *   Server-backed cart state. Loads the user's cart from /cart, exposes
  *   add/remove/update/clear/applyCoupon and derived totals/count.
  *   addItem accepts { book: { id, title, price, coverImage }, quantity }.
+ *   Cart is fetched lazily — only when a consumer first needs it.
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import cartApi from "../services/cartApi";
 import useAuth from "../hooks/useAuth";
@@ -35,6 +36,7 @@ export function CartProvider({ children }) {
   const [coupon, setCoupon] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const fetchedRef = useRef(false);
 
   const applyServerCart = useCallback((data) => {
     const cart = data?.cart;
@@ -46,18 +48,22 @@ export function CartProvider({ children }) {
     if (!isAuthenticated) {
       setItems([]);
       setCoupon(null);
+      fetchedRef.current = false;
       return;
     }
     try {
       applyServerCart(await cartApi.get());
+      fetchedRef.current = true;
     } catch (_err) {
       // ignore — cart stays as-is on transient failures
     }
   }, [isAuthenticated, applyServerCart]);
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  const ensureLoaded = useCallback(async () => {
+    if (!fetchedRef.current && isAuthenticated) {
+      await refresh();
+    }
+  }, [isAuthenticated, refresh]);
 
   const addItem = useCallback(
     async ({ book, quantity = 1 }) => {
@@ -70,6 +76,7 @@ export function CartProvider({ children }) {
       setIsUpdating(true);
       try {
         applyServerCart(await cartApi.add(bookId, quantity));
+        fetchedRef.current = true;
         return true;
       } catch (err) {
         toast.error(getErrorMessage(err));
@@ -174,6 +181,7 @@ export function CartProvider({ children }) {
       applyCoupon,
       removeCoupon,
       refresh,
+      ensureLoaded,
       isUpdating,
     }),
     [
@@ -190,6 +198,7 @@ export function CartProvider({ children }) {
       applyCoupon,
       removeCoupon,
       refresh,
+      ensureLoaded,
       isUpdating,
     ]
   );

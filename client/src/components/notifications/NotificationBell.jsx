@@ -1,6 +1,7 @@
 /**
  * components/notifications/NotificationBell.jsx
  * Bell icon with unread count badge. Toggles the notification dropdown.
+ * Notifications are loaded lazily on first open.
  */
 import { useEffect, useRef, useState } from "react";
 import { FaBell } from "react-icons/fa";
@@ -14,6 +15,7 @@ export default function NotificationBell() {
     markAllAsRead,
     clearNotifications,
     handleNotificationClick,
+    loadNotifications,
   } = useNotifications();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +23,7 @@ export default function NotificationBell() {
 
   useEffect(() => {
     if (!isOpen) return undefined;
+    loadNotifications();
     const onClick = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
         setIsOpen(false);
@@ -28,7 +31,7 @@ export default function NotificationBell() {
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
-  }, [isOpen]);
+  }, [isOpen, loadNotifications]);
 
   return (
     <div className="relative" ref={containerRef}>

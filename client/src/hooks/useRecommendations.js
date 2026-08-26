@@ -22,7 +22,7 @@ export function usePersonalized({ limit = 8, enabled = true } = {}) {
     queryKey: ["recommendations", "personalized", limit],
     queryFn: () => recommendationApi.personalized({ limit }),
     enabled,
-    staleTime: 1000 * 60 * 2,
+    staleTime: 1000 * 60 * 5,
   });
 }
 
@@ -32,7 +32,7 @@ export function useTrending({ limit = 8, enabled = true } = {}) {
     queryKey: ["recommendations", "trending", limit],
     queryFn: () => recommendationApi.trending({ limit }),
     enabled,
-    staleTime: 1000 * 60,
+    staleTime: 1000 * 60 * 5,
   });
 }
 

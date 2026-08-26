@@ -32,12 +32,16 @@ const drawerLink = ({ isActive }) =>
 
 export default function Navbar() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
-  const { count: cartCount } = useCartContext();
+  const { count: cartCount, ensureLoaded } = useCartContext();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (isAuthenticated) ensureLoaded();
+  }, [isAuthenticated, ensureLoaded]);
 
   // Close user menu on outside click
   useEffect(() => {

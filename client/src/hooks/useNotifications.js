@@ -2,6 +2,7 @@
  * hooks/useNotifications.js
  * Listens to Socket.IO events and manages notification state.
  * Shows toast notifications, tracks unread count, and syncs with server.
+ * Notifications are loaded lazily — only when the bell is first opened.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
@@ -13,36 +14,39 @@ import useAuth from "./useAuth";
 const MAX_NOTIFICATIONS = 50;
 
 export default function useNotifications() {
-  const { socket } = useSocket();
+  const { socket, ensureConnected } = useSocket();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
   const listenersRef = useRef({});
 
-  useEffect(() => {
-    if (!isAuthenticated) return;
-    notificationApi
-      .list({ limit: 20 })
-      .then((data) => {
-        if (data?.notifications) {
-          setNotifications(
-            data.notifications.map((n) => ({
-              id: n._id,
-              type: n.type,
-              title: n.title,
-              message: n.message,
-              read: n.read,
-              link: n.link,
-              data: n.data,
-              createdAt: n.createdAt,
-            }))
-          );
-          setUnreadCount(data.unreadCount || 0);
-        }
-      })
-      .catch(() => {});
-  }, [isAuthenticated]);
+  const loadNotifications = useCallback(async () => {
+    if (!isAuthenticated || isLoaded) return;
+    try {
+      const data = await notificationApi.list({ limit: 20 });
+      if (data?.notifications) {
+        setNotifications(
+          data.notifications.map((n) => ({
+            id: n._id,
+            type: n.type,
+            title: n.title,
+            message: n.message,
+            read: n.read,
+            link: n.link,
+            data: n.data,
+            createdAt: n.createdAt,
+          }))
+        );
+        setUnreadCount(data.unreadCount || 0);
+      }
+      setIsLoaded(true);
+      ensureConnected();
+    } catch (_err) {
+      // ignore
+    }
+  }, [isAuthenticated, isLoaded, ensureConnected]);
 
   const addNotification = useCallback((notification) => {
     const entry = {
@@ -78,7 +82,7 @@ export default function useNotifications() {
   }, []);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !isLoaded) return;
 
     const handlers = {
       "order:created": (data) => {
@@ -134,7 +138,7 @@ export default function useNotifications() {
       });
       listenersRef.current = {};
     };
-  }, [socket, addNotification]);
+  }, [socket, isLoaded, addNotification]);
 
   const handleNotificationClick = useCallback(
     (notification) => {
@@ -161,5 +165,6 @@ export default function useNotifications() {
     markAllAsRead,
     clearNotifications,
     handleNotificationClick,
+    loadNotifications,
   };
 }

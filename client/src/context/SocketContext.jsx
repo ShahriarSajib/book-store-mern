@@ -1,9 +1,9 @@
 /**
  * context/SocketContext.jsx
  * Manages the Socket.IO connection lifecycle.
- * Connects when authenticated, disconnects on logout.
+ * Connects lazily — only when a consumer first calls ensureConnected.
  */
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import useAuth from "../hooks/useAuth";
 import baseURL from "../config/api";
@@ -14,22 +14,15 @@ const SocketContext = createContext(null);
 const SERVER_URL = baseURL.replace(/\/api\/?$/, "");
 
 export function SocketProvider({ children }) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef(null);
+  const connectedRef = useRef(false);
 
-  useEffect(() => {
-    if (!isAuthenticated || !user) {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-      setIsConnected(false);
-      return;
-    }
+  const ensureConnected = useCallback(() => {
+    if (connectedRef.current || !isAuthenticated) return;
 
     const token = storage.getAccess();
-
     if (!token) return;
 
     const socket = io(SERVER_URL, {
@@ -42,32 +35,42 @@ export function SocketProvider({ children }) {
     });
 
     socketRef.current = socket;
+    connectedRef.current = true;
 
-    socket.on("connect", () => {
-      setIsConnected(true);
-    });
+    socket.on("connect", () => setIsConnected(true));
+    socket.on("disconnect", () => setIsConnected(false));
+    socket.on("connect_error", () => setIsConnected(false));
+  }, [isAuthenticated]);
 
-    socket.on("disconnect", () => {
+  useEffect(() => {
+    if (!isAuthenticated) {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+      connectedRef.current = false;
       setIsConnected(false);
-    });
+      return;
+    }
+  }, [isAuthenticated]);
 
-    socket.on("connect_error", () => {
-      setIsConnected(false);
-    });
-
+  useEffect(() => {
     return () => {
-      socket.disconnect();
-      socketRef.current = null;
-      setIsConnected(false);
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+        connectedRef.current = false;
+      }
     };
-  }, [isAuthenticated, user]);
+  }, []);
 
   const value = useMemo(
     () => ({
       socket: socketRef.current,
       isConnected,
+      ensureConnected,
     }),
-    [isConnected]
+    [isConnected, ensureConnected]
   );
 
   return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;

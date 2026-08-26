@@ -22,7 +22,10 @@ export const storage = {
   },
 };
 
-const api = axios.create({ baseURL });
+const api = axios.create({
+  baseURL,
+  timeout: 15000,
+});
 
 api.interceptors.request.use((config) => {
   const token = storage.getAccess();

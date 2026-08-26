@@ -6,7 +6,7 @@ import Sidebar from "./Sidebar";
 
 export default function AdminLayout() {
   return (
-    <div className="flex min-h-[70vh] gap-0">
+    <div className="flex h-full gap-0">
       <Sidebar />
       <main className="flex-1 p-6">
         <Outlet />

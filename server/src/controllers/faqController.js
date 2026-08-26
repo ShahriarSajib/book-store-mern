@@ -1,10 +1,10 @@
 /**
  * controllers/faqController.js — FAQ knowledge base CRUD + public search.
  */
-const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/AppError");
-const { FaqDocument } = require("../models");
-const { getPagination, buildPageMeta } = require("../utils/paginate");
+import catchAsync from "../utils/catchAsync.js";
+import AppError from "../utils/AppError.js";
+import { FaqDocument } from "../models/index.js";
+import { getPagination, buildPageMeta } from "../utils/paginate.js";
 
 const list = catchAsync(async (req, res) => {
   const { page, limit, skip } = getPagination(req.query);
@@ -50,4 +50,4 @@ const remove = catchAsync(async (req, res) => {
   res.json({ success: true });
 });
 
-module.exports = { list, search, create, update, remove };
+export { list, search, create, update, remove };

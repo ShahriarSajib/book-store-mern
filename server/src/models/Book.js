@@ -9,7 +9,7 @@
  *     counters (viewCount, purchaseCount).
  *   - Embedding reference (embeddingId + optional cached vector).
  */
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 function slugify(value) {
   if (!value) return "";
@@ -73,4 +73,4 @@ bookSchema.index({ averageRating: -1 });
 bookSchema.index({ publishedYear: -1 });
 bookSchema.index({ averageRating: -1, ratingsCount: -1 });
 
-module.exports = mongoose.model("Book", bookSchema);
+export default mongoose.model("Book", bookSchema);

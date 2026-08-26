@@ -2,15 +2,15 @@
  * routes/similarBookRoutes.js
  */
 
-const express = require("express");
+import { Router } from "express";
 
-const {
+import {
   getSimilarBooks,
-} = require("../controllers/similarBookController");
+} from "../controllers/similarBookController.js";
 
-const router = express.Router();
+const router = Router();
 
 // GET /api/similar-books/:bookId
 router.get("/:bookId", getSimilarBooks);
 
-module.exports = router;
+export default router;

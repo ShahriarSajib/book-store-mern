@@ -41,7 +41,7 @@ export default function AuthShell({ title, subtitle, footer, children }) {
             <span className="auth-brand__logo-mark">
               <FaBook />
             </span>
-            <span className="auth-brand__logo-text">AI Bookstore</span>
+            <span className="auth-brand__logo-text">BookVerse</span>
           </Link>
 
           <div className="auth-brand__hero">

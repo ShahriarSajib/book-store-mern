@@ -34,7 +34,7 @@ export default function Register() {
   return (
     <AuthShell
       title="Create your account"
-      subtitle="Join the AI Bookstore in under a minute."
+      subtitle="Join the BookVerse in under a minute."
       footer={
         <>
           Already have an account?{" "}

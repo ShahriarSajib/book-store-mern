@@ -2,9 +2,9 @@
  * controllers/similarBookController.js
  */
 
-const {
+import {
   findSimilarBooks,
-} = require("../services/similarBookService");
+} from "../services/similarBookService.js";
 
 const getSimilarBooks = async (req, res) => {
   try {
@@ -55,6 +55,6 @@ const getSimilarBooks = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   getSimilarBooks,
 };

@@ -11,9 +11,11 @@
  * model with the same tool contract — this implementation stays fully
  * functional offline.
  */
-const crypto = require("crypto");
-const AppError = require("../utils/AppError");
-const { Conversation, FaqDocument, Book, Order, Cart } = require("../models");
+import crypto from "crypto";
+import AppError from "../utils/AppError.js";
+import { Conversation, FaqDocument, Book, Order, Cart } from "../models/index.js";
+import { addItem } from "./cartService.js";
+import { cancelOrder } from "./orderService.js";
 
 function token() {
   return crypto.randomBytes(16).toString("hex");
@@ -91,8 +93,7 @@ async function findBooks(message, limit = 5) {
 }
 
 async function addToCart(userId, bookId, quantity = 1) {
-  const cartService = require("./cartService");
-  return cartService.addItem(userId, bookId, quantity);
+  return addItem(userId, bookId, quantity);
 }
 
 function detectBookAdd(message) {
@@ -108,7 +109,7 @@ async function buildReply(userId, message) {
   // Greeting
   if (/^(hi|hello|hey|assalam|salam)\b/.test(lower)) {
     return {
-      reply: "Hello! I can help you find books, answer store questions, and manage your cart or orders. Try “show me fantasy books” or “what is your return policy?”.",
+      reply: "Hello! I can help you find books, answer store questions, and manage your cart or orders. Try \u201cshow me fantasy books\u201d or \u201cwhat is your return policy?\u201d.",
     };
   }
 
@@ -118,7 +119,7 @@ async function buildReply(userId, message) {
     if (!orders.length) {
       return { reply: "You don't have any orders yet. Browse the catalog and place your first order!" };
     }
-    const lines = orders.map((o) => `• ${o.orderNumber} — ${o.status} (${new Date(o.createdAt).toLocaleDateString()}) — $${o.total.toFixed(2)}`).join("\n");
+    const lines = orders.map((o) => `\u2022 ${o.orderNumber} \u2014 ${o.status} (${new Date(o.createdAt).toLocaleDateString()}) \u2014 $${o.total.toFixed(2)}`).join("\n");
     return { reply: `Here are your recent orders:\n${lines}\n\nAsk me to cancel a pending one if needed.` };
   }
 
@@ -126,9 +127,9 @@ async function buildReply(userId, message) {
   if (/my\s+cart|show.*cart|what.*in.*cart/i.test(lower)) {
     const cart = await Cart.findOne({ user: userId }).populate("items.book", "title price");
     if (!cart || !cart.items.length) {
-      return { reply: "Your cart is empty. Try “add The Hobbit to my cart”." };
+      return { reply: "Your cart is empty. Try \u201cadd The Hobbit to my cart\u201d." };
     }
-    const lines = cart.items.map((i) => `• ${i.book.title} × ${i.quantity} — $${(i.book.price * i.quantity).toFixed(2)}`).join("\n");
+    const lines = cart.items.map((i) => `\u2022 ${i.book.title} \u00d7 ${i.quantity} \u2014 $${(i.book.price * i.quantity).toFixed(2)}`).join("\n");
     return { reply: `Your cart:\n${lines}` };
   }
 
@@ -143,7 +144,7 @@ async function buildReply(userId, message) {
     }
     const confirmationToken = token();
     return {
-      reply: `To confirm: do you want to cancel order ${ref}? Reply with the confirmation below, or say “yes”.`,
+      reply: `To confirm: do you want to cancel order ${ref}? Reply with the confirmation below, or say \u201cyes\u201d.`,
       tool: { name: "cancelOrder", args: { orderId: String(order._id) }, confirmationToken, status: "pending" },
     };
   }
@@ -156,11 +157,11 @@ async function buildReply(userId, message) {
       const book = books[0];
       await addToCart(userId, book._id, 1);
       return {
-        reply: `Added “${book.title}” to your cart.`,
+        reply: `Added \u201c${book.title}\u201d to your cart.`,
         books: [book],
       };
     }
-    return { reply: `I couldn't find a book matching “${title}”. Try a different title.` };
+    return { reply: `I couldn't find a book matching \u201c${title}\u201d. Try a different title.` };
   }
 
   // Book discovery
@@ -168,7 +169,7 @@ async function buildReply(userId, message) {
   if (bookWords.some((word) => strip(lower).includes(word))) {
     const books = await findBooks(message, 5);
     if (books.length) {
-      const lines = books.map((b) => `• ${b.title} — by ${b.authors?.[0] || "unknown"} — $${b.price.toFixed(2)}`).join("\n");
+      const lines = books.map((b) => `\u2022 ${b.title} \u2014 by ${b.authors?.[0] || "unknown"} \u2014 $${b.price.toFixed(2)}`).join("\n");
       return {
         reply: `Here's what I found:\n${lines}\n\nTap any book above to open it, or ask me to add one to your cart.`,
         books,
@@ -182,7 +183,7 @@ async function buildReply(userId, message) {
   if (faq) return { reply: faq.reply, source: faq.source };
 
   return {
-    reply: "I can help you find books, check your cart and orders, and answer questions about shipping, payments, and returns. Try “recommend a fantasy novel” or “what is your refund policy?”.",
+    reply: "I can help you find books, check your cart and orders, and answer questions about shipping, payments, and returns. Try \u201crecommend a fantasy novel\u201d or \u201cwhat is your refund policy?\u201d.",
   };
 }
 
@@ -247,8 +248,7 @@ async function confirmAction(userId, confirmationToken) {
   const { name, args } = pending.tool;
   let reply;
   if (name === "cancelOrder") {
-    const orderService = require("./orderService");
-    const order = await orderService.cancelOrder(userId, args.orderId, "Cancelled via AI assistant");
+    const order = await cancelOrder(userId, args.orderId, "Cancelled via AI assistant");
     reply = `Order ${order.orderNumber} has been cancelled and your refund/stock is restored.`;
   } else {
     throw new AppError("Unknown action", 400, "UNKNOWN_ACTION");
@@ -274,4 +274,4 @@ async function clearHistory(userId) {
   return { success: true };
 }
 
-module.exports = { sendMessage, confirmAction, history, clearHistory };
+export { sendMessage, confirmAction, history, clearHistory };

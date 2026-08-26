@@ -1,8 +1,8 @@
 /**
  * controllers/couponController.js — coupon apply + admin CRUD.
  */
-const catchAsync = require("../utils/catchAsync");
-const couponService = require("../services/couponService");
+import catchAsync from "../utils/catchAsync.js";
+import * as couponService from "../services/couponService.js";
 
 const apply = catchAsync(async (req, res) => {
   const { code, subtotal } = req.body;
@@ -26,4 +26,4 @@ const remove = catchAsync(async (req, res) => {
   res.json(await couponService.remove(req.params.id));
 });
 
-module.exports = { apply, list, create, update, remove };
+export { apply, list, create, update, remove };

@@ -1,7 +1,7 @@
 /**
  * validators/cartValidators.js — express-validator chains for cart routes.
  */
-const { body } = require("express-validator");
+import { body } from "express-validator";
 
 const addItemValidators = [
   body("bookId").isMongoId().withMessage("A valid book id is required"),
@@ -16,4 +16,4 @@ const couponCodeValidators = [
   body("code").trim().notEmpty().withMessage("Coupon code is required").isLength({ max: 50 }),
 ];
 
-module.exports = { addItemValidators, updateQuantityValidators, couponCodeValidators };
+export { addItemValidators, updateQuantityValidators, couponCodeValidators };

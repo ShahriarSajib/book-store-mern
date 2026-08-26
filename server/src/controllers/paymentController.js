@@ -1,11 +1,12 @@
 /**
  * controllers/paymentController.js — Stripe checkout, webhook, config.
  */
-const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/AppError");
-const stripeService = require("../services/stripeService");
-const orderService = require("../services/orderService");
-const logger = require("../utils/logger");
+import catchAsync from "../utils/catchAsync.js";
+import AppError from "../utils/AppError.js";
+import stripeService from "../services/stripeService.js";
+import * as orderService from "../services/orderService.js";
+import logger from "../utils/logger.js";
+import { Order } from "../models/index.js";
 
 /**
  * POST /api/payments/create-checkout-session
@@ -17,7 +18,6 @@ const createCheckoutSession = catchAsync(async (req, res) => {
   if (!orderId) throw new AppError("orderId is required", 400, "VALIDATION_ERROR");
 
   // Fetch order and populate user for email
-  const { Order } = require("../models");
   const order = await Order.findById(orderId).populate("user", "name email");
   if (!order) throw new AppError("Order not found", 404, "NOT_FOUND");
 
@@ -101,7 +101,6 @@ const webhook = catchAsync(async (req, res) => {
     case "payment_intent.payment_failed": {
       const paymentIntent = event.data.object;
       // Find order by payment intent ID
-      const { Order } = require("../models");
       const order = await Order.findOne({ stripePaymentIntentId: paymentIntent.id });
       if (order) {
         await orderService.failPayment(
@@ -130,4 +129,4 @@ const getConfig = catchAsync(async (_req, res) => {
   res.json({ publishableKey });
 });
 
-module.exports = { createCheckoutSession, webhook, getConfig };
+export { createCheckoutSession, webhook, getConfig };

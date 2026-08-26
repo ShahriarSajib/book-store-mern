@@ -8,4 +8,4 @@ function pick(source, keys) {
   }, {});
 }
 
-module.exports = pick;
+export default pick;

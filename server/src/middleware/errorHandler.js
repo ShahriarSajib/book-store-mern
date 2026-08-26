@@ -3,7 +3,7 @@
  * Responsibility: centralized error handler. Maps AppError, Mongoose,
  * JWT, and validation errors to consistent JSON responses.
  */
-const AppError = require("../utils/AppError");
+import AppError from "../utils/AppError.js";
 
 function isValidationError(err) {
   return err && (err.name === "ValidationError" || err.name === "CastError");
@@ -53,4 +53,4 @@ function errorHandler(err, req, res, _next) {
   });
 }
 
-module.exports = errorHandler;
+export default errorHandler;

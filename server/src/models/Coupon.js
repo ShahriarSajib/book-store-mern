@@ -3,7 +3,7 @@
  * Responsibility: coupon codes (type, value, min purchase,
  * expiry, usage limit, active flag).
  */
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const couponSchema = new mongoose.Schema(
   {
@@ -30,4 +30,4 @@ const couponSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Coupon", couponSchema);
+export default mongoose.model("Coupon", couponSchema);

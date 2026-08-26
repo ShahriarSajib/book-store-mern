@@ -33,6 +33,9 @@ import Cart from "../pages/customer/Cart.jsx";
 import Checkout from "../pages/customer/Checkout.jsx";
 import Orders from "../pages/customer/Orders.jsx";
 import OrderDetails from "../pages/customer/OrderDetails.jsx";
+import OrderTracking from "../pages/customer/OrderTracking.jsx";
+import CustomerDashboard from "../pages/customer/CustomerDashboard.jsx";
+import NotificationPreferences from "../pages/customer/NotificationPreferences.jsx";
 import Wishlist from "../pages/customer/Wishlist.jsx";
 import Addresses from "../pages/customer/Addresses.jsx";
 import ChatFullPage from "../pages/chatbot/ChatFullPage.jsx";
@@ -51,6 +54,7 @@ import AdminInventory from "../pages/admin/Inventory.jsx";
 import AdminReviews from "../pages/admin/Reviews.jsx";
 import AdminCoupons from "../pages/admin/Coupons.jsx";
 import AdminAnalytics from "../pages/admin/Analytics.jsx";
+import AdminRecommendations from "../pages/admin/Recommendations.jsx";
 import AdminAIAssistant from "../pages/admin/AIAssistant.jsx";
 
 export default function AppRouter() {
@@ -80,11 +84,14 @@ export default function AppRouter() {
 
       {/* Customer (protected) */}
       <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<CustomerDashboard />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/notifications" element={<NotificationPreferences />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/orders/:id" element={<OrderDetails />} />
+        <Route path="/orders/:id/tracking" element={<OrderTracking />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/profile/addresses" element={<Addresses />} />
         <Route path="/chat" element={<ChatFullPage />} />
@@ -106,6 +113,7 @@ export default function AppRouter() {
           <Route path="/admin/reviews" element={<AdminReviews />} />
           <Route path="/admin/coupons" element={<AdminCoupons />} />
           <Route path="/admin/analytics" element={<AdminAnalytics />} />
+          <Route path="/admin/recommendations" element={<AdminRecommendations />} />
           <Route path="/admin/ai" element={<AdminAIAssistant />} />
         </Route>
       </Route>

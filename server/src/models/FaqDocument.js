@@ -4,7 +4,7 @@
  * (shipping, payment, returns, refunds, policies, account help).
  * Vector ID + content + metadata stored here.
  */
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const faqDocumentSchema = new mongoose.Schema(
   {
@@ -21,4 +21,4 @@ const faqDocumentSchema = new mongoose.Schema(
 
 faqDocumentSchema.index({ question: "text", answer: "text", keywords: "text" });
 
-module.exports = mongoose.model("FaqDocument", faqDocumentSchema);
+export default mongoose.model("FaqDocument", faqDocumentSchema);

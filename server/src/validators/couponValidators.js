@@ -1,7 +1,7 @@
 /**
  * validators/couponValidators.js — express-validator chains for coupon routes.
  */
-const { body } = require("express-validator");
+import { body } from "express-validator";
 
 const createCouponValidators = [
   body("code").trim().notEmpty().withMessage("Code is required").isLength({ max: 50 }),
@@ -15,4 +15,4 @@ const createCouponValidators = [
   body("isActive").optional().isBoolean(),
 ];
 
-module.exports = { createCouponValidators };
+export { createCouponValidators };

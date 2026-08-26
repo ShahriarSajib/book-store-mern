@@ -2,14 +2,13 @@
  * controllers/searchController.js — keyword + autocomplete endpoints.
  * Reuses the catalog book service so filters/sort/pagination stay consistent.
  */
-const catchAsync = require("../utils/catchAsync");
-const bookService = require("../services/bookService");
-const { Book } = require("../models");
+import catchAsync from "../utils/catchAsync.js";
+import * as bookService from "../services/bookService.js";
+import { Book, User } from "../models/index.js";
 
 const search = catchAsync(async (req, res) => {
   const result = await bookService.listBooks(req.query);
   if (req.user?.id && req.query.q) {
-    const { User } = require("../models");
     User.updateOne(
       { _id: req.user.id },
       {
@@ -35,4 +34,4 @@ const autocomplete = catchAsync(async (req, res) => {
   res.json({ suggestions: books });
 });
 
-module.exports = { search, autocomplete };
+export { search, autocomplete };

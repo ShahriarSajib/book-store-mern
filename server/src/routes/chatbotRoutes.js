@@ -5,9 +5,11 @@
  *   DELETE /history        clear conversations
  *   POST /confirm          confirm sensitive tool call (e.g. cancel order)
  */
-const router = require("express").Router();
-const { protect } = require("../middleware/auth");
-const ctrl = require("../controllers/chatbotController");
+import { Router } from "express";
+import { protect } from "../middleware/auth.js";
+import * as ctrl from "../controllers/chatbotController.js";
+
+const router = Router();
 
 router.use(protect);
 
@@ -16,4 +18,4 @@ router.get("/history", ctrl.getHistory);
 router.delete("/history", ctrl.clearHistory);
 router.post("/", ctrl.send);
 
-module.exports = router;
+export default router;

@@ -36,6 +36,14 @@ export const adminApi = {
     inventory: () => api.get("/admin/analytics/inventory").then((r) => r.data),
     recommendations: () => api.get("/admin/analytics/recommendations").then((r) => r.data),
   },
+  recommendations: {
+    summary: () => api.get("/admin/recommendations/summary").then((r) => r.data),
+    embeddings: (params) => api.get("/admin/recommendations/embeddings", { params }).then((r) => r.data),
+    mostRecommended: (params) => api.get("/admin/recommendations/most-recommended", { params }).then((r) => r.data),
+    mostClicked: (params) => api.get("/admin/recommendations/most-clicked", { params }).then((r) => r.data),
+    logs: (params) => api.get("/admin/recommendations/logs", { params }).then((r) => r.data),
+    regenerate: (bookIds) => api.post("/admin/recommendations/embeddings/regenerate", { bookIds }).then((r) => r.data),
+  },
   ai: {
     chat: (message, conversationId) =>
       api.post("/admin/ai/chat", { message, conversationId }).then((r) => r.data),

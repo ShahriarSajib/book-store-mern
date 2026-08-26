@@ -2,8 +2,9 @@
  * controllers/bookController.js — HTTP layer for book CRUD + public catalog.
  * Delegates to bookService.
  */
-const catchAsync = require("../utils/catchAsync");
-const bookService = require("../services/bookService");
+import catchAsync from "../utils/catchAsync.js";
+import * as bookService from "../services/bookService.js";
+import { User } from "../models/index.js";
 
 const list = catchAsync(async (req, res) => {
   const result = await bookService.listBooks(req.query);
@@ -13,7 +14,6 @@ const list = catchAsync(async (req, res) => {
 const getById = catchAsync(async (req, res) => {
   const book = await bookService.getBookById(req.params.id);
   if (req.user?.id) {
-    const { User } = require("../models");
     User.updateOne(
       { _id: req.user.id },
       {
@@ -41,4 +41,4 @@ const remove = catchAsync(async (req, res) => {
   res.json({ success: true });
 });
 
-module.exports = { list, getById, create, update, remove };
+export { list, getById, create, update, remove };

@@ -2,11 +2,13 @@
  * routes/reviewRoutes.js — /api/reviews/*
  *   GET /book/:bookId, POST /, PUT /:id, DELETE /:id
  */
-const router = require("express").Router();
-const validate = require("../middleware/validate");
-const { protect, requireVerified } = require("../middleware/auth");
-const { reviewValidators } = require("../validators");
-const ctrl = require("../controllers/reviewController");
+import { Router } from "express";
+import validate from "../middleware/validate.js";
+import { protect, requireVerified } from "../middleware/auth.js";
+import { reviewValidators } from "../validators/index.js";
+import * as ctrl from "../controllers/reviewController.js";
+
+const router = Router();
 
 router.get("/book/:bookId", ctrl.listForBook);
 
@@ -15,4 +17,4 @@ router.post("/", requireVerified, validate(reviewValidators.createReviewValidato
 router.put("/:id", requireVerified, validate(reviewValidators.updateReviewValidators), ctrl.update);
 router.delete("/:id", requireVerified, ctrl.remove);
 
-module.exports = router;
+export default router;

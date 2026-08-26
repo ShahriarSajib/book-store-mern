@@ -2,9 +2,9 @@
  * services/bookService.js — book CRUD, search, filter, sort, paginate,
  * view tracking, and stock updates. Owns the catalog business rules.
  */
-const AppError = require("../utils/AppError");
-const repo = require("../repositories/bookRepository");
-const { getPagination, buildPageMeta } = require("../utils/paginate");
+import AppError from "../utils/AppError.js";
+import * as repo from "../repositories/bookRepository.js";
+import { getPagination, buildPageMeta } from "../utils/paginate.js";
 
 const SORT_OPTIONS = {
   newest: { publishedYear: -1 },
@@ -169,7 +169,7 @@ async function adjustStock(id, quantity) {
   return book;
 }
 
-module.exports = {
+export {
   listBooks,
   getBookById,
   createBook,

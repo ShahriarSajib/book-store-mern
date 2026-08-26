@@ -1,9 +1,9 @@
 /**
  * services/reviewService.js — add/update/delete review, recompute book rating.
  */
-const AppError = require("../utils/AppError");
-const { Review, Book } = require("../models");
-const { getPagination, buildPageMeta } = require("../utils/paginate");
+import AppError from "../utils/AppError.js";
+import { Review, Book } from "../models/index.js";
+import { getPagination, buildPageMeta } from "../utils/paginate.js";
 
 async function recomputeBookRating(bookId) {
   const [agg] = await Review.aggregate([
@@ -100,7 +100,7 @@ async function adminRemove(reviewId) {
   return { success: true };
 }
 
-module.exports = {
+export default {
   listByBook,
   create,
   update,

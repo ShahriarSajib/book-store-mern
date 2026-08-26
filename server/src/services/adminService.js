@@ -1,9 +1,9 @@
 /**
  * services/adminService.js — admin dashboard + user management.
  */
-const AppError = require("../utils/AppError");
-const { User, Book, Order, Category, Author, Publisher } = require("../models");
-const { getPagination, buildPageMeta } = require("../utils/paginate");
+import AppError from "../utils/AppError.js";
+import { User, Book, Order, Category, Author, Publisher } from "../models/index.js";
+import { getPagination, buildPageMeta } from "../utils/paginate.js";
 
 function safeCount(Model, filter = {}) {
   return typeof Model === "function" && typeof Model.countDocuments === "function"
@@ -108,7 +108,7 @@ async function deleteUser(userId) {
   return { success: true };
 }
 
-module.exports = {
+export {
   getDashboard,
   listUsers,
   getUserById,

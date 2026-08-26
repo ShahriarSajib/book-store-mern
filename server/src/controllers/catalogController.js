@@ -1,8 +1,8 @@
 /**
  * controllers/catalogController.js — categories/authors/publishers endpoints.
  */
-const catchAsync = require("../utils/catchAsync");
-const catalogService = require("../services/catalogService");
+import catchAsync from "../utils/catchAsync.js";
+import * as catalogService from "../services/catalogService.js";
 
 function serviceFor(req) {
   const base = req.baseUrl.split("/").pop();
@@ -34,4 +34,4 @@ const remove = catchAsync(async (req, res) => {
   res.json(await serviceFor(req).remove(req.params.id));
 });
 
-module.exports = { list, getById, create, update, remove };
+export { list, getById, create, update, remove };

@@ -6,8 +6,8 @@
  * preview URL. The auth service surfaces this preview to the API client so
  * email flows can be tested without a real SMTP provider.
  */
-const nodemailer = require("nodemailer");
-const env = require("../config/env");
+import nodemailer from "nodemailer";
+import env from "../config/env.js";
 
 function buildTransport() {
   if (env.MAIL_USER && env.MAIL_PASS) {
@@ -48,11 +48,11 @@ async function sendEmail({ to, subject, html, text }) {
 
 function verificationEmail(name, url) {
   return {
-    subject: "Verify your email — AI Bookstore",
+    subject: "Verify your email — BookVerse",
     html: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;padding:24px;border:1px solid #eee;border-radius:8px">
       <h2 style="color:#4f46e5">Verify your email</h2>
       <p>Hi ${name || "there"},</p>
-      <p>Thanks for creating an account at the AI Bookstore. Please confirm your email address by clicking the button below:</p>
+      <p>Thanks for creating an account at the BookVerse. Please confirm your email address by clicking the button below:</p>
       <p style="text-align:center;margin:28px 0">
         <a href="${url}" style="background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block">Verify email</a>
       </p>
@@ -63,7 +63,7 @@ function verificationEmail(name, url) {
 
 function passwordResetEmail(name, url) {
   return {
-    subject: "Reset your password — AI Bookstore",
+    subject: "Reset your password — BookVerse",
     html: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;padding:24px;border:1px solid #eee;border-radius:8px">
       <h2 style="color:#4f46e5">Reset your password</h2>
       <p>Hi ${name || "there"},</p>
@@ -76,8 +76,4 @@ function passwordResetEmail(name, url) {
   };
 }
 
-module.exports = {
-  sendEmail,
-  verificationEmail,
-  passwordResetEmail,
-};
+export { sendEmail, verificationEmail, passwordResetEmail };

@@ -1,8 +1,8 @@
 /**
  * controllers/uploadController.js — image upload for covers/avatars.
  */
-const catchAsync = require("../utils/catchAsync");
-const env = require("../config/env");
+import catchAsync from "../utils/catchAsync.js";
+import env from "../config/env.js";
 
 const uploadImage = catchAsync(async (req, res) => {
   if (!req.file) {
@@ -15,4 +15,4 @@ const uploadImage = catchAsync(async (req, res) => {
   });
 });
 
-module.exports = { uploadImage };
+export { uploadImage };

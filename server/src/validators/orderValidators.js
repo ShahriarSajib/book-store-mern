@@ -1,7 +1,7 @@
 /**
  * validators/orderValidators.js — express-validator chains for order routes.
  */
-const { body } = require("express-validator");
+import { body } from "express-validator";
 
 const createOrderValidators = [
   body("shippingAddressId").optional().isMongoId().withMessage("Invalid shipping address"),
@@ -17,4 +17,4 @@ const createOrderValidators = [
   body("shippingAddress.city").optional().trim().notEmpty().withMessage("City is required"),
 ];
 
-module.exports = { createOrderValidators };
+export { createOrderValidators };

@@ -7,4 +7,4 @@ function catchAsync(fn) {
   };
 }
 
-module.exports = catchAsync;
+export default catchAsync;

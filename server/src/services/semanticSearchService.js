@@ -1,7 +1,5 @@
-const Book = require("../models/Book");
-const {
-  generateEmbedding,
-} = require("../ai/embeddings/embeddingService");
+import Book from "../models/Book.js";
+import { generateEmbedding } from "../ai/embeddings/embeddingService.js";
 
 /**
  * Calculate cosine similarity between two vectors.
@@ -106,7 +104,7 @@ const semanticSearch = async ({
     });
 };
 
-module.exports = {
+export {
   semanticSearch,
   cosineSimilarity,
 };

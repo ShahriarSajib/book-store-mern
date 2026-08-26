@@ -3,12 +3,12 @@
  * Responsibility: configure multer for cover images and other files.
  * Enforces MAX_UPLOAD_MB, mime-type whitelist, and safe filenames.
  */
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
-const crypto = require("crypto");
-const env = require("../config/env");
-const AppError = require("./../utils/AppError");
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import crypto from "crypto";
+import env from "../config/env.js";
+import AppError from "../utils/AppError.js";
 
 const uploadDir = path.resolve(process.cwd(), env.UPLOAD_DIR || "uploads");
 fs.mkdirSync(uploadDir, { recursive: true });
@@ -34,4 +34,4 @@ const uploadImage = multer({
   limits: { fileSize: (env.MAX_UPLOAD_MB || 5) * 1024 * 1024 },
 });
 
-module.exports = { uploadImage };
+export { uploadImage };

@@ -66,7 +66,7 @@ export default function ChatFullPage() {
             <FaRobot className="h-5 w-5" />
           </span>
           <div>
-            <h1 className="text-lg font-bold text-ink-900">AI Bookstore Assistant</h1>
+            <h1 className="text-lg font-bold text-ink-900">BookVerse Assistant</h1>
             <p className="text-xs text-ink-500">Ask me about books, orders, or your cart</p>
           </div>
         </div>

@@ -1,9 +1,10 @@
 /**
  * controllers/userController.js — profile, addresses, password change.
  */
-const catchAsync = require("../utils/catchAsync");
-const userService = require("../services/userService");
-const authService = require("../services/authService");
+import catchAsync from "../utils/catchAsync.js";
+import userService from "../services/userService.js";
+import * as authService from "../services/authService.js";
+import * as wishlistService from "../services/wishlistService.js";
 
 const getMe = catchAsync(async (req, res) => {
   res.json({ user: await userService.getProfile(req.user.id) });
@@ -43,21 +44,26 @@ const getHistory = catchAsync(async (req, res) => {
 });
 
 const getWishlist = catchAsync(async (req, res) => {
-  const wishlistService = require("../services/wishlistService");
   res.json({ wishlist: await wishlistService.getWishlist(req.user.id) });
 });
 
 const addWishlistItem = catchAsync(async (req, res) => {
-  const wishlistService = require("../services/wishlistService");
   res.status(201).json({ wishlist: await wishlistService.add(req.user.id, req.body.bookId) });
 });
 
 const removeWishlistItem = catchAsync(async (req, res) => {
-  const wishlistService = require("../services/wishlistService");
   res.json({ wishlist: await wishlistService.remove(req.user.id, req.params.bookId) });
 });
 
-module.exports = {
+const moveWishlistToCart = catchAsync(async (req, res) => {
+  res.json(await wishlistService.moveToCart(req.user.id, req.params.bookId));
+});
+
+const getDashboard = catchAsync(async (req, res) => {
+  res.json(await userService.getDashboard(req.user.id));
+});
+
+export {
   getMe,
   updateMe,
   changePassword,
@@ -66,7 +72,9 @@ module.exports = {
   updateAddress,
   deleteAddress,
   getHistory,
+  getDashboard,
   getWishlist,
   addWishlistItem,
   removeWishlistItem,
+  moveWishlistToCart,
 };

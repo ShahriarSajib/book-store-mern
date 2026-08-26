@@ -3,7 +3,7 @@
  * Responsibility: per-user-per-book review (rating + comment).
  * Used to compute Book.averageRating and reviewCount.
  */
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -34,4 +34,4 @@ const reviewSchema = new mongoose.Schema(
 
 reviewSchema.index({ book: 1, user: 1 }, { unique: true });
 
-module.exports = mongoose.model("Review", reviewSchema);
+export default mongoose.model("Review", reviewSchema);

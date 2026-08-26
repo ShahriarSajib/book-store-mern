@@ -1,12 +1,12 @@
 /**
  * services/authService.js — register/login/refresh/verifyEmail/resetPassword.
  */
-const crypto = require("crypto");
-const AppError = require("../utils/AppError");
-const { User } = require("../models");
-const { signAccessToken, signRefreshToken, verifyRefreshToken } = require("../utils/jwt");
-const emailUtil = require("../utils/email");
-const env = require("../config/env");
+import crypto from "crypto";
+import AppError from "../utils/AppError.js";
+import { User } from "../models/index.js";
+import { signAccessToken, signRefreshToken, verifyRefreshToken } from "../utils/jwt.js";
+import * as emailUtil from "../utils/email.js";
+import env from "../config/env.js";
 
 const FRONTEND_URL = env.CLIENT_URL || "http://localhost:5173";
 
@@ -180,7 +180,7 @@ async function changePassword(userId, currentPassword, newPassword) {
   return { message: "Password updated successfully. Please log in again." };
 }
 
-module.exports = {
+export {
   register,
   login,
   refresh,

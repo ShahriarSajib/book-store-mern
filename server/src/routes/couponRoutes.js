@@ -3,12 +3,14 @@
  *   POST /apply (cart-aware when called with cart payload)
  *   Admin: GET /, POST /, PUT /:id, DELETE /:id
  */
-const router = require("express").Router();
-const validate = require("../middleware/validate");
-const { protect } = require("../middleware/auth");
-const { requireAdmin } = require("../middleware/admin");
-const { cartValidators, couponValidators } = require("../validators");
-const ctrl = require("../controllers/couponController");
+import { Router } from "express";
+import validate from "../middleware/validate.js";
+import { protect } from "../middleware/auth.js";
+import { requireAdmin } from "../middleware/admin.js";
+import { cartValidators, couponValidators } from "../validators/index.js";
+import * as ctrl from "../controllers/couponController.js";
+
+const router = Router();
 
 router.post("/apply", validate(cartValidators.couponCodeValidators), ctrl.apply);
 
@@ -17,4 +19,4 @@ router.post("/", protect, requireAdmin, validate(couponValidators.createCouponVa
 router.put("/:id", protect, requireAdmin, ctrl.update);
 router.delete("/:id", protect, requireAdmin, ctrl.remove);
 
-module.exports = router;
+export default router;

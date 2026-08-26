@@ -1,8 +1,8 @@
 /**
  * config/db.js — MongoDB connection helper.
  */
-const mongoose = require("mongoose");
-const env = require("./env");
+import mongoose from "mongoose";
+import env from "./env.js";
 
 async function connectDB() {
   mongoose.set("strictQuery", true);
@@ -11,4 +11,4 @@ async function connectDB() {
   console.log("[db] connected");
 }
 
-module.exports = connectDB;
+export default connectDB;

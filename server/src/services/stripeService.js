@@ -2,10 +2,10 @@
  * services/stripeService.js — Stripe SDK wrapper.
  * Handles checkout sessions, webhooks, refunds, and config.
  */
-const stripe = require("stripe");
-const env = require("../config/env");
-const AppError = require("../utils/AppError");
-const logger = require("../utils/logger");
+import Stripe from "stripe";
+import env from "../config/env.js";
+import AppError from "../utils/AppError.js";
+import logger from "../utils/logger.js";
 
 let stripeInstance = null;
 
@@ -14,7 +14,7 @@ function getClient() {
     if (!env.STRIPE_SECRET_KEY) {
       throw new AppError("Stripe is not configured", 500, "PAYMENT_NOT_CONFIGURED");
     }
-    stripeInstance = stripe(env.STRIPE_SECRET_KEY);
+    stripeInstance = Stripe(env.STRIPE_SECRET_KEY);
   }
   return stripeInstance;
 }
@@ -154,7 +154,7 @@ function getPublishableKey() {
   return env.STRIPE_PUBLISHABLE_KEY;
 }
 
-module.exports = {
+export default {
   createCheckoutSession,
   constructWebhookEvent,
   refundPayment,

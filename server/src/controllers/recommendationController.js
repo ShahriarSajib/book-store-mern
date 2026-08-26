@@ -1,11 +1,11 @@
 /**
  * controllers/recommendationController.js — combined recommendation endpoints.
  */
-const catchAsync = require("../utils/catchAsync");
-const trendingService = require("../services/trendingService");
-const similarBookService = require("../services/similarBookService");
-const personalizedRecommendationService = require("../services/personalizedRecommendationService");
-const userService = require("../services/userService");
+import catchAsync from "../utils/catchAsync.js";
+import trendingService from "../services/trendingService.js";
+import * as similarBookService from "../services/similarBookService.js";
+import * as personalizedRecommendationService from "../services/personalizedRecommendationService.js";
+import userService from "../services/userService.js";
 
 const trending = catchAsync(async (req, res) => {
   const limit = Number(req.query.limit) || 10;
@@ -32,4 +32,4 @@ const recentlyViewed = catchAsync(async (req, res) => {
   res.json({ results: history.browseHistory });
 });
 
-module.exports = { trending, similar, personalized, recentlyViewed };
+export { trending, similar, personalized, recentlyViewed };

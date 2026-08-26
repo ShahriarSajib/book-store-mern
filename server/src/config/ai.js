@@ -3,9 +3,9 @@
  * Centralizes providers, dimensions, and runtime toggles.
  * Lets us swap embedding/vector/LLM providers without code changes elsewhere.
  */
-const env = require("./env");
+import env from "./env.js";
 
-module.exports = {
+const aiConfig = {
   llm: {
     provider: env.LLM_PROVIDER,
     apiKey: env.LLM_API_KEY,
@@ -51,3 +51,5 @@ module.exports = {
     ],
   },
 };
+
+export default aiConfig;

@@ -1,14 +1,36 @@
 /**
  * services/cartService.js — add/remove/update quantity, totals, coupon validation.
  */
-const AppError = require("../utils/AppError");
-const { Cart, Book } = require("../models");
-const couponService = require("./couponService");
+import AppError from "../utils/AppError.js";
+import { Cart, Book } from "../models/index.js";
+import * as couponService from "./couponService.js";
+import socketService from "./socketService.js";
 
 const BOOK_POPULATE = {
   path: "items.book",
   select: "title coverImage price authors stock isActive",
 };
+
+function emitLowStock(book) {
+  try {
+    if (socketService.isLowStock(book.stock)) {
+      socketService.emitToAdmins("stock:low", {
+        book: { _id: book._id, title: book.title, stock: book.stock },
+        message: `Low stock alert: "${book.title}" has only ${book.stock} units left`,
+      });
+    }
+  } catch (_err) { /* socket emit is best-effort */ }
+}
+
+async function checkLowStockAfterOrder(items) {
+  try {
+    const bookIds = items.map((i) => i.book);
+    const books = await Book.find({ _id: { $in: bookIds } }).select("title stock");
+    for (const book of books) {
+      emitLowStock(book);
+    }
+  } catch (_err) { /* socket emit is best-effort */ }
+}
 
 async function getCart(userId) {
   let cart = await Cart.findOne({ user: userId });
@@ -105,11 +127,21 @@ async function applyCoupon(userId, code) {
   return cart.populate(BOOK_POPULATE);
 }
 
-module.exports = {
+async function removeCoupon(userId) {
+  const cart = await Cart.findOne({ user: userId });
+  if (!cart) throw new AppError("Cart not found", 404, "NOT_FOUND");
+  cart.coupon = undefined;
+  await cart.save();
+  return cart.populate(BOOK_POPULATE);
+}
+
+export {
   getCart,
   addItem,
   updateQuantity,
   removeItem,
   clearCart,
   applyCoupon,
+  removeCoupon,
+  checkLowStockAfterOrder,
 };

@@ -3,7 +3,7 @@
  * Responsibility: completed order records with items, totals,
  * shipping address, payment status, order status, tracking metadata.
  */
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const orderItemSchema = new mongoose.Schema(
   {
@@ -55,7 +55,7 @@ const orderSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+      enum: ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"],
       default: "pending",
       index: true,
     },
@@ -89,4 +89,4 @@ const orderSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Order", orderSchema);
+export default mongoose.model("Order", orderSchema);

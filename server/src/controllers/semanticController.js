@@ -1,6 +1,6 @@
-const {
+import {
   semanticSearch,
-} = require("../services/semanticSearchService");
+} from "../services/semanticSearchService.js";
 
 const searchBooks = async (req, res) => {
   try {
@@ -44,6 +44,6 @@ const searchBooks = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   searchBooks,
 };

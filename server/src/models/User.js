@@ -5,10 +5,10 @@
  *   - Holds auth fields, profile, role, addresses, view/search history.
  *   - Password hashing hooks; toJSON strips sensitive fields.
  */
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
-const crypto = require("crypto");
-const env = require("../config/env");
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import env from "../config/env.js";
 
 const ROLES = {
   CUSTOMER: "customer",
@@ -65,6 +65,19 @@ const userSchema = new mongoose.Schema(
     browseHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
     searchHistory: [{ type: String, maxlength: 200 }],
     favoriteGenres: [{ type: String }],
+
+    notificationPreferences: {
+      email: {
+        orderUpdates: { type: Boolean, default: true },
+        promotions: { type: Boolean, default: true },
+        newsletter: { type: Boolean, default: true },
+      },
+      push: {
+        orderUpdates: { type: Boolean, default: true },
+        promotions: { type: Boolean, default: false },
+        newsletter: { type: Boolean, default: false },
+      },
+    },
 
     lastLoginAt: { type: Date },
   },
@@ -131,4 +144,4 @@ const User = mongoose.model("User", userSchema);
 
 User.ROLES = ROLES;
 
-module.exports = User;
+export default User;

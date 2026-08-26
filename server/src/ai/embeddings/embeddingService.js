@@ -1,4 +1,4 @@
-const { pipeline } = require("@xenova/transformers");
+import { pipeline } from "@xenova/transformers";
 
 let extractor = null;
 
@@ -41,6 +41,6 @@ const generateEmbedding = async (text) => {
   return Array.from(output.data);
 };
 
-module.exports = {
+export {
   generateEmbedding,
 };

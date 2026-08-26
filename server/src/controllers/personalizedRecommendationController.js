@@ -1,12 +1,10 @@
-const {
+import {
   getPersonalizedRecommendations,
-} = require(
-  "../services/personalizedRecommendationService"
-);
+} from "../services/personalizedRecommendationService.js";
 
 const getRecommendations = async (req, res) => {
   try {
-    const userId = req.user?._id;
+    const userId = req.user?.id;
 
     if (!userId) {
       return res.status(401).json({
@@ -43,6 +41,6 @@ const getRecommendations = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   getRecommendations,
 };

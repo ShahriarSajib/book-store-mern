@@ -4,4 +4,4 @@
  * role updates, deactivate).
  */
 // TODO
-module.exports = {};
+export default {};

@@ -1,8 +1,8 @@
 /**
  * controllers/reviewController.js — reviews per book.
  */
-const catchAsync = require("../utils/catchAsync");
-const reviewService = require("../services/reviewService");
+import catchAsync from "../utils/catchAsync.js";
+import reviewService from "../services/reviewService.js";
 
 const listForBook = catchAsync(async (req, res) => {
   res.json(await reviewService.listByBook(req.params.bookId, req.query));
@@ -21,4 +21,4 @@ const remove = catchAsync(async (req, res) => {
   res.json(await reviewService.remove(req.user.id, req.params.id));
 });
 
-module.exports = { listForBook, create, update, remove };
+export { listForBook, create, update, remove };

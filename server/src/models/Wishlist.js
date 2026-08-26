@@ -3,7 +3,7 @@
  * Responsibility: separate wishlist collection — one doc per user,
  * items are book references with unique constraint.
  */
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const wishlistItemSchema = new mongoose.Schema(
   {
@@ -26,4 +26,4 @@ const wishlistSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Wishlist", wishlistSchema);
+export default mongoose.model("Wishlist", wishlistSchema);

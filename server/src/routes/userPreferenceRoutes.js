@@ -1,14 +1,14 @@
-const express = require("express");
+import { Router } from "express";
 
-const {
+import {
   getMyPreferences,
   addFavoriteGenre,
   addFavoriteAuthor,
-} = require("../controllers/userPreferenceController");
+} from "../controllers/userPreferenceController.js";
 
-const { protect } = require("../middleware/auth");
+import { protect } from "../middleware/auth.js";
 
-const router = express.Router();
+const router = Router();
 
 router.get("/", protect, getMyPreferences);
 
@@ -16,4 +16,4 @@ router.post("/genre", protect, addFavoriteGenre);
 
 router.post("/author", protect, addFavoriteAuthor);
 
-module.exports = router;
+export default router;

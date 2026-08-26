@@ -2,8 +2,8 @@
  * controllers/chatbotController.js — /api/chat, /api/chat/history.
  * Validates user + delegates to chatbotService. Never calls LLM directly.
  */
-const catchAsync = require("../utils/catchAsync");
-const chatbotService = require("../services/chatbotService");
+import catchAsync from "../utils/catchAsync.js";
+import * as chatbotService from "../services/chatbotService.js";
 
 const send = catchAsync(async (req, res) => {
   res.json(await chatbotService.sendMessage(req.user.id, req.body));
@@ -21,4 +21,4 @@ const clearHistory = catchAsync(async (req, res) => {
   res.json(await chatbotService.clearHistory(req.user.id));
 });
 
-module.exports = { send, confirm, getHistory, clearHistory };
+export { send, confirm, getHistory, clearHistory };

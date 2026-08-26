@@ -1,8 +1,8 @@
 /**
  * controllers/analyticsController.js — admin analytics endpoints.
  */
-const catchAsync = require("../utils/catchAsync");
-const analyticsService = require("../services/analyticsService");
+import catchAsync from "../utils/catchAsync.js";
+import * as analyticsService from "../services/analyticsService.js";
 
 const sales = catchAsync(async (req, res) => {
   res.json(await analyticsService.salesReport(req.query));
@@ -16,4 +16,4 @@ const recommendations = catchAsync(async (_req, res) => {
   res.json(await analyticsService.recommendationReport());
 });
 
-module.exports = { sales, inventory, recommendations };
+export { sales, inventory, recommendations };

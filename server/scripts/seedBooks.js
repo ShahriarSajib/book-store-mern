@@ -53,6 +53,11 @@ function randomPrice() {
   return Math.round((5.99 + Math.random() * 34) * 100) / 100;
 }
 
+function randomStock() {
+  const weights = [0, 1, 2, 3, 5, 10, 15, 20, 30, 50];
+  return weights[Math.floor(Math.random() * weights.length)];
+}
+
 function toBookDoc(row) {
   const title = cleanString(row.title);
   const doc = {
@@ -66,7 +71,7 @@ function toBookDoc(row) {
     ratingsCount: cleanNumber(row.ratings_count) ?? 0,
     pages: cleanNumber(row.num_pages),
     price: randomPrice(),
-    stock: 100,
+    stock: randomStock(),
     isActive: true,
   };
 

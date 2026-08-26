@@ -3,4 +3,4 @@
  * Responsibility: wrap async route handlers to forward errors.
  */
 // TODO
-module.exports = {};
+export default {};

@@ -1,11 +1,11 @@
-const express = require("express");
+import { Router } from "express";
 
-const {
+import {
   searchBooks,
-} = require("../controllers/semanticController");
+} from "../controllers/semanticController.js";
 
-const router = express.Router();
+const router = Router();
 
 router.get("/", searchBooks);
 
-module.exports = router;
+export default router;

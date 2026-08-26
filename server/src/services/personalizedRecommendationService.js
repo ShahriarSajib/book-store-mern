@@ -1,5 +1,5 @@
-const Book = require("../models/Book");
-const UserPreference = require("../models/UserPreference");
+import Book from "../models/Book.js";
+import UserPreference from "../models/UserPreference.js";
 
 async function getPersonalizedRecommendations(userId, limit = 10) {
   const preference = await UserPreference.findOne({
@@ -101,6 +101,6 @@ async function getPersonalizedRecommendations(userId, limit = 10) {
   return scoredBooks.slice(0, Number(limit));
 }
 
-module.exports = {
+export {
   getPersonalizedRecommendations,
 };

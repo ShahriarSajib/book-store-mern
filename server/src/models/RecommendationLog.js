@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const recommendationLogSchema = new mongoose.Schema(
   {
@@ -29,7 +29,7 @@ const recommendationLogSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model(
+export default mongoose.model(
   "RecommendationLog",
   recommendationLogSchema
 );

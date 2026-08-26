@@ -4,7 +4,7 @@
 import cn from "../../utils/cn";
 
 export function Skeleton({ className }) {
-  return <div className={cn("animate-pulse rounded-lg bg-ink-100", className)} />;
+  return <div className={cn("animate-pulse rounded-lg bg-ink-100 dark:bg-ink-700", className)} />;
 }
 
 export function SkeletonText({ lines = 3, className }) {
@@ -19,7 +19,7 @@ export function SkeletonText({ lines = 3, className }) {
 
 export function SkeletonCard({ className }) {
   return (
-    <div className={cn("rounded-2xl border border-ink-100 bg-white p-4 shadow-soft", className)}>
+    <div className={cn("rounded-2xl border border-ink-100 bg-white p-4 shadow-soft dark:border-ink-700 dark:bg-ink-800", className)}>
       <Skeleton className="aspect-[2/3] w-full rounded-xl" />
       <Skeleton className="mt-3 h-4 w-3/4" />
       <Skeleton className="mt-2 h-3 w-1/2" />

@@ -2,8 +2,8 @@
  * controllers/authController.js — HTTP layer for auth.
  * Delegates to authService.
  */
-const catchAsync = require("../utils/catchAsync");
-const authService = require("../services/authService");
+import catchAsync from "../utils/catchAsync.js";
+import * as authService from "../services/authService.js";
 
 const register = catchAsync(async (req, res) => {
   const result = await authService.register(req.body);
@@ -65,7 +65,7 @@ const changePassword = catchAsync(async (req, res) => {
   res.json(result);
 });
 
-module.exports = {
+export {
   register,
   login,
   refresh,

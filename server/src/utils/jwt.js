@@ -1,9 +1,9 @@
 /**
  * utils/jwt.js — sign/verify access + refresh tokens.
  */
-const jwt = require("jsonwebtoken");
-const env = require("../config/env");
-const AppError = require("./AppError");
+import jwt from "jsonwebtoken";
+import env from "../config/env.js";
+import AppError from "./AppError.js";
 
 function signAccessToken(payload) {
   return jwt.sign(payload, env.JWT_ACCESS_SECRET, {
@@ -33,9 +33,4 @@ function verifyRefreshToken(token) {
   }
 }
 
-module.exports = {
-  signAccessToken,
-  signRefreshToken,
-  verifyAccessToken,
-  verifyRefreshToken,
-};
+export { signAccessToken, signRefreshToken, verifyAccessToken, verifyRefreshToken };

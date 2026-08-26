@@ -5,10 +5,11 @@
 const router = require("express").Router();
 const validate = require("../middleware/validate");
 const { protect, requireVerified } = require("../middleware/auth");
+const { restrictTo } = require("../middleware/admin");
 const { cartValidators } = require("../validators");
 const ctrl = require("../controllers/cartController");
 
-router.use(protect);
+router.use(protect, restrictTo("customer"));
 
 router.get("/", ctrl.getCart);
 router.post("/", requireVerified, validate(cartValidators.addItemValidators), ctrl.addItem);

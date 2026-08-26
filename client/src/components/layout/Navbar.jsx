@@ -82,7 +82,7 @@ export default function Navbar() {
         <div className="navbar__actions">
           {isAuthenticated && <NotificationBell />}
 
-          {isAuthenticated && (
+          {isAuthenticated && user?.role === "customer" && (
             <Link
               to="/cart"
               className="navbar__link relative"

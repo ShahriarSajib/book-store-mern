@@ -103,10 +103,10 @@ export default function Footer() {
 
       <div className="footer__bottom">
         <div className="footer__bottom-inner">
-          <p>© {new Date().getFullYear()} BookVerse — MERN + Semantic Recommendations</p>
+          <p>© {new Date().getFullYear()} BookVerse : Way of Life</p>
           <div className="flex items-center gap-4">
             <span className="inline-flex items-center gap-1">
-              Made with <FaHeart className="text-rose-500" /> for readers
+              Made with <FaHeart className="text-rose-500" /> for readers by Nonchalants
             </span>
             <span className="hidden h-1 w-1 rounded-full bg-ink-300 sm:inline-block" />
             <Link to="/privacy" className="hover:text-brand-700">Privacy</Link>

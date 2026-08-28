@@ -14,7 +14,7 @@ function getClient() {
     if (!env.STRIPE_SECRET_KEY) {
       throw new AppError("Stripe is not configured", 500, "PAYMENT_NOT_CONFIGURED");
     }
-    stripeInstance = Stripe(env.STRIPE_SECRET_KEY);
+    stripeInstance = new Stripe(env.STRIPE_SECRET_KEY);
   }
   return stripeInstance;
 }

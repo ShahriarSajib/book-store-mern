@@ -14,11 +14,13 @@ import { FaTimes } from "react-icons/fa";
 
 export default function Modal({ open, onClose, title, children, labelledBy }) {
   const dialogRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e) => {
-      if (e.key === "Escape") onClose?.();
+      if (e.key === "Escape") onCloseRef.current?.();
     };
     document.addEventListener("keydown", onKey);
     const prevOverflow = document.body.style.overflow;
@@ -35,7 +37,7 @@ export default function Modal({ open, onClose, title, children, labelledBy }) {
       document.body.style.overflow = prevOverflow;
       window.clearTimeout(t);
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 

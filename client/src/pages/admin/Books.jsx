@@ -93,7 +93,7 @@ export default function AdminBooks() {
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["admin", "books", { search, page }],
-    queryFn: () => bookApi.list({ q: search || undefined, page, limit: PAGE_SIZE, sort: "newest" }),
+    queryFn: () => bookApi.list({ q: search || undefined, page, limit: PAGE_SIZE, sort: "newest", facet: "false" }),
     keepPreviousData: true,
   });
 

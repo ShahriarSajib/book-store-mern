@@ -19,7 +19,12 @@ async function findMany({ filter = {}, sort = { averageRating: -1 }, skip = 0, l
   return { books, total };
 }
 
-async function getFacets(top = 30) {
+const FACET_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+let facetCache = null;
+let facetCacheLoadedAt = 0;
+let facetLoadingPromise = null;
+
+const computeFacets = async (top = 30) => {
   const [categories, authors] = await Promise.all([
     Book.aggregate([
       { $unwind: { path: "$categories", preserveNullAndEmptyArrays: true } },
@@ -53,15 +58,46 @@ async function getFacets(top = 30) {
   return { categories, authors };
 }
 
+async function getFacets(top = 30) {
+  const now = Date.now();
+
+  if (facetCache && now - facetCacheLoadedAt < FACET_CACHE_TTL_MS) {
+    return facetCache;
+  }
+
+  if (!facetLoadingPromise) {
+    facetLoadingPromise = computeFacets(top)
+      .then((value) => {
+        facetCache = value;
+        facetCacheLoadedAt = Date.now();
+        return value;
+      })
+      .finally(() => {
+        facetLoadingPromise = null;
+      });
+  }
+
+  return facetLoadingPromise;
+}
+
+const resetFacetCache = () => {
+  facetCache = null;
+  facetCacheLoadedAt = 0;
+  facetLoadingPromise = null;
+};
+
 async function create(data) {
+  resetFacetCache();
   return Book.create(data);
 }
 
 async function updateById(id, data) {
+  resetFacetCache();
   return Book.findByIdAndUpdate(id, data, { new: true, runValidators: true }).select(PUBLIC_SELECT);
 }
 
 async function deleteById(id) {
+  resetFacetCache();
   return Book.findByIdAndDelete(id);
 }
 

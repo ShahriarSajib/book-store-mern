@@ -107,9 +107,13 @@ async function listBooks(query = {}) {
     sort = { score: { $meta: "textScore" } };
   }
 
+  // The full-collection facet aggregation is only needed for the public
+  // catalog sidebar. Admin lists pass withFacets=false to skip it.
+  const withFacets = query.withFacets !== false && query.facet !== "false";
+
   const [result, facets] = await Promise.all([
     repo.findMany({ filter, sort, skip, limit }),
-    repo.getFacets(),
+    withFacets ? repo.getFacets() : Promise.resolve({ categories: [], authors: [] }),
   ]);
 
   return {

@@ -35,8 +35,8 @@ const deleteUser = catchAsync(async (req, res) => {
 });
 
 // ---- Inventory ----
-const listInventory = catchAsync(async (_req, res) => {
-  res.json(await inventoryService.list());
+const listInventory = catchAsync(async (req, res) => {
+  res.json(await inventoryService.list(req.query));
 });
 
 const updateStock = catchAsync(async (req, res) => {

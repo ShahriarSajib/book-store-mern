@@ -11,7 +11,34 @@ function safeCount(Model, filter = {}) {
     : Promise.resolve(null);
 }
 
-async function getDashboard() {
+const DASHBOARD_CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes
+let dashboardCache = null;
+let dashboardCacheLoadedAt = 0;
+let dashboardLoadingPromise = null;
+
+async function getDashboard({ force = false } = {}) {
+  const now = Date.now();
+
+  if (!force && dashboardCache && now - dashboardCacheLoadedAt < DASHBOARD_CACHE_TTL_MS) {
+    return dashboardCache;
+  }
+
+  if (!dashboardLoadingPromise) {
+    dashboardLoadingPromise = loadDashboard()
+      .then((value) => {
+        dashboardCache = value;
+        dashboardCacheLoadedAt = Date.now();
+        return value;
+      })
+      .finally(() => {
+        dashboardLoadingPromise = null;
+      });
+  }
+
+  return dashboardLoadingPromise;
+}
+
+async function loadDashboard() {
   const [users, activeUsers, books, categories, authors, publishers, orders, pendingOrders] =
     await Promise.all([
       safeCount(User),

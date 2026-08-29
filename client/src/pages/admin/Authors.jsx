@@ -21,10 +21,11 @@ export default function Authors() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState("");
+  const [page, setPage] = useState(1);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin", "authors"],
-    queryFn: () => catalogApi.authors.list(),
+    queryKey: ["admin", "authors", page],
+    queryFn: () => catalogApi.authors.list({ page, limit: 50 }),
   });
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["admin", "authors"] });
@@ -97,6 +98,7 @@ export default function Authors() {
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const authors = data?.items || [];
+  const pagination = data?.pagination || { page: 1, pages: 1, total: 0 };
 
   return (
     <div className="space-y-6">
@@ -174,6 +176,32 @@ export default function Authors() {
               ))}
             </tbody>
           </table>
+
+          {pagination.pages > 1 && (
+            <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-sm">
+              <span className="text-slate-500">
+                Page {pagination.page} of {pagination.pages} ({pagination.total} authors)
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!pagination.hasPrev}
+                  onClick={() => setPage((p) => p - 1)}
+                >
+                  Prev
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!pagination.hasNext}
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

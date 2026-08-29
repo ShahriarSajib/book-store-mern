@@ -3,13 +3,38 @@
  */
 import AppError from "../utils/AppError.js";
 import { Book } from "../models/index.js";
+import { getPagination, buildPageMeta } from "../utils/paginate.js";
 import socketService from "./socketService.js";
 
-async function list() {
-  const books = await Book.find()
-    .select("title price stock coverImage averageRating isActive")
-    .sort({ stock: 1 });
-  return { items: books };
+const DEFAULT_LOW_STOCK = 10;
+const MAX_LIMIT = 100;
+
+async function list({ page = 1, limit = 50, lowOnly } = {}) {
+  const { skip } = getPagination({ page, limit });
+  const clamped = Math.min(Math.max(Number(limit) || 50, 1), MAX_LIMIT);
+
+  const filter = {};
+
+  // Server-side low-stock filter instead of pulling every book and filtering
+  // in the browser.
+  if (lowOnly === "true" || lowOnly === true) {
+    filter.stock = { $lte: DEFAULT_LOW_STOCK };
+  }
+
+  const [books, total] = await Promise.all([
+    Book.find(filter)
+      .select("title price stock coverImage averageRating isActive")
+      .sort({ stock: 1 })
+      .skip(skip)
+      .limit(clamped)
+      .lean(),
+    Book.countDocuments(filter),
+  ]);
+
+  return {
+    items: books,
+    pagination: buildPageMeta(total, Number(page) || 1, clamped),
+  };
 }
 
 async function updateStock(bookId, stock) {

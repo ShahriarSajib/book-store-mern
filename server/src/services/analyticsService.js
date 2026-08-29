@@ -4,11 +4,39 @@
  */
 import { Order, Book, Review, User } from "../models/index.js";
 
+const CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes
+const cache = new Map();
+const inflight = new Map();
+
+async function cached(key, loader) {
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < CACHE_TTL_MS) {
+    return hit.value;
+  }
+
+  if (inflight.has(key)) return inflight.get(key);
+
+  const promise = loader()
+    .then((value) => {
+      cache.set(key, { at: Date.now(), value });
+      return value;
+    })
+    .finally(() => {
+      inflight.delete(key);
+    });
+  inflight.set(key, promise);
+  return promise;
+}
+
 async function salesReport(query = {}) {
   const days = Math.max(1, Math.min(365, Number(query.days) || 30));
-  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
   const groupBy = query.groupBy === "day" ? "day" : query.groupBy === "month" ? "month" : "day";
 
+  return cached(`sales:${days}:${groupBy}`, () => computeSalesReport(days, groupBy));
+}
+
+async function computeSalesReport(days, groupBy) {
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
   const dateProject = groupBy === "month" ? { $month: "$createdAt" } : { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
 
   const [summary, series, topBooks, statusBreakdown] = await Promise.all([
@@ -41,6 +69,10 @@ async function salesReport(query = {}) {
 }
 
 async function inventoryReport() {
+  return cached("inventory", computeInventoryReport);
+}
+
+async function computeInventoryReport() {
   const [lowStock, outOfStock, totals] = await Promise.all([
     Book.find({ stock: { $gt: 0, $lte: 10 } }).select("title price stock coverImage").sort({ stock: 1 }).limit(50),
     Book.countDocuments({ stock: { $lte: 0 } }),
@@ -56,6 +88,10 @@ async function inventoryReport() {
 }
 
 async function recommendationReport() {
+  return cached("recommendation", computeRecommendationReport);
+}
+
+async function computeRecommendationReport() {
   const [topRated, mostPurchased, reviewStats] = await Promise.all([
     Book.find({ ratingsCount: { $gt: 0 } }).sort({ averageRating: -1, ratingsCount: -1 }).select("title averageRating ratingsCount coverImage").limit(10),
     Book.find({ purchaseCount: { $gt: 0 } }).sort({ purchaseCount: -1 }).select("title purchaseCount price coverImage").limit(10),
@@ -71,6 +107,10 @@ async function recommendationReport() {
 }
 
 async function summary() {
+  return cached("summary", computeSummary);
+}
+
+async function computeSummary() {
   const [orders, revenue, users, reviews] = await Promise.all([
     Order.countDocuments(),
     Order.aggregate([

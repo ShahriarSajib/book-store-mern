@@ -31,12 +31,14 @@ function StockBadge({ stock }) {
 export default function Inventory() {
   const queryClient = useQueryClient();
   const [lowOnly, setLowOnly] = useState(false);
+  const [page, setPage] = useState(1);
   const [editingId, setEditingId] = useState(null);
   const [stockValue, setStockValue] = useState("");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin", "inventory"],
-    queryFn: () => adminApi.inventory.list(),
+    queryKey: ["admin", "inventory", { lowOnly, page }],
+    queryFn: () =>
+      adminApi.inventory.list({ page, limit: 50, lowOnly: lowOnly || undefined }),
   });
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["admin", "inventory"] });
@@ -54,7 +56,7 @@ export default function Inventory() {
   });
 
   const items = data?.items || [];
-  const shown = lowOnly ? items.filter((b) => b.stock <= LOW_STOCK) : items;
+  const pagination = data?.pagination || { page: 1, pages: 1, total: 0 };
 
   const handleSave = (book) => {
     const stock = Number(stockValue);
@@ -76,7 +78,10 @@ export default function Inventory() {
           <input
             type="checkbox"
             checked={lowOnly}
-            onChange={(e) => setLowOnly(e.target.checked)}
+            onChange={(e) => {
+              setLowOnly(e.target.checked);
+              setPage(1);
+            }}
             className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
           />
           Show low stock only
@@ -87,7 +92,7 @@ export default function Inventory() {
         <div className="flex justify-center py-16 text-brand-600">
           <Spinner className="h-8 w-8" />
         </div>
-      ) : shown.length === 0 ? (
+      ) : items.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-500">
           {lowOnly ? "No low stock books." : "No inventory yet."}
         </div>
@@ -103,7 +108,7 @@ export default function Inventory() {
               </tr>
             </thead>
             <tbody>
-              {shown.map((book) => (
+              {items.map((book) => (
                 <tr key={getId(book)} className="border-t border-slate-100">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
@@ -159,6 +164,32 @@ export default function Inventory() {
               ))}
             </tbody>
           </table>
+
+          {pagination.pages > 1 && (
+            <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-sm">
+              <span className="text-slate-500">
+                Page {pagination.page} of {pagination.pages} ({pagination.total} books)
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!pagination.hasPrev}
+                  onClick={() => setPage((p) => p - 1)}
+                >
+                  Prev
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!pagination.hasNext}
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

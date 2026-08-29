@@ -10,8 +10,12 @@ function serviceFor(req) {
 }
 
 const list = catchAsync(async (req, res) => {
-  const items = await serviceFor(req).list();
-  res.json({ items });
+  const result = await serviceFor(req).list(req.query);
+  if (result && result.pagination) {
+    res.json(result);
+  } else {
+    res.json({ items: result });
+  }
 });
 
 const getById = catchAsync(async (req, res) => {

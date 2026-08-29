@@ -12,7 +12,7 @@ export const catalogApi = {
     remove: (id) => api.delete(`/categories/${id}`).then((r) => r.data),
   },
   authors: {
-    list: () => api.get("/authors").then((r) => r.data),
+    list: (params) => api.get("/authors", { params }).then((r) => r.data),
     get: (id) => api.get(`/authors/${id}`).then((r) => r.data),
     create: (data) => api.post("/authors", data).then((r) => r.data),
     update: (id, data) => api.put(`/authors/${id}`, data).then((r) => r.data),

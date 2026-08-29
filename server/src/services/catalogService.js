@@ -3,6 +3,7 @@
  */
 import AppError from "../utils/AppError.js";
 import { Category, Author, Publisher, Book } from "../models/index.js";
+import { getPagination, buildPageMeta } from "../utils/paginate.js";
 
 const RESOURCES = {
   categories: { Model: Category, label: "Category" },
@@ -10,10 +11,27 @@ const RESOURCES = {
   publishers: { Model: Publisher, label: "Publisher" },
 };
 
+async function listWithPagination(Model, { page = 1, limit = 50, includeInactive = false } = {}) {
+  const { skip } = getPagination({ page, limit });
+  const clamped = Math.min(Math.max(Number(limit) || 50, 1), 100);
+
+  const filter = includeInactive ? {} : { isActive: true };
+  const [items, total] = await Promise.all([
+    Model.find(filter).sort({ name: 1 }).skip(skip).limit(clamped).lean(),
+    Model.countDocuments(filter),
+  ]);
+
+  return { items, pagination: buildPageMeta(total, Number(page) || 1, clamped) };
+}
+
 function buildService(resource) {
   const { Model, label } = RESOURCES[resource];
 
-  async function list() {
+  async function list(query = {}) {
+    // Optional pagination via ?page=&limit= ; otherwise return the full list.
+    if (query.page !== undefined || query.limit !== undefined) {
+      return listWithPagination(Model, { page: query.page, limit: query.limit, includeInactive: query.all === "true" });
+    }
     return Model.find({ isActive: true }).sort({ name: 1 });
   }
 

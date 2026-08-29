@@ -2,6 +2,7 @@
  * components/notifications/NotificationDropdown.jsx
  * Dropdown panel showing recent notifications with mark-as-read.
  */
+import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import {
   FaBell,
@@ -10,6 +11,7 @@ import {
   FaInfoCircle,
   FaTimesCircle,
 } from "react-icons/fa";
+import ConfirmModal from "../ui/ConfirmModal";
 
 const typeConfig = {
   order: { icon: FaCheckCircle, color: "text-green-500" },
@@ -25,6 +27,8 @@ export default function NotificationDropdown({
   onMarkAllRead,
   onClearAll,
 }) {
+  const [clearOpen, setClearOpen] = useState(false);
+
   if (notifications.length === 0) {
     return (
       <div className="w-80 p-6 text-center">
@@ -48,7 +52,7 @@ export default function NotificationDropdown({
           </button>
           <button
             type="button"
-            onClick={onClearAll}
+            onClick={() => setClearOpen(true)}
             className="text-xs text-ink-400 dark:text-ink-500 hover:text-ink-600 dark:hover:text-ink-300"
           >
             Clear
@@ -84,6 +88,18 @@ export default function NotificationDropdown({
           );
         })}
       </div>
+
+      <ConfirmModal
+        open={clearOpen}
+        onClose={() => setClearOpen(false)}
+        onConfirm={() => {
+          setClearOpen(false);
+          onClearAll();
+        }}
+        title="Clear notifications"
+        message="Are you sure you want to clear all your notifications? This cannot be undone."
+        confirmLabel="Clear all"
+      />
     </div>
   );
 }

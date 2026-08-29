@@ -24,6 +24,7 @@ import { useCartContext } from "../../context/CartContext";
 import { useTheme } from "../../context/ThemeContext";
 import NotificationBell from "../notifications/NotificationBell";
 import Button from "../ui/Button";
+import ConfirmModal from "../ui/ConfirmModal";
 
 const navLink = ({ isActive }) =>
   `navbar__link${isActive ? " is-active" : ""}`;
@@ -38,6 +39,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -56,9 +58,14 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", onClick);
   }, [menuOpen]);
 
-  const handleLogout = async () => {
+  const confirmLogout = () => {
     setMenuOpen(false);
     setDrawerOpen(false);
+    setLogoutOpen(true);
+  };
+
+  const handleLogout = async () => {
+    setLogoutOpen(false);
     await logout();
     toast.success("Logged out");
     navigate("/");
@@ -187,7 +194,7 @@ export default function Navbar() {
                   </Link>
                   <button
                     type="button"
-                    onClick={handleLogout}
+                    onClick={confirmLogout}
                     className="user-menu__item user-menu__item--danger"
                     role="menuitem"
                   >
@@ -265,7 +272,7 @@ export default function Navbar() {
           {isAuthenticated && (
             <button
               type="button"
-              onClick={handleLogout}
+              onClick={confirmLogout}
               className="navbar__drawer-link text-red-600"
             >
               Log out
@@ -273,6 +280,15 @@ export default function Navbar() {
           )}
         </div>
       )}
+
+      <ConfirmModal
+        open={logoutOpen}
+        onClose={() => setLogoutOpen(false)}
+        onConfirm={handleLogout}
+        title="Log out"
+        message="Are you sure you want to log out of your account?"
+        confirmLabel="Log out"
+      />
     </header>
   );
 }

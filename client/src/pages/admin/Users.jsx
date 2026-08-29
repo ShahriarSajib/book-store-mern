@@ -8,6 +8,7 @@ import adminApi from "../../services/adminApi";
 import useAuth from "../../hooks/useAuth";
 import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import { FaSearch, FaTrash } from "react-icons/fa";
 
 const ROLES = ["customer", "book_manager", "order_manager", "admin"];
@@ -32,6 +33,7 @@ export default function Users() {
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(1);
+  const [pendingAction, setPendingAction] = useState(null);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["admin", "users", { search, role, status, page }],
@@ -176,7 +178,17 @@ export default function Users() {
                     <select
                       value={u.role}
                       disabled={u.id === me.id}
-                      onChange={(e) => updateMutation.mutate({ id: u.id, patch: { role: e.target.value } })}
+                      onChange={(e) => {
+                        const next = e.target.value;
+                        if (next === u.role) return;
+                        setPendingAction({
+                          user: u,
+                          patch: { role: next },
+                          title: "Change user role",
+                          message: `Change ${u.name}'s role from "${u.role}" to "${next}"?`,
+                          label: "Change role",
+                        });
+                      }}
                       className="rounded-md border border-slate-300 px-2 py-1 text-sm capitalize focus:border-brand-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-400"
                     >
                       {ROLES.map((r) => (
@@ -198,7 +210,15 @@ export default function Users() {
                           size="sm"
                           loading={updateMutation.isLoading && updateMutation.variables?.id === u.id}
                           onClick={() =>
-                            updateMutation.mutate({ id: u.id, patch: { isActive: !u.isActive } })
+                            setPendingAction({
+                              user: u,
+                              patch: { isActive: !u.isActive },
+                              title: u.isActive ? "Disable user" : "Enable user",
+                              message: u.isActive
+                                ? `Disable ${u.name}'s account? They will no longer be able to sign in.`
+                                : `Enable ${u.name}'s account?`,
+                              label: u.isActive ? "Disable" : "Enable",
+                            })
                           }
                         >
                           {u.isActive ? "Disable" : "Enable"}
@@ -248,6 +268,21 @@ export default function Users() {
         </div>
       )}
       {isFetching && !isLoading && <p className="text-xs text-slate-400">Updating…</p>}
+
+      <ConfirmModal
+        open={!!pendingAction}
+        onClose={() => setPendingAction(null)}
+        onConfirm={() => {
+          if (pendingAction) {
+            updateMutation.mutate({ id: pendingAction.user.id, patch: pendingAction.patch });
+          }
+          setPendingAction(null);
+        }}
+        title={pendingAction?.title || "Confirm action"}
+        message={pendingAction?.message || ""}
+        confirmLabel={pendingAction?.label || "Confirm"}
+        loading={updateMutation.isPending}
+      />
     </div>
   );
 }

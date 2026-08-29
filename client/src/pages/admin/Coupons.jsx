@@ -9,6 +9,7 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Spinner from "../../components/ui/Spinner";
 import Modal from "../../components/ui/Modal";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 import { formatCurrency, formatDate } from "../../utils/format";
 
@@ -79,6 +80,7 @@ export default function Coupons() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState("");
+  const [pendingToggle, setPendingToggle] = useState(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "coupons"],
@@ -227,12 +229,7 @@ export default function Coupons() {
                           toggleMutation.isLoading &&
                           toggleMutation.variables?.id === getId(coupon)
                         }
-                        onClick={() =>
-                          toggleMutation.mutate({
-                            id: getId(coupon),
-                            isActive: !coupon.isActive,
-                          })
-                        }
+                        onClick={() => setPendingToggle({ coupon, isActive: !coupon.isActive })}
                       >
                         {coupon.isActive ? "Disable" : "Enable"}
                       </Button>
@@ -353,6 +350,30 @@ export default function Coupons() {
           </div>
         </form>
       </Modal>
+
+      <ConfirmModal
+        open={!!pendingToggle}
+        onClose={() => setPendingToggle(null)}
+        onConfirm={() => {
+          if (pendingToggle) {
+            toggleMutation.mutate({
+              id: getId(pendingToggle.coupon),
+              isActive: pendingToggle.isActive,
+            });
+          }
+          setPendingToggle(null);
+        }}
+        title={pendingToggle?.isActive ? "Enable coupon" : "Disable coupon"}
+        message={
+          pendingToggle
+            ? `Set coupon "${pendingToggle.coupon.code}" to ${
+                pendingToggle.isActive ? "active" : "inactive"
+              }? Inactive coupons cannot be used at checkout.`
+            : ""
+        }
+        confirmLabel={pendingToggle?.isActive ? "Enable" : "Disable"}
+        loading={toggleMutation.isPending}
+      />
     </div>
   );
 }

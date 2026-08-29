@@ -1,8 +1,10 @@
 /**
  * components/cart/CartSummary.jsx — totals, coupon, checkout actions.
  */
+import { useState } from "react";
 import { FaShoppingCart } from "react-icons/fa";
 import Button from "../../components/ui/Button";
+import ConfirmModal from "../ui/ConfirmModal";
 import CouponInput from "./CouponInput";
 import { formatCurrency } from "../../utils/format";
 
@@ -18,6 +20,7 @@ export default function CartSummary({
   onClear,
 }) {
   const count = items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+  const [clearOpen, setClearOpen] = useState(false);
 
   return (
     <aside className="rounded-2xl border border-ink-100 bg-white p-5 shadow-soft">
@@ -54,9 +57,21 @@ export default function CartSummary({
         Proceed to checkout
       </Button>
 
-      <Button variant="ghost" fullWidth className="mt-2" onClick={onClear}>
+      <Button variant="ghost" fullWidth className="mt-2" onClick={() => setClearOpen(true)}>
         Clear cart
       </Button>
+
+      <ConfirmModal
+        open={clearOpen}
+        onClose={() => setClearOpen(false)}
+        onConfirm={() => {
+          setClearOpen(false);
+          onClear();
+        }}
+        title="Clear cart"
+        message="Are you sure you want to remove all items from your cart? This cannot be undone."
+        confirmLabel="Clear cart"
+      />
     </aside>
   );
 }

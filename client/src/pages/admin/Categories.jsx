@@ -9,6 +9,7 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Spinner from "../../components/ui/Spinner";
 import Modal from "../../components/ui/Modal";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 
 const EMPTY_FORM = { name: "", description: "" };
@@ -21,6 +22,7 @@ export default function Categories() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState("");
+  const [pendingToggle, setPendingToggle] = useState(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "categories"],
@@ -149,12 +151,7 @@ export default function Categories() {
                         toggleMutation.isLoading &&
                         toggleMutation.variables?.id === getId(cat)
                       }
-                      onClick={() =>
-                        toggleMutation.mutate({
-                          id: getId(cat),
-                          isActive: !cat.isActive,
-                        })
-                      }
+                      onClick={() => setPendingToggle({ cat, isActive: !cat.isActive })}
                     >
                       {cat.isActive ? "Active" : "Inactive"}
                     </Button>
@@ -208,6 +205,30 @@ export default function Categories() {
           </div>
         </form>
       </Modal>
+
+      <ConfirmModal
+        open={!!pendingToggle}
+        onClose={() => setPendingToggle(null)}
+        onConfirm={() => {
+          if (pendingToggle) {
+            toggleMutation.mutate({
+              id: getId(pendingToggle.cat),
+              isActive: pendingToggle.isActive,
+            });
+          }
+          setPendingToggle(null);
+        }}
+        title={pendingToggle?.isActive ? "Activate category" : "Deactivate category"}
+        message={
+          pendingToggle
+            ? `Set category "${pendingToggle.cat.name}" to ${
+                pendingToggle.isActive ? "active" : "inactive"
+              }? Inactive categories are hidden from the store.`
+            : ""
+        }
+        confirmLabel={pendingToggle?.isActive ? "Activate" : "Deactivate"}
+        loading={toggleMutation.isPending}
+      />
     </div>
   );
 }

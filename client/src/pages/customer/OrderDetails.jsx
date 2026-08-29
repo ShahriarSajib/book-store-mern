@@ -1,6 +1,7 @@
 /**
  * pages/customer/OrderDetails.jsx — items, status, cancel, invoice.
  */
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -8,6 +9,7 @@ import orderApi from "../../services/orderApi";
 import { useCartContext } from "../../context/CartContext";
 import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import { formatDate, formatCurrency } from "../../utils/format";
 import { ORDER_STATUS } from "../../config/constants";
 import { FaArrowLeft, FaFileDownload, FaMapMarkerAlt, FaRedo, FaShoppingCart, FaTruck } from "react-icons/fa";
@@ -32,6 +34,7 @@ const PAYMENT_STATUS_STYLES = {
 export default function OrderDetails() {
   const { id } = useParams();
   const queryClient = useQueryClient();
+  const [cancelOpen, setCancelOpen] = useState(false);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["order", id],
@@ -104,9 +107,12 @@ export default function OrderDetails() {
     order.status === "pending";
 
   const handleCancel = () => {
-    const reason = window.prompt("Reason for cancellation (optional):");
-    if (reason === null) return;
-    cancelMutation.mutate(reason);
+    setCancelOpen(true);
+  };
+
+  const doCancel = () => {
+    setCancelOpen(false);
+    cancelMutation.mutate("");
   };
 
   const handleInvoice = async () => {
@@ -306,6 +312,16 @@ export default function OrderDetails() {
           </Button>
         </div>
       )}
+
+      <ConfirmModal
+        open={cancelOpen}
+        onClose={() => setCancelOpen(false)}
+        onConfirm={doCancel}
+        title="Cancel order"
+        message={`Are you sure you want to cancel order #${order.orderNumber || id}? This cannot be undone.`}
+        confirmLabel="Cancel order"
+        loading={cancelMutation.isLoading}
+      />
     </div>
   );
 }

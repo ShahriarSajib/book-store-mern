@@ -8,6 +8,7 @@ import adminApi from "../../services/adminApi";
 import { ORDER_STATUS } from "../../config/constants";
 import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import { FaSearch } from "react-icons/fa";
 import { formatCurrency, formatDate } from "../../utils/format";
 
@@ -38,6 +39,7 @@ export default function Orders() {
   const [status, setStatus] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [pendingStatus, setPendingStatus] = useState(null);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["admin", "orders", { status, search, page }],
@@ -163,12 +165,11 @@ export default function Orders() {
                   <td className="px-4 py-3">
                     <select
                       value={order.status}
-                      onChange={(e) =>
-                        updateMutation.mutate({
-                          id: getId(order),
-                          patch: { status: e.target.value },
-                        })
-                      }
+                      onChange={(e) => {
+                        const next = e.target.value;
+                        if (next === order.status) return;
+                        setPendingStatus({ id: getId(order), current: order.status, next, label: order.orderNumber });
+                      }}
                       className="rounded-md border border-slate-300 px-2 py-1 text-sm capitalize focus:border-brand-500 focus:outline-none"
                     >
                       {Object.values(ORDER_STATUS).map((value) => (
@@ -219,6 +220,30 @@ export default function Orders() {
         </div>
       )}
       {isFetching && !isLoading && <p className="text-xs text-slate-400">Updating…</p>}
+
+      <ConfirmModal
+        open={!!pendingStatus}
+        onClose={() => setPendingStatus(null)}
+        onConfirm={() => {
+          if (pendingStatus) {
+            updateMutation.mutate({
+              id: pendingStatus.id,
+              patch: { status: pendingStatus.next },
+            });
+          }
+          setPendingStatus(null);
+        }}
+        title="Change order status"
+        message={
+          pendingStatus
+            ? `Change order #${pendingStatus.label} from "${labelize(
+                pendingStatus.current
+              )}" to "${labelize(pendingStatus.next)}"?`
+            : ""
+        }
+        confirmLabel="Change status"
+        loading={updateMutation.isPending}
+      />
     </div>
   );
 }

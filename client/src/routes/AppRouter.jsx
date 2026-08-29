@@ -27,7 +27,9 @@ const CategoryPage = lazy(() => import("../pages/public/CategoryPage.jsx"));
 const AuthorPage = lazy(() => import("../pages/public/AuthorPage.jsx"));
 const PublisherPage = lazy(() => import("../pages/public/PublisherPage.jsx"));
 const SearchResults = lazy(() => import("../pages/public/SearchResults.jsx"));
-const ComingSoon = lazy(() => import("../pages/public/ComingSoon.jsx"));
+const Privacy = lazy(() => import("../pages/public/Privacy.jsx"));
+const Terms = lazy(() => import("../pages/public/Terms.jsx"));
+const Contact = lazy(() => import("../pages/public/Contact.jsx"));
 const NotFound = lazy(() => import("../pages/public/NotFound.jsx"));
 
 // auth pages
@@ -90,9 +92,9 @@ export default function AppRouter() {
         <Route path="/ai-search" element={<SemanticSearch />} />
         <Route path="/trending" element={<TrendingBooksPage />} />
         <Route path="/recommended" element={<RecommendedForYou />} />
-        <Route path="/privacy" element={<ComingSoon title="Privacy policy" />} />
-        <Route path="/terms" element={<ComingSoon title="Terms of service" />} />
-        <Route path="/contact" element={<ComingSoon title="Contact us" />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/contact" element={<Contact />} />
 
         {/* Auth */}
         <Route path="/login" element={<Login />} />

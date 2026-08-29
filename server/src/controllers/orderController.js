@@ -3,6 +3,7 @@
  */
 import catchAsync from "../utils/catchAsync.js";
 import * as orderService from "../services/orderService.js";
+import { generateInvoicePdf } from "../services/invoiceService.js";
 
 const createOrder = catchAsync(async (req, res) => {
   const { order, isOnlinePayment } = await orderService.createOrder(req.user.id, req.body);
@@ -31,10 +32,11 @@ const reorder = catchAsync(async (req, res) => {
 
 const downloadInvoice = catchAsync(async (req, res) => {
   const order = await orderService.getOrder(req.user.id, req.params.id);
-  const csv = orderService.invoiceRows(order);
-  res.setHeader("Content-Type", "text/csv; charset=utf-8");
-  res.setHeader("Content-Disposition", `attachment; filename="invoice-${order.orderNumber}.csv"`);
-  res.send(csv);
+  if (order.user) await order.populate("user", "name email");
+  const pdf = await generateInvoicePdf(order);
+  res.setHeader("Content-Type", "application/pdf; charset=utf-8");
+  res.setHeader("Content-Disposition", `attachment; filename="invoice-${order.orderNumber}.pdf"`);
+  res.send(pdf);
 });
 
 export { createOrder, listOrders, getOrder, getTracking, cancelOrder, reorder, downloadInvoice };

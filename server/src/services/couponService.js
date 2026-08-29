@@ -3,6 +3,9 @@
  */
 import AppError from "../utils/AppError.js";
 import { Coupon } from "../models/index.js";
+import { getPagination, buildPageMeta } from "../utils/paginate.js";
+
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 function discountFor(coupon, subtotal) {
   let discount = 0;
@@ -55,8 +58,19 @@ async function trackUsage(code) {
   await Coupon.updateOne({ code: String(code).trim().toUpperCase() }, { $inc: { usedCount: 1 } });
 }
 
-async function listAdmin() {
-  return Coupon.find().sort({ createdAt: -1 });
+async function listAdmin(query = {}) {
+  const search = (query.search || query.q || "").trim();
+  const filter = search
+    ? { $or: [{ code: new RegExp(escapeRegex(search), "i") }, { description: new RegExp(escapeRegex(search), "i") }] }
+    : {};
+
+  const { page, limit } = getPagination({ page: query.page, limit: query.limit });
+  const [coupons, total] = await Promise.all([
+    Coupon.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+    Coupon.countDocuments(filter),
+  ]);
+
+  return { coupons, pagination: buildPageMeta(total, page, limit) };
 }
 
 async function create(data) {

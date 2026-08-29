@@ -14,7 +14,7 @@ export const adminApi = {
     remove: (id) => api.delete(`/admin/users/${id}`).then((r) => r.data),
   },
   inventory: {
-    list: () => api.get("/admin/inventory").then((r) => r.data),
+    list: (params) => api.get("/admin/inventory", { params }).then((r) => r.data),
     updateStock: (id, stock) =>
       api.put(`/admin/inventory/${id}`, { stock }).then((r) => r.data),
   },

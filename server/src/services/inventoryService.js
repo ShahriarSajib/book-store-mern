@@ -9,7 +9,9 @@ import socketService from "./socketService.js";
 const DEFAULT_LOW_STOCK = 10;
 const MAX_LIMIT = 100;
 
-async function list({ page = 1, limit = 50, lowOnly } = {}) {
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+async function list({ page = 1, limit = 50, lowOnly, search = "" } = {}) {
   const { skip } = getPagination({ page, limit });
   const clamped = Math.min(Math.max(Number(limit) || 50, 1), MAX_LIMIT);
 
@@ -19,6 +21,19 @@ async function list({ page = 1, limit = 50, lowOnly } = {}) {
   // in the browser.
   if (lowOnly === "true" || lowOnly === true) {
     filter.stock = { $lte: DEFAULT_LOW_STOCK };
+  }
+
+  const term = (search || "").trim();
+  if (term) {
+    const regex = new RegExp(escapeRegex(term), "i");
+    filter.$or = [
+      { title: regex },
+      { subtitle: regex },
+      { authors: regex },
+      { publisher: regex },
+      { isbn10: regex },
+      { isbn13: regex },
+    ];
   }
 
   const [books, total] = await Promise.all([

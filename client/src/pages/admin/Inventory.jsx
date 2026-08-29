@@ -9,6 +9,7 @@ import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
 import ExportPdfButton from "../../components/admin/ExportPdfButton";
 import { formatCurrency } from "../../utils/format";
+import { FaSearch } from "react-icons/fa";
 
 const LOW_STOCK = 10;
 
@@ -33,13 +34,15 @@ export default function Inventory() {
   const queryClient = useQueryClient();
   const [lowOnly, setLowOnly] = useState(false);
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [stockValue, setStockValue] = useState("");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin", "inventory", { lowOnly, page }],
+    queryKey: ["admin", "inventory", { lowOnly, search, page }],
     queryFn: () =>
-      adminApi.inventory.list({ page, limit: 50, lowOnly: lowOnly || undefined }),
+      adminApi.inventory.list({ page, limit: 50, lowOnly: lowOnly || undefined, search: search || undefined }),
+    keepPreviousData: true,
   });
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["admin", "inventory"] });
@@ -90,13 +93,30 @@ export default function Inventory() {
         <ExportPdfButton type="inventory" />
       </div>
 
+      <div className="relative max-w-md">
+        <FaSearch className="pointer-events-none absolute left-3 top-2.5 text-slate-400" />
+        <input
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+          placeholder="Search books (title, author, publisher, ISBN)…"
+          className="w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200"
+        />
+      </div>
+
       {isLoading ? (
         <div className="flex justify-center py-16 text-brand-600">
           <Spinner className="h-8 w-8" />
         </div>
       ) : items.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-500">
-          {lowOnly ? "No low stock books." : "No inventory yet."}
+          {search
+            ? "No books match your search."
+            : lowOnly
+            ? "No low stock books."
+            : "No inventory yet."}
         </div>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">

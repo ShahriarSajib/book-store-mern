@@ -58,8 +58,8 @@ const deleteReview = catchAsync(async (req, res) => {
 });
 
 // ---- Coupons ----
-const listCoupons = catchAsync(async (_req, res) => {
-  res.json({ coupons: await couponService.listAdmin() });
+const listCoupons = catchAsync(async (req, res) => {
+  res.json(await couponService.listAdmin(req.query));
 });
 
 const createCoupon = catchAsync(async (req, res) => {

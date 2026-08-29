@@ -1,6 +1,7 @@
 /**
  * pages/admin/Reviews.jsx — moderate reviews.
  */
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import adminApi from "../../services/adminApi";
@@ -8,17 +9,20 @@ import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
 import Rating from "../../components/ui/Rating";
 import ExportPdfButton from "../../components/admin/ExportPdfButton";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaSearch } from "react-icons/fa";
 import { formatDate } from "../../utils/format";
 
 const getId = (item) => item?._id || item?.id;
 
 export default function Reviews() {
   const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin", "reviews"],
-    queryFn: () => adminApi.reviews.list(),
+    queryKey: ["admin", "reviews", { search, page }],
+    queryFn: () => adminApi.reviews.list({ search, page, limit: 20 }),
+    keepPreviousData: true,
   });
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["admin", "reviews"] });
@@ -50,6 +54,7 @@ export default function Reviews() {
   };
 
   const reviews = data?.reviews || [];
+  const pagination = data?.pagination || { page: 1, pages: 1, total: 0 };
 
   return (
     <div className="space-y-6">
@@ -61,13 +66,26 @@ export default function Reviews() {
         <ExportPdfButton type="reviews" />
       </div>
 
+      <div className="relative max-w-md">
+        <FaSearch className="pointer-events-none absolute left-3 top-2.5 text-slate-400" />
+        <input
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+          placeholder="Search reviews (book, reviewer, text)…"
+          className="w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200"
+        />
+      </div>
+
       {isLoading ? (
         <div className="flex justify-center py-16 text-brand-600">
           <Spinner className="h-8 w-8" />
         </div>
       ) : reviews.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-slate-500">
-          No reviews yet.
+          {search ? "No reviews match your search." : "No reviews yet."}
         </div>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -156,6 +174,32 @@ export default function Reviews() {
               ))}
             </tbody>
           </table>
+
+          {pagination.pages > 1 && (
+            <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-sm">
+              <span className="text-slate-500">
+                Page {pagination.page} of {pagination.pages} ({pagination.total} reviews)
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!pagination.hasPrev}
+                  onClick={() => setPage((p) => p - 1)}
+                >
+                  Prev
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!pagination.hasNext}
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -2,8 +2,10 @@
  * services/reviewService.js — add/update/delete review, recompute book rating.
  */
 import AppError from "../utils/AppError.js";
-import { Review, Book } from "../models/index.js";
+import { Review, Book, User } from "../models/index.js";
 import { getPagination, buildPageMeta } from "../utils/paginate.js";
+
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 async function recomputeBookRating(bookId) {
   const [agg] = await Review.aggregate([
@@ -70,6 +72,22 @@ async function listAll(query = {}) {
   const { page, limit, skip } = getPagination(query);
   const filter = {};
   if (query.isApproved !== undefined) filter.isApproved = query.isApproved === "true";
+
+  const search = (query.search || query.q || "").trim();
+  if (search) {
+    const regex = new RegExp(escapeRegex(search), "i");
+    const [bookIds, userIds] = await Promise.all([
+      Book.find({ title: regex }).select("_id").lean(),
+      User.find({ $or: [{ name: regex }, { email: regex }] }).select("_id").lean(),
+    ]);
+    filter.$or = [
+      { title: regex },
+      { body: regex },
+      { book: { $in: bookIds.map((b) => b._id) } },
+      { user: { $in: userIds.map((u) => u._id) } },
+    ];
+  }
+
   const [total, reviews] = await Promise.all([
     Review.countDocuments(filter),
     Review.find(filter)

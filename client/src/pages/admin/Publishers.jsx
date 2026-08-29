@@ -10,7 +10,7 @@ import Input from "../../components/ui/Input";
 import Spinner from "../../components/ui/Spinner";
 import Modal from "../../components/ui/Modal";
 import ExportPdfButton from "../../components/admin/ExportPdfButton";
-import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
+import { FaPlus, FaTrash, FaEdit, FaSearch } from "react-icons/fa";
 
 const EMPTY_FORM = { name: "", country: "", website: "" };
 
@@ -22,10 +22,13 @@ export default function Publishers() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState("");
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin", "publishers"],
-    queryFn: () => catalogApi.publishers.list(),
+    queryKey: ["admin", "publishers", { search, page }],
+    queryFn: () => catalogApi.publishers.list({ search, page, limit: 50, all: "true" }),
+    keepPreviousData: true,
   });
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["admin", "publishers"] });
@@ -96,6 +99,7 @@ export default function Publishers() {
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const publishers = data?.items || [];
+  const pagination = data?.pagination || { page: 1, pages: 1, total: 0 };
 
   return (
     <div className="space-y-6">
@@ -110,6 +114,19 @@ export default function Publishers() {
             <FaPlus /> Add publisher
           </Button>
         </div>
+      </div>
+
+      <div className="relative max-w-md">
+        <FaSearch className="pointer-events-none absolute left-3 top-2.5 text-slate-400" />
+        <input
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+          placeholder="Search publishers…"
+          className="w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200"
+        />
       </div>
 
       {isLoading ? (
@@ -178,6 +195,32 @@ export default function Publishers() {
               ))}
             </tbody>
           </table>
+
+          {pagination.pages > 1 && (
+            <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-sm">
+              <span className="text-slate-500">
+                Page {pagination.page} of {pagination.pages} ({pagination.total} publishers)
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!pagination.hasPrev}
+                  onClick={() => setPage((p) => p - 1)}
+                >
+                  Prev
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!pagination.hasNext}
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

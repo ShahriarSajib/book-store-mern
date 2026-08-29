@@ -10,7 +10,7 @@ import Input from "../../components/ui/Input";
 import Spinner from "../../components/ui/Spinner";
 import Modal from "../../components/ui/Modal";
 import ExportPdfButton from "../../components/admin/ExportPdfButton";
-import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
+import { FaPlus, FaTrash, FaEdit, FaSearch } from "react-icons/fa";
 
 const EMPTY_FORM = { name: "", bio: "", bornYear: "", country: "" };
 
@@ -23,10 +23,12 @@ export default function Authors() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState("");
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin", "authors", page],
-    queryFn: () => catalogApi.authors.list({ page, limit: 50 }),
+    queryKey: ["admin", "authors", { search, page }],
+    queryFn: () => catalogApi.authors.list({ search, page, limit: 50, all: "true" }),
+    keepPreviousData: true,
   });
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["admin", "authors"] });
@@ -114,6 +116,19 @@ export default function Authors() {
             <FaPlus /> Add author
           </Button>
         </div>
+      </div>
+
+      <div className="relative max-w-md">
+        <FaSearch className="pointer-events-none absolute left-3 top-2.5 text-slate-400" />
+        <input
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+          placeholder="Search authors…"
+          className="w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200"
+        />
       </div>
 
       {isLoading ? (

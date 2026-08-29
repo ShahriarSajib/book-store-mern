@@ -35,6 +35,9 @@ Thumbs.db
 server/uploads/*
 !server/uploads/.gitkeep
 
+# Generated embedding cache (rebuilt automatically)
+server/data/embedding-cache.json
+
 # Coverage / tests
 coverage/
 .nyc_output/

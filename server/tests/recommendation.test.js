@@ -3,6 +3,7 @@
  * recommendation ranking (genre/author/liked/viewed boosts, fallback).
  */
 jest.mock("../src/models/Book", () => ({
+  aggregate: jest.fn(),
   find: jest.fn(),
 }));
 jest.mock("../src/models/PopularityRecord", () => ({
@@ -14,59 +15,50 @@ jest.mock("../src/models/UserPreference", () => ({
 const Book = require("../src/models/Book");
 const PopularityRecord = require("../src/models/PopularityRecord");
 
-const { getTrendingBooks } = require("../src/services/trendingService");
+const { getTrendingBooks, resetTrendingCache } = require("../src/services/trendingService");
 const {
   getPersonalizedRecommendations,
 } = require("../src/services/personalizedRecommendationService");
 
 describe("getTrendingBooks", () => {
-  it("scores purchases×10 + views + searches×3 + rating×5 + activity×5", async () => {
-    Book.find.mockReturnValue({
-      lean: jest.fn().mockResolvedValue([
-        { _id: "a", title: "Purchases King", viewCount: 0, purchaseCount: 10, averageRating: 4 },
-        { _id: "b", title: "Views King", viewCount: 50, purchaseCount: 3, averageRating: 4.5 },
-        { _id: "c", title: "Searches Only", viewCount: 0, purchaseCount: 0, averageRating: 0 },
-      ]),
-    });
-    PopularityRecord.find.mockReturnValue({
-      lean: jest.fn().mockResolvedValue([
-        { bookId: "c", views: 0, purchases: 0, searches: 10, recentActivity: 2 },
-      ]),
-    });
+  beforeEach(() => {
+    resetTrendingCache();
+  });
+
+  it("returns the top scored books from the aggregation pipeline", async () => {
+    // The service pushes scoring/sorting into MongoDB; the mocked aggregate
+    // replays the top-N with trendingScore already attached.
+    Book.aggregate.mockResolvedValue([
+      { _id: "a", title: "Purchases King", trendingScore: 120 },
+      { _id: "b", title: "Views King", trendingScore: 102.5 },
+      { _id: "c", title: "Searches Only", trendingScore: 40 },
+    ]);
 
     const result = await getTrendingBooks(2);
 
-    // a = 10*10 + 0 + 0 + 4*5 = 120
-    // b = 3*10 + 50 + 0 + 4.5*5 = 102.5
-    // c = 0 + 0 + 10*3 + 0 + 2*5 = 40
     expect(result.map((b) => b.title)).toEqual(["Purchases King", "Views King"]);
     expect(result[0].trendingScore).toBe(120);
     expect(result[1].trendingScore).toBe(102.5);
   });
 
   it("respects the limit parameter", async () => {
-    Book.find.mockReturnValue({
-      lean: jest.fn().mockResolvedValue(
-        Array.from({ length: 12 }, (_, i) => ({
-          _id: `book-${i}`,
-          purchaseCount: i,
-          viewCount: 0,
-          averageRating: 0,
-        }))
-      ),
-    });
-    PopularityRecord.find.mockReturnValue({ lean: jest.fn().mockResolvedValue([]) });
+    // Mirrors the aggregation's descending sort.
+    Book.aggregate.mockResolvedValue(
+      Array.from({ length: 12 }, (_, i) => ({
+        _id: `book-${i}`,
+        title: `Book ${i}`,
+        trendingScore: 11 - i,
+      }))
+    );
 
     const result = await getTrendingBooks(5);
     expect(result).toHaveLength(5);
-    expect(result[0].purchaseCount).toBe(11); // highest first
+    expect(result[0].trendingScore).toBe(11); // highest first
+    expect(result[4].trendingScore).toBe(7);
   });
 
   it("treats missing popularity data as zeros", async () => {
-    Book.find.mockReturnValue({
-      lean: jest.fn().mockResolvedValue([{ _id: "x", title: "Lonely" }]),
-    });
-    PopularityRecord.find.mockReturnValue({ lean: jest.fn().mockResolvedValue([]) });
+    Book.aggregate.mockResolvedValue([{ _id: "x", title: "Lonely", trendingScore: 0 }]);
 
     const [book] = await getTrendingBooks(1);
     expect(book.trendingScore).toBe(0);

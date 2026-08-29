@@ -33,7 +33,7 @@ jest.mock("../src/services/notificationService", () => ({
 
 const cartService = require("../src/services/cartService");
 const orderService = require("../src/services/orderService");
-const AppError = require("../src/utils/AppError");
+const AppError = require("../src/utils/AppError").default;
 
 function makeCart(overrides = {}) {
   const cart = {

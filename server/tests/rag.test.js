@@ -56,9 +56,9 @@ describe("semanticSearch", () => {
 
   it("ranks by similarity, strips embeddings, and applies filters", async () => {
     const books = [
-      { _id: "b2", title: "Love Letters", embedding: [0, 1] },
-      { _id: "b1", title: "The Martian", embedding: [1, 0] },
-      { _id: "b3", title: "Orbit", embedding: [0.7071, 0.7071] },
+      { _id: "b2", title: "Love Letters", categories: ["Romance"], price: 10, embedding: [0, 1] },
+      { _id: "b1", title: "The Martian", categories: ["Sci-Fi"], price: 20, embedding: [1, 0] },
+      { _id: "b3", title: "Orbit", categories: ["Sci-Fi"], price: 30, embedding: [0.7071, 0.7071] },
     ];
     const lean = jest.fn().mockResolvedValue(books);
     const select = jest.fn(() => ({ lean }));
@@ -72,11 +72,9 @@ describe("semanticSearch", () => {
       maxPrice: 50,
     });
 
-    // Mongo filter combines embedding presence with the provided facets
+    // The catalog is fetched once; facet filtering happens in the app layer.
     expect(Book.find).toHaveBeenCalledWith({
       embedding: { $exists: true, $ne: [] },
-      categories: "Sci-Fi",
-      price: { $gte: 5, $lte: 50 },
     });
 
     expect(results).toHaveLength(2);

@@ -10,7 +10,7 @@ const repo = require("../src/repositories/bookRepository");
 
 // Auth middleware stub: send "x-test-user: <id>:<role>" header to authenticate.
 jest.mock("../src/middleware/auth", () => {
-  const AppError = require("../src/utils/AppError");
+  const AppError = require("../src/utils/AppError").default;
   return {
     protect: (req, _res, next) => {
       const header = req.headers["x-test-user"];
@@ -32,14 +32,14 @@ jest.mock("../src/middleware/auth", () => {
   };
 });
 
-const AppError = require("../src/utils/AppError");
+const AppError = require("../src/utils/AppError").default;
 
 jest.mock("../src/models", () => ({
   User: { updateOne: jest.fn().mockResolvedValue({}) },
 }));
 
-const errorHandler = require("../src/middleware/errorHandler");
-const bookRoutes = require("../src/routes/bookRoutes");
+const errorHandler = require("../src/middleware/errorHandler").default;
+const bookRoutes = require("../src/routes/bookRoutes").default;
 
 function buildApp() {
   const app = express();

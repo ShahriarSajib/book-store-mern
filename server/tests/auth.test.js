@@ -5,7 +5,7 @@ const express = require("express");
 const request = require("supertest");
 
 const { protect } = require("../src/middleware/auth");
-const errorHandler = require("../src/middleware/errorHandler");
+const errorHandler = require("../src/middleware/errorHandler").default;
 
 describe("auth middleware", () => {
   it("returns 401 for an invalid bearer token", async () => {

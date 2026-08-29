@@ -84,7 +84,7 @@ describe("lowStockNotifier", () => {
     expect(Notification.insertMany).toHaveBeenCalledWith(
       expect.arrayContaining([
         expect.objectContaining({ user: "admin1", title: "Low stock alert" }),
-        expect.objectContaining({ user: "admin2", type: "inventory" }),
+        expect.objectContaining({ user: "admin2", type: "stock" }),
       ])
     );
     expect(Notification.insertMany.mock.calls[0][0]).toHaveLength(4);

@@ -13,9 +13,14 @@ import env from "./config/env.js";
 import connectDB from "./config/db.js";
 import socketService from "./services/socketService.js";
 import * as scheduler from "./jobs/scheduler.js";
+import { warmCache } from "./services/semanticSearchService.js";
 
 async function bootstrap() {
   await connectDB();
+
+  // Warm the in-memory embedding cache in the background so the first
+  // semantic search is fast instead of waiting on a full-catalog fetch.
+  warmCache();
 
   const server = http.createServer(app);
   socketService.init(server, env.CLIENT_URL);

@@ -4,7 +4,7 @@
  * Renders the form card inside a glass container with subtle entrance animation.
  */
 import { Link } from "react-router-dom";
-import { FaBook, FaQuoteLeft, FaShieldAlt, FaStar } from "react-icons/fa";
+import { FaQuoteLeft, FaShieldAlt, FaStar } from "react-icons/fa";
 
 const testimonials = [
   {
@@ -39,7 +39,7 @@ export default function AuthShell({ title, subtitle, footer, children }) {
         <aside className="auth-brand">
           <Link to="/" className="auth-brand__logo">
             <span className="auth-brand__logo-mark">
-              <FaBook />
+              <img src="/favicon.svg" alt="BookVerse logo" className="h-10 w-10 rounded-xl" />
             </span>
             <span className="auth-brand__logo-text">BookVerse</span>
           </Link>

@@ -5,7 +5,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
-  FaBook,
   FaFacebookF,
   FaInstagram,
   FaShieldAlt,
@@ -38,7 +37,7 @@ export default function Footer() {
         <div className="footer__brand">
           <div className="flex items-center gap-2">
             <span className="navbar__brand-mark">
-              <FaBook />
+              <img src="/favicon.svg" alt="BookVerse logo" className="h-9 w-9 rounded-xl" />
             </span>
             <span className="text-lg font-extrabold text-ink-900">BookVerse</span>
           </div>

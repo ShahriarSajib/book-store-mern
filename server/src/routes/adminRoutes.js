@@ -43,5 +43,6 @@ router.get("/analytics/recommendations", ctrl.analyticsRecommendations);
 router.use("/recommendations", recommendationAdminRoutes);
 
 router.post("/ai/chat", ctrl.aiChat);
+router.post("/ai/confirm", ctrl.confirmAiAction);
 
 export default router;

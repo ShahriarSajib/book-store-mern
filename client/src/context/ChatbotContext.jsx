@@ -7,6 +7,7 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import chatbotApi from "../services/chatbotApi";
+import adminApi from "../services/adminApi";
 import useAuth from "../hooks/useAuth";
 
 const ChatbotContext = createContext(null);
@@ -22,7 +23,7 @@ function getErrorMessage(err) {
 }
 
 export function ChatbotProvider({ children }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [conversationId, setConversationId] = useState(null);
@@ -50,7 +51,9 @@ export function ChatbotProvider({ children }) {
       setIsTyping(true);
 
       try {
-        const data = await chatbotApi.send(clean, conversationId);
+        const data = isAdmin
+          ? await adminApi.ai.chat(clean, conversationId)
+          : await chatbotApi.send(clean, conversationId);
         setConversationId(data.conversationId);
         const assistantMsg = {
           id: nextId(),
@@ -77,7 +80,7 @@ export function ChatbotProvider({ children }) {
         setIsTyping(false);
       }
     },
-    [conversationId, isAuthenticated]
+    [conversationId, isAuthenticated, isAdmin]
   );
 
   const confirm = useCallback(async () => {
@@ -85,7 +88,9 @@ export function ChatbotProvider({ children }) {
     setIsSending(true);
     setIsTyping(true);
     try {
-      const data = await chatbotApi.confirm(pendingTool.confirmationToken);
+      const data = isAdmin
+        ? await adminApi.ai.confirm(pendingTool.confirmationToken)
+        : await chatbotApi.confirm(pendingTool.confirmationToken);
       setPendingTool(null);
       setMessages((prev) => [
         ...prev,
@@ -99,7 +104,7 @@ export function ChatbotProvider({ children }) {
       setIsSending(false);
       setIsTyping(false);
     }
-  }, [pendingTool]);
+  }, [pendingTool, isAdmin]);
 
   const dismissTool = useCallback(() => {
     setPendingTool(null);

@@ -12,9 +12,17 @@ export const SUGGESTIONS = [
   "My cart",
 ];
 
-export default function ChatComposer({ onSend, isSending = false, disabled = false }) {
+export const ADMIN_SUGGESTIONS = [
+  "Store overview",
+  "Sales for 30 days",
+  "Low stock alert",
+  "Top selling books",
+];
+
+export default function ChatComposer({ onSend, isSending = false, disabled = false, isAdmin = false }) {
   const [text, setText] = useState("");
   const canSend = text.trim().length > 0 && !isSending && !disabled;
+  const suggestions = isAdmin ? ADMIN_SUGGESTIONS : SUGGESTIONS;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -33,7 +41,7 @@ export default function ChatComposer({ onSend, isSending = false, disabled = fal
   return (
     <div>
       <div className="mb-2 flex flex-wrap gap-1.5">
-        {SUGGESTIONS.map((suggestion) => (
+        {suggestions.map((suggestion) => (
           <button
             key={suggestion}
             type="button"

@@ -47,6 +47,8 @@ export const adminApi = {
   ai: {
     chat: (message, conversationId) =>
       api.post("/admin/ai/chat", { message, conversationId }).then((r) => r.data),
+    confirm: (confirmationToken) =>
+      api.post("/admin/ai/confirm", { confirmationToken }).then((r) => r.data),
   },
 };
 

@@ -11,7 +11,7 @@ import * as couponService from "../services/couponService.js";
 import * as orderService from "../services/orderService.js";
 import * as paymentService from "../services/paymentService.js";
 import * as analyticsService from "../services/analyticsService.js";
-import * as chatbotService from "../services/chatbotService.js";
+import * as adminAssistantService from "../services/adminAssistantService.js";
 
 const getDashboard = catchAsync(async (_req, res) => {
   res.json(await adminService.getDashboard());
@@ -102,7 +102,11 @@ const analyticsRecommendations = catchAsync(async (_req, res) => {
 
 // ---- AI Assistant (admin) ----
 const aiChat = catchAsync(async (req, res) => {
-  res.json(await chatbotService.sendMessage(req.user.id, req.body));
+  res.json(await adminAssistantService.sendAdminMessage(req.user.id, req.body));
+});
+
+const confirmAiAction = catchAsync(async (req, res) => {
+  res.json(await adminAssistantService.confirmAdminAction(req.user.id, req.body.confirmationToken));
 });
 
 export {
@@ -127,4 +131,5 @@ export {
   analyticsInventory,
   analyticsRecommendations,
   aiChat,
+  confirmAiAction,
 };

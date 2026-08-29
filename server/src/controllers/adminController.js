@@ -12,6 +12,7 @@ import * as orderService from "../services/orderService.js";
 import * as paymentService from "../services/paymentService.js";
 import * as analyticsService from "../services/analyticsService.js";
 import * as adminAssistantService from "../services/adminAssistantService.js";
+import { exportListPdf } from "../services/adminExportService.js";
 
 const getDashboard = catchAsync(async (_req, res) => {
   res.json(await adminService.getDashboard());
@@ -109,6 +110,14 @@ const confirmAiAction = catchAsync(async (req, res) => {
   res.json(await adminAssistantService.confirmAdminAction(req.user.id, req.body.confirmationToken));
 });
 
+// ---- PDF exports ----
+const exportList = catchAsync(async (req, res) => {
+  const pdf = await exportListPdf(req.params.type);
+  res.setHeader("Content-Type", "application/pdf; charset=utf-8");
+  res.setHeader("Content-Disposition", `attachment; filename="bookverse-${req.params.type}.pdf"`);
+  res.send(pdf);
+});
+
 export {
   getDashboard,
   listUsers,
@@ -132,4 +141,5 @@ export {
   analyticsRecommendations,
   aiChat,
   confirmAiAction,
+  exportList,
 };

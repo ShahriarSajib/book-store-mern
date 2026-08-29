@@ -5,69 +5,17 @@
  *   with the BookVerse logo (rasterized from the SVG via sharp) as a
  *   translucent watermark.
  */
-import path from "node:path";
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import PDFDocument from "pdfkit";
-import sharp from "sharp";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const STORE = {
-  name: "BookVerse",
-  tagline: "Way of Life",
-  email: "hello@bookverse.com",
-  phone: "+1 (555) 012-3456",
-  address: "55 Reader's Row, Book District, Portland, OR 97201",
-};
-
-const C = {
-  brand: "#3B82F6",
-  brandDark: "#1D4ED8",
-  softBlue: "#EFF6FF",
-  ink: "#18181B",
-  gray: "#6B7280",
-  lightGray: "#9CA3AF",
-  soft: "#F8FAFC",
-  border: "#E5E7EB",
-  white: "#FFFFFF",
-};
-
-// Lazily rasterize the brand logo (cached).
-let logoBufferPromise = null;
-function getLogoBuffer() {
-  if (!logoBufferPromise) {
-    const svgPath = path.resolve(__dirname, "../../../client/public/favicon.svg");
-    const svg = readFileSync(svgPath);
-    logoBufferPromise = sharp(svg).resize(320, 320).png().toBuffer();
-  }
-  return logoBufferPromise;
-}
-
-const money = (n) => `$${(Number(n) || 0).toFixed(2)}`;
-const label = (s) =>
-  s ? s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, " ") : "—";
-const fmtDateTime = (d) =>
-  new Date(d).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
+import { BRAND as STORE, PAGE, COLORS as C, getLogoBuffer, drawWatermark, money, label, fmtDateTime } from "./pdfBranding.js";
 
 function ellipsize(s, max = 46) {
   const str = s || "";
   return str.length > max ? `${str.slice(0, max - 1)}…` : str;
 }
 
-function drawWatermark(doc, logo) {
-  const cx = 595.28 / 2;
-  const cy = 420;
-  doc.save();
-  doc.translate(cx, cy);
-  doc.rotate(-28);
-  doc.image(logo, -190, -190, { width: 380, opacity: 0.055 });
-  doc.restore();
-}
-
 function drawHeader(doc, order, logo) {
-  const PW = 595.28;
-  const M = 45;
+  const PW = PAGE.width;
+  const M = PAGE.margin;
 
   // top accent bar
   doc.rect(0, 0, PW, 6).fill(C.brand);

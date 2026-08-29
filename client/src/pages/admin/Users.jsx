@@ -9,6 +9,7 @@ import useAuth from "../../hooks/useAuth";
 import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
 import ConfirmModal from "../../components/ui/ConfirmModal";
+import ExportPdfButton from "../../components/admin/ExportPdfButton";
 import { FaSearch, FaTrash } from "react-icons/fa";
 
 const ROLES = ["customer", "book_manager", "order_manager", "admin"];
@@ -138,6 +139,7 @@ export default function Users() {
             Clear filters
           </Button>
         )}
+        <ExportPdfButton type="users" className="ml-auto" />
       </div>
 
       {isLoading ? (

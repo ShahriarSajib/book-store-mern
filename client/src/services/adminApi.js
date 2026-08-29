@@ -5,6 +5,8 @@ import api from "./axios";
 
 export const adminApi = {
   dashboard: () => api.get("/admin/dashboard").then((r) => r.data),
+  exportPdf: (type) =>
+    api.get(`/admin/export/${type}`, { responseType: "blob" }).then((r) => r.data),
   users: {
     list: (params) => api.get("/admin/users", { params }).then((r) => r.data),
     get: (id) => api.get(`/admin/users/${id}`).then((r) => r.data),

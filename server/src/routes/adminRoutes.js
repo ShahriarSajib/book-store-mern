@@ -13,6 +13,8 @@ const router = Router();
 
 router.use(protect, requireAdmin);
 
+router.get("/export/:type", ctrl.exportList);
+
 router.get("/dashboard", ctrl.getDashboard);
 
 router.get("/users", ctrl.listUsers);

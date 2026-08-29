@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import adminApi from "../../services/adminApi";
 import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
+import ExportPdfButton from "../../components/admin/ExportPdfButton";
 import { formatCurrency } from "../../utils/format";
 
 const LOW_STOCK = 10;
@@ -86,6 +87,7 @@ export default function Inventory() {
           />
           Show low stock only
         </label>
+        <ExportPdfButton type="inventory" />
       </div>
 
       {isLoading ? (

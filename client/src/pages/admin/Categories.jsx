@@ -10,6 +10,7 @@ import Input from "../../components/ui/Input";
 import Spinner from "../../components/ui/Spinner";
 import Modal from "../../components/ui/Modal";
 import ConfirmModal from "../../components/ui/ConfirmModal";
+import ExportPdfButton from "../../components/admin/ExportPdfButton";
 import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 
 const EMPTY_FORM = { name: "", description: "" };
@@ -110,9 +111,12 @@ export default function Categories() {
           <h1 className="text-2xl font-bold text-slate-900">Category management</h1>
           <p className="text-sm text-slate-500">Create, edit and remove catalog categories.</p>
         </div>
-        <Button onClick={openCreate}>
-          <FaPlus /> Add category
-        </Button>
+        <div className="flex items-center gap-2">
+          <ExportPdfButton type="categories" />
+          <Button onClick={openCreate}>
+            <FaPlus /> Add category
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (

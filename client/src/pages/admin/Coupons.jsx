@@ -10,6 +10,7 @@ import Input from "../../components/ui/Input";
 import Spinner from "../../components/ui/Spinner";
 import Modal from "../../components/ui/Modal";
 import ConfirmModal from "../../components/ui/ConfirmModal";
+import ExportPdfButton from "../../components/admin/ExportPdfButton";
 import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 import { formatCurrency, formatDate } from "../../utils/format";
 
@@ -169,9 +170,12 @@ export default function Coupons() {
           <h1 className="text-2xl font-bold text-slate-900">Coupon management</h1>
           <p className="text-sm text-slate-500">Create, edit and remove discount coupons.</p>
         </div>
-        <Button onClick={openCreate}>
-          <FaPlus /> Create coupon
-        </Button>
+        <div className="flex items-center gap-2">
+          <ExportPdfButton type="coupons" />
+          <Button onClick={openCreate}>
+            <FaPlus /> Create coupon
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (

@@ -9,6 +9,7 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Spinner from "../../components/ui/Spinner";
 import Modal from "../../components/ui/Modal";
+import ExportPdfButton from "../../components/admin/ExportPdfButton";
 import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 
 const EMPTY_FORM = { name: "", country: "", website: "" };
@@ -103,9 +104,12 @@ export default function Publishers() {
           <h1 className="text-2xl font-bold text-slate-900">Publisher management</h1>
           <p className="text-sm text-slate-500">Create, edit and remove catalog publishers.</p>
         </div>
-        <Button onClick={openCreate}>
-          <FaPlus /> Add publisher
-        </Button>
+        <div className="flex items-center gap-2">
+          <ExportPdfButton type="publishers" />
+          <Button onClick={openCreate}>
+            <FaPlus /> Add publisher
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (

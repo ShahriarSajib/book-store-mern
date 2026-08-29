@@ -7,6 +7,7 @@ import adminApi from "../../services/adminApi";
 import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
 import Rating from "../../components/ui/Rating";
+import ExportPdfButton from "../../components/admin/ExportPdfButton";
 import { FaTrash } from "react-icons/fa";
 import { formatDate } from "../../utils/format";
 
@@ -52,9 +53,12 @@ export default function Reviews() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Review moderation</h1>
-        <p className="text-sm text-slate-500">Approve, edit or remove customer reviews.</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Review moderation</h1>
+          <p className="text-sm text-slate-500">Approve, edit or remove customer reviews.</p>
+        </div>
+        <ExportPdfButton type="reviews" />
       </div>
 
       {isLoading ? (

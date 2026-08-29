@@ -9,6 +9,7 @@ import { ORDER_STATUS } from "../../config/constants";
 import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
 import ConfirmModal from "../../components/ui/ConfirmModal";
+import ExportPdfButton from "../../components/admin/ExportPdfButton";
 import { FaSearch } from "react-icons/fa";
 import { formatCurrency, formatDate } from "../../utils/format";
 
@@ -124,6 +125,7 @@ export default function Orders() {
             Clear filters
           </Button>
         )}
+        <ExportPdfButton type="orders" className="ml-auto" />
       </div>
 
       {isLoading ? (

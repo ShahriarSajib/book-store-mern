@@ -9,6 +9,7 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Spinner from "../../components/ui/Spinner";
 import Modal from "../../components/ui/Modal";
+import ExportPdfButton from "../../components/admin/ExportPdfButton";
 import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 
 const EMPTY_FORM = { name: "", bio: "", bornYear: "", country: "" };
@@ -107,9 +108,12 @@ export default function Authors() {
           <h1 className="text-2xl font-bold text-slate-900">Author management</h1>
           <p className="text-sm text-slate-500">Create, edit and remove catalog authors.</p>
         </div>
-        <Button onClick={openCreate}>
-          <FaPlus /> Add author
-        </Button>
+        <div className="flex items-center gap-2">
+          <ExportPdfButton type="authors" />
+          <Button onClick={openCreate}>
+            <FaPlus /> Add author
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (

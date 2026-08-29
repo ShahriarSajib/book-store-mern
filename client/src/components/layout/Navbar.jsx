@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   FaBars,
-  FaBook,
   FaBrain,
   FaFire,
   FaMoon,
@@ -67,7 +66,7 @@ export default function Navbar() {
       <div className="navbar__inner">
         <Link to="/" className="navbar__brand" onClick={() => setDrawerOpen(false)}>
           <span className="navbar__brand-mark">
-            <FaBook />
+            <img src="/favicon.svg" alt="BookVerse logo" className="h-9 w-9 rounded-xl" />
           </span>
           <span>BookVerse</span>
         </Link>

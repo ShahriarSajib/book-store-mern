@@ -4,10 +4,21 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import userApi from "../../services/userApi";
+import { notificationApi } from "../../services/notificationApi";
 import Spinner from "../../components/ui/Spinner";
-import { formatCurrency, formatNumber, formatDate } from "../../utils/format";
+import { formatCurrency, formatNumber, formatDate, formatDateTime } from "../../utils/format";
 import { Link } from "react-router-dom";
-import { FaBox, FaCheckCircle, FaClock, FaHeart, FaShoppingBag, FaStar, FaTimesCircle } from "react-icons/fa";
+import {
+  FaBell,
+  FaBox,
+  FaCheckCircle,
+  FaClock,
+  FaHeart,
+  FaShoppingBag,
+  FaStar,
+  FaTimesCircle,
+  FaUser,
+} from "react-icons/fa";
 
 function StatCard({ label, value, icon: Icon, color }) {
   const colors = {
@@ -42,6 +53,11 @@ export default function CustomerDashboard() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["customer", "dashboard"],
     queryFn: userApi.dashboard,
+  });
+
+  const { data: notifData } = useQuery({
+    queryKey: ["notifications", "list"],
+    queryFn: () => notificationApi.list({ limit: 5 }),
   });
 
   if (isLoading) {
@@ -84,37 +100,84 @@ export default function CustomerDashboard() {
       </div>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-slate-800">Recent orders</h3>
-          <Link to="/orders" className="text-xs font-medium text-indigo-600 hover:underline">
-            View all
+        <h3 className="mb-3 text-sm font-semibold text-slate-800">Quick actions</h3>
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          <Link to="/orders" className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700">
+            <FaBox className="mr-2 inline" /> Track order
+          </Link>
+          <Link to="/wishlist" className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700">
+            <FaHeart className="mr-2 inline" /> Wishlist
+          </Link>
+          <Link to="/notifications" className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700">
+            <FaBell className="mr-2 inline" /> Notifications
+          </Link>
+          <Link to="/profile" className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700">
+            <FaUser className="mr-2 inline" /> Profile
           </Link>
         </div>
-        {recentOrders.length === 0 ? (
-          <p className="py-4 text-sm text-slate-400">No orders yet.</p>
-        ) : (
-          <div className="space-y-2">
-            {recentOrders.map((order) => (
-              <Link
-                key={order._id}
-                to={`/orders/${order._id}`}
-                className="flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-slate-50"
-              >
-                <div className="min-w-0">
-                  <p className="font-medium text-slate-800">#{order.orderNumber}</p>
-                  <p className="text-xs text-slate-500">{formatDate(order.createdAt)}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[order.status] || "bg-slate-100 text-slate-600"}`}>
-                    {order.status}
-                  </span>
-                  <span className="font-medium text-slate-700">{formatCurrency(order.total)}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
       </section>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-800">
+              <FaBell className="text-indigo-500" /> Notifications
+            </h3>
+            <Link to="/notifications" className="text-xs font-medium text-indigo-600 hover:underline">
+              Settings
+            </Link>
+          </div>
+          {!notifData || notifData.notifications?.length === 0 ? (
+            <p className="py-4 text-sm text-slate-400">You&apos;re all caught up.</p>
+          ) : (
+            <div className="space-y-2">
+              {notifData.notifications.map((n) => (
+                <div key={n._id} className={`flex items-start justify-between gap-3 rounded-lg px-3 py-2 ${n.read ? "" : "bg-indigo-50"}`}>
+                  <div className="min-w-0">
+                    <p className={`text-sm ${n.read ? "text-slate-700" : "font-medium text-slate-900"}`}>{n.title}</p>
+                    <p className="truncate text-xs text-slate-500">{n.message}</p>
+                    <p className="text-[11px] text-slate-400">{formatDateTime(n.createdAt)}</p>
+                  </div>
+                  {!n.read && <span className="mt-1.5 inline-block h-2 w-2 shrink-0 rounded-full bg-indigo-500" />}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-slate-800">Recent orders</h3>
+            <Link to="/orders" className="text-xs font-medium text-indigo-600 hover:underline">
+              View all
+            </Link>
+          </div>
+          {recentOrders.length === 0 ? (
+            <p className="py-4 text-sm text-slate-400">No orders yet.</p>
+          ) : (
+            <div className="space-y-2">
+              {recentOrders.map((order) => (
+                <Link
+                  key={order._id}
+                  to={`/orders/${order._id}`}
+                  className="flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-slate-50"
+                >
+                  <div className="min-w-0">
+                    <p className="font-medium text-slate-800">#{order.orderNumber}</p>
+                    <p className="text-xs text-slate-500">{formatDate(order.createdAt)}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[order.status] || "bg-slate-100 text-slate-600"}`}>
+                      {order.status}
+                    </span>
+                    <span className="font-medium text-slate-700">{formatCurrency(order.total)}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

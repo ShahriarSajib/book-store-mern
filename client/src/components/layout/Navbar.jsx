@@ -6,7 +6,9 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   FaBars,
+  FaBoxOpen,
   FaBrain,
+  FaChartLine,
   FaFire,
   FaMoon,
   FaShieldAlt,
@@ -20,6 +22,7 @@ import toast from "react-hot-toast";
 import useAuth from "../../hooks/useAuth";
 import { useCartContext } from "../../context/CartContext";
 import { useTheme } from "../../context/ThemeContext";
+import NotificationBell from "../notifications/NotificationBell";
 import Button from "../ui/Button";
 
 const navLink = ({ isActive }) =>
@@ -103,6 +106,8 @@ export default function Navbar() {
             {theme === "dark" ? <FaSun /> : <FaMoon />}
           </button>
 
+          {isAuthenticated && <NotificationBell />}
+
           {isAuthenticated && !isAdmin && (
             <Link
               to="/cart"
@@ -142,14 +147,16 @@ export default function Navbar() {
                     <p className="truncate text-xs text-ink-500">{user.email}</p>
                     <span className="user-menu__role">{user.role}</span>
                   </div>
-                  <Link
-                    to="/profile"
-                    onClick={() => setMenuOpen(false)}
-                    className="user-menu__item"
-                    role="menuitem"
-                  >
-                    <FaUser /> <span className="text-ink-400" />&nbsp;My profile
-                  </Link>
+                  {!isAdmin && (
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setMenuOpen(false)}
+                      className="user-menu__item"
+                      role="menuitem"
+                    >
+                      <FaChartLine className="text-ink-400" /> &nbsp;My dashboard
+                    </Link>
+                  )}
                   {isAdmin && (
                     <Link
                       to="/admin"
@@ -160,6 +167,24 @@ export default function Navbar() {
                       <FaShieldAlt className="text-ink-400" /> Admin panel
                     </Link>
                   )}
+                  {!isAdmin && (
+                    <Link
+                      to="/orders"
+                      onClick={() => setMenuOpen(false)}
+                      className="user-menu__item"
+                      role="menuitem"
+                    >
+                      <FaBoxOpen className="text-ink-400" /> &nbsp;My orders
+                    </Link>
+                  )}
+                  <Link
+                    to="/profile"
+                    onClick={() => setMenuOpen(false)}
+                    className="user-menu__item"
+                    role="menuitem"
+                  >
+                    <FaUser /> <span className="text-ink-400" />&nbsp;My profile
+                  </Link>
                   <button
                     type="button"
                     onClick={handleLogout}
@@ -212,6 +237,19 @@ export default function Navbar() {
             <NavLink to="/admin" className={drawerLink} onClick={() => setDrawerOpen(false)}>
               Admin
             </NavLink>
+          )}
+          {isAuthenticated && !isAdmin && (
+            <>
+              <NavLink to="/dashboard" className={drawerLink} onClick={() => setDrawerOpen(false)}>
+                My dashboard
+              </NavLink>
+              <NavLink to="/orders" className={drawerLink} onClick={() => setDrawerOpen(false)}>
+                My orders
+              </NavLink>
+              <NavLink to="/notifications" className={drawerLink} onClick={() => setDrawerOpen(false)}>
+                Notification settings
+              </NavLink>
+            </>
           )}
           <div className="navbar__drawer-sep" />
           {!isAuthenticated && (

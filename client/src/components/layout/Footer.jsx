@@ -61,7 +61,9 @@ export default function Footer() {
           <div className="mt-3 space-y-2">
             <Link to="/books" className="footer__link">All books</Link>
             <Link to="/trending" className="footer__link">Trending</Link>
-            <Link to="/recommended" className="footer__link">Recommended for you</Link>
+            {!isAdmin && (
+              <Link to="/recommended" className="footer__link">Recommended for you</Link>
+            )}
             <Link to="/ai-search" className="footer__link">AI search</Link>
           </div>
         </div>
@@ -70,8 +72,12 @@ export default function Footer() {
           <h4 className="footer__title">Account</h4>
           <div className="mt-3 space-y-2">
             <Link to="/profile" className="footer__link">My profile</Link>
-            <Link to="/orders" className="footer__link">Orders</Link>
-            <Link to="/cart" className="footer__link">Cart</Link>
+            {!isAdmin && (
+              <Link to="/orders" className="footer__link">Orders</Link>
+            )}
+            {!isAdmin && (
+              <Link to="/cart" className="footer__link">Cart</Link>
+            )}
             {isAdmin && (
               <Link to="/admin" className="footer__link inline-flex items-center gap-1.5">
                 <FaShieldAlt className="text-ink-400" /> Admin

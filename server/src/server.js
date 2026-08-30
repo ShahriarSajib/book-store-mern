@@ -13,14 +13,16 @@ import env from "./config/env.js";
 import connectDB from "./config/db.js";
 import socketService from "./services/socketService.js";
 import * as scheduler from "./jobs/scheduler.js";
-import { warmCache } from "./services/semanticSearchService.js";
+import { warmCache } from "./services/embeddingCatalogService.js";
 
 async function bootstrap() {
   await connectDB();
 
-  // Warm the in-memory embedding cache in the background so the first
-  // semantic search is fast instead of waiting on a full-catalog fetch.
-  warmCache();
+  // Warm the shared in-memory embedding cache. On a fresh load this does the
+  // one-time full-catalog transfer now (before listeners accept traffic) instead
+  // of making the first semantic-search / similar-books request block and time
+  // out. Restarts reuse the on-disk snapshot in about a second.
+  await warmCache();
 
   const server = http.createServer(app);
   socketService.init(server, env.CLIENT_URL);

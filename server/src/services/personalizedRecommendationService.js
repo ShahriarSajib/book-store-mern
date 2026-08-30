@@ -2,6 +2,11 @@ import Book from "../models/Book.js";
 import UserPreference from "../models/UserPreference.js";
 
 async function getPersonalizedRecommendations(userId, limit = 10) {
+  if (userId && typeof userId === "object") {
+    limit = userId.limit ?? limit;
+    userId = userId.userId;
+  }
+
   const preference = await UserPreference.findOne({
     userId,
   }).lean();

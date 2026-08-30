@@ -16,10 +16,7 @@ const getRecommendations = async (req, res) => {
     const limit = Number(req.query.limit) || 10;
 
     const books =
-      await getPersonalizedRecommendations({
-        userId,
-        limit,
-      });
+      await getPersonalizedRecommendations(userId, limit);
 
     return res.status(200).json({
       success: true,

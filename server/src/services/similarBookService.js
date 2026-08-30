@@ -1,44 +1,73 @@
 /**
  * services/similarBookService.js
- *
  * Finds books that are semantically similar to a given book.
+ *
+ * Performance: candidates used to be pulled back from the (remote) database —
+ * embedded vectors included — on every request, which made this endpoint take
+ * seconds and frequently time out. Similar-book lookup now scans the shared
+ * in-memory embedding catalog (see embeddingCatalogService), so requests are
+ * served in milliseconds after the first load.
+ *
+ * Availability: while the embedding catalog is still loading (cold start) the
+ * endpoint never makes the request wait on the database transfer. It serves a
+ * fast, indexed same-category selection instead, and switches to the semantic
+ * (cosine) ranking as soon as the catalog is warm.
  */
-
 import Book from "../models/Book.js";
+import {
+  getCachedBooks,
+  cosineSimilarity,
+} from "./embeddingCatalogService.js";
+
+const METADATA_SELECT =
+  "title subtitle slug authors categories publisher coverImage description " +
+  "price stock averageRating ratingsCount reviewCount isActive";
+
+const priceBounds = (minPrice, maxPrice) => {
+  const min =
+    minPrice !== undefined && minPrice !== ""
+      ? Number(minPrice)
+      : null;
+  const max =
+    maxPrice !== undefined && maxPrice !== ""
+      ? Number(maxPrice)
+      : null;
+  return { min, max };
+};
 
 /**
- * Calculate cosine similarity between two vectors.
- *
- * Formula:
- * cosine(A, B) = (A . B) / (|A| * |B|)
+ * Fast fallback used only while the embedding catalog is unavailable (cold
+ * start). Prefers active, same-category books — a small indexed query without
+ * embeddings — so the section still renders something useful instead of
+ * erroring or timing out.
  */
-function cosineSimilarity(a, b) {
-  if (!Array.isArray(a) || !Array.isArray(b)) {
-    return 0;
+async function fallbackByCategory(
+  sourceBook,
+  { safeLimit, category, min, max }
+) {
+  const query = {
+    _id: { $ne: sourceBook._id },
+    isActive: true,
+  };
+
+  if (category) {
+    query.categories = category;
+  } else if (Array.isArray(sourceBook.categories) &&
+    sourceBook.categories.length > 0) {
+    query.categories = { $in: sourceBook.categories };
   }
 
-  if (a.length !== b.length || a.length === 0) {
-    return 0;
+  if (min !== null || max !== null) {
+    query.price = {};
+    if (min !== null) query.price.$gte = min;
+    if (max !== null) query.price.$lte = max;
   }
 
-  let dotProduct = 0;
-  let magnitudeA = 0;
-  let magnitudeB = 0;
-
-  for (let i = 0; i < a.length; i++) {
-    dotProduct += a[i] * b[i];
-    magnitudeA += a[i] * a[i];
-    magnitudeB += b[i] * b[i];
-  }
-
-  const denominator =
-    Math.sqrt(magnitudeA) * Math.sqrt(magnitudeB);
-
-  if (denominator === 0) {
-    return 0;
-  }
-
-  return dotProduct / denominator;
+  return Book.find(query)
+    .select(METADATA_SELECT)
+    .sort({ averageRating: -1, reviewCount: -1 })
+    .limit(safeLimit)
+    .lean();
 }
 
 /**
@@ -80,62 +109,87 @@ async function findSimilarBooks({
     50
   );
 
-  // Build filters.
-  const filter = {
-    _id: { $ne: sourceBook._id },
-    isActive: true,
-    embedding: { $exists: true, $ne: [] },
-  };
+  const { min, max } = priceBounds(minPrice, maxPrice);
 
-  if (category) {
-    filter.categories = category;
+  const catalog = await getCachedBooks();
+
+  if (!catalog || catalog.length === 0) {
+    // Catalog not ready yet — return fast category-based picks instead of
+    // making the request wait on the (slow) database transfer.
+    return fallbackByCategory(sourceBook, {
+      safeLimit,
+      category,
+      min,
+      max,
+    });
   }
 
-  if (minPrice !== undefined && minPrice !== "") {
-    filter.price = {
-      ...(filter.price || {}),
-      $gte: Number(minPrice),
-    };
-  }
+  const sourceId = String(sourceBook._id);
+  const selectedCategory = category
+    ? String(category)
+    : null;
 
-  if (maxPrice !== undefined && maxPrice !== "") {
-    filter.price = {
-      ...(filter.price || {}),
-      $lte: Number(maxPrice),
-    };
-  }
+  // Calculate similarity in memory against the cached catalog.
+  const results = [];
 
-  // Get candidate books.
-  const candidateBooks = await Book.find(filter)
-    .select(
-      "+embedding title subtitle authors categories publisher " +
-      "coverImage description price stock averageRating " +
-      "ratingsCount reviewCount"
-    )
-    .lean();
+  for (const book of catalog) {
+    if (String(book._id) === sourceId) {
+      continue;
+    }
 
-  // Calculate similarity.
-  const results = candidateBooks.map((book) => {
+    if (book.isActive === false) {
+      continue;
+    }
+
+    if (
+      !Array.isArray(book.embedding) ||
+      book.embedding.length === 0
+    ) {
+      continue;
+    }
+
+    if (
+      selectedCategory &&
+      !(book.categories || []).includes(selectedCategory)
+    ) {
+      continue;
+    }
+
+    const price = Number(book.price);
+    if (min !== null && price < min) {
+      continue;
+    }
+
+    if (max !== null && price > max) {
+      continue;
+    }
+
     const similarity = cosineSimilarity(
       sourceBook.embedding,
       book.embedding
     );
 
-    // Do not return embedding to frontend.
-    delete book.embedding;
-
-    return {
+    results.push({
       ...book,
       similarity: Number(similarity.toFixed(4)),
-    };
-  });
+    });
+  }
 
   // Highest similarity first.
   results.sort(
     (a, b) => b.similarity - a.similarity
   );
 
-  return results.slice(0, safeLimit);
+  // Do not return embedding to frontend;
+  // copies are sliced so the shared cache is never mutated.
+  return results
+    .slice(0, safeLimit)
+    .map((book) => {
+      const { embedding, ...bookWithoutEmbedding } =
+        book;
+
+      return bookWithoutEmbedding;
+    });
 }
 
 export {

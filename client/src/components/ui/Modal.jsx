@@ -1,5 +1,8 @@
 /**
  * components/ui/Modal.jsx — accessible modal with backdrop, ESC, focus trap.
+ * Rendered into a portal on document.body so fixed positioning stays relative
+ * to the viewport (ancestors with transform/filter/backdrop-filter would
+ * otherwise hijack the containing block and shove the dialog off-center).
  * Usage:
  *   <Modal open={isOpen} onClose={() => setIsOpen(false)} title="Confirm">
  *     <p>Are you sure?</p>
@@ -10,6 +13,7 @@
  *   </Modal>
  */
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { FaTimes } from "react-icons/fa";
 
 export default function Modal({ open, onClose, title, children, labelledBy }) {
@@ -43,7 +47,7 @@ export default function Modal({ open, onClose, title, children, labelledBy }) {
 
   const titleId = labelledBy || (title ? "modal-title" : undefined);
 
-  return (
+  return createPortal(
     <>
       <div
         className="modal-overlay"
@@ -72,6 +76,7 @@ export default function Modal({ open, onClose, title, children, labelledBy }) {
         )}
         <div className="modal__body">{children}</div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }

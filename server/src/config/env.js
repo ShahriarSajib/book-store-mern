@@ -56,6 +56,13 @@ const env = {
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+
+  BKASH_BASE_URL: process.env.BKASH_BASE_URL || "https://tokenized.sandbox.bka.sh/v1.2.0-beta",
+  BKASH_APP_KEY: process.env.BKASH_APP_KEY,
+  BKASH_APP_SECRET: process.env.BKASH_APP_SECRET,
+  BKASH_USERNAME: process.env.BKASH_USERNAME,
+  BKASH_PASSWORD: process.env.BKASH_PASSWORD,
+  BKASH_EXCHANGE_RATE_BDT_PER_USD: Number(process.env.BKASH_EXCHANGE_RATE_BDT_PER_USD) || 110,
 };
 
 export default env;

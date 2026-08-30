@@ -66,6 +66,13 @@ export default function OrderDetails() {
 
   const retryPayment = useMutation({
     mutationFn: async () => {
+      if (data?.order?.paymentMethod === "bkash") {
+        const bkashData = await paymentApi.createBkashPayment(id);
+        if (bkashData?.url) {
+          window.location.href = bkashData.url;
+        }
+        return;
+      }
       const sessionData = await paymentApi.createCheckoutSession(id);
       if (sessionData?.url) {
         window.location.href = sessionData.url;
@@ -102,7 +109,7 @@ export default function OrderDetails() {
     (order.status === ORDER_STATUS.PENDING || order.status === ORDER_STATUS.CONFIRMED || order.status === ORDER_STATUS.PROCESSING) &&
     order.paymentStatus !== "paid";
   const canRetryPayment =
-    order.paymentMethod === "card" &&
+    (order.paymentMethod === "card" || order.paymentMethod === "bkash") &&
     order.paymentStatus === "pending" &&
     order.status === "pending";
 

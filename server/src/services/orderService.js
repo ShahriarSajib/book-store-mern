@@ -14,7 +14,7 @@ import { getPagination, buildPageMeta } from "../utils/paginate.js";
 import { generateTrackingNumber } from "../utils/tracking.js";
 
 const CANCELLABLE = ["pending", "confirmed", "processing"];
-const ONLINE_PAYMENT_METHODS = ["card"];
+const ONLINE_PAYMENT_METHODS = ["card", "bkash"];
 
 const SHIPPING_RATE = 3.99;
 const FREE_SHIPPING_THRESHOLD = 50;
@@ -447,10 +447,11 @@ function invoiceRows(order) {
 }
 
 /**
- * Confirm payment for an order (called by Stripe webhook on checkout.session.completed).
+ * Confirm payment for an order (called by the Stripe webhook on
+ * checkout.session.completed, or by the bKash callback/execute handlers).
  * Decrements stock, clears cart, updates payment status.
  */
-async function confirmPayment(orderId, stripeSessionId, stripePaymentIntentId) {
+async function confirmPayment(orderId, stripeSessionId, stripePaymentIntentId, meta = {}) {
   const order = await Order.findById(orderId);
   if (!order) {
     logger.warn("confirmPayment: order not found", { orderId });
@@ -462,6 +463,8 @@ async function confirmPayment(orderId, stripeSessionId, stripePaymentIntentId) {
   order.paidAt = new Date();
   if (stripePaymentIntentId) order.stripePaymentIntentId = stripePaymentIntentId;
   if (stripeSessionId) order.stripeSessionId = stripeSessionId;
+  if (meta.bkashTrxId) order.bkashTrxId = meta.bkashTrxId;
+  if (meta.bkashPaymentId) order.bkashPaymentId = meta.bkashPaymentId;
   await order.save();
 
   // Decrement stock and increment purchase count (deferred from order creation for online payments)

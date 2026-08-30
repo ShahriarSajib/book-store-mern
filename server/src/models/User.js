@@ -80,6 +80,9 @@ const userSchema = new mongoose.Schema(
     },
 
     lastLoginAt: { type: Date },
+
+    bkashAgreementId: { type: String, trim: true },
+    bkashAgreementLinkedAt: { type: Date },
   },
   { timestamps: true }
 );

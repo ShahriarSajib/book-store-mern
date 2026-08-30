@@ -2,8 +2,8 @@
  * pages/customer/Checkout.jsx — address, payment, place order.
  * For card payments, redirects to Stripe Checkout after creating the order.
  */
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import userApi from "../../services/userApi";
@@ -21,10 +21,12 @@ import { formatCurrency } from "../../utils/format";
 const PAYMENT_METHODS = [
   { value: "cash_on_delivery", label: "Cash on delivery" },
   { value: "card", label: "Credit / debit card (Stripe)" },
+  { value: "bkash", label: "bKash" },
 ];
 
 export default function Checkout() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { items, count, subtotal, discount, total, coupon, applyCoupon, isUpdating, clearCart } = useCartContext();
   const [shippingAddressId, setShippingAddressId] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cash_on_delivery");
@@ -54,6 +56,17 @@ export default function Checkout() {
         }
       }
 
+      // If bKash payment, create a bKash payment and redirect to its page
+      if (paymentMethod === "bkash" && orderData?.order?._id) {
+        const bkashData = await paymentApi.createBkashPayment(orderData.order._id);
+        if (bkashData?.url) {
+          // Redirect to the bKash page — a first-time buyer lands on the
+          // one-time wallet linking step, then payment resumes automatically.
+          window.location.href = bkashData.url;
+          return { redirecting: true, bkashLinking: Boolean(bkashData.requiresAgreement) };
+        }
+      }
+
       // Cash on delivery — navigate directly
       clearCart();
       toast.success("Order placed successfully");
@@ -65,6 +78,27 @@ export default function Checkout() {
   });
 
   const addresses = data?.addresses || [];
+
+  // Resume after a bKash wallet-linking callback (server redirects here with
+  // ?bkash=linked|failed&order_id=...).
+  const bkashLinkState = searchParams.get("bkash");
+  const bkashResumeOrderId = searchParams.get("order_id");
+  useEffect(() => {
+    if (bkashLinkState === "linked" && bkashResumeOrderId) {
+      toast.success("Your bKash wallet is linked");
+      setSearchParams({}, { replace: true });
+      paymentApi
+        .createBkashPayment(bkashResumeOrderId)
+        .then((data) => {
+          if (data?.url) window.location.href = data.url;
+          else toast.error("Please place your order again");
+        })
+        .catch(() => toast.error("Could not resume your bKash payment"));
+    } else if (bkashLinkState === "failed") {
+      toast.error("bKash wallet linking was not completed");
+      setSearchParams({}, { replace: true });
+    }
+  }, [bkashLinkState, bkashResumeOrderId, setSearchParams]);
 
   if (items.length === 0) {
     return (
@@ -102,7 +136,11 @@ export default function Checkout() {
       {isRedirecting && (
         <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 text-center">
           <Spinner className="mx-auto mb-3 h-6 w-6 text-blue-600" />
-          <p className="font-medium text-blue-700">Redirecting to Stripe checkout...</p>
+          <p className="font-medium text-blue-700">
+            {placeOrder.data?.bkashLinking
+              ? "Redirecting to bKash to link your wallet..."
+              : "Redirecting to secure checkout..."}
+          </p>
           <p className="text-sm text-blue-600">Please do not close this page.</p>
         </div>
       )}
@@ -205,6 +243,11 @@ export default function Checkout() {
             You will be redirected to Stripe&apos;s secure checkout page to complete payment.
           </p>
         )}
+        {paymentMethod === "bkash" && (
+          <p className="mt-3 text-xs text-ink-400">
+            You will be redirected to bKash&apos;s secure checkout page. First-time buyers link their bKash wallet once (one-time OTP) and are returned here to finish payment.
+          </p>
+        )}
       </section>
 
       <section className="rounded-2xl border border-ink-100 bg-white p-6 shadow-soft">
@@ -255,7 +298,7 @@ export default function Checkout() {
           disabled={isRedirecting}
           className="mt-4"
         >
-          {paymentMethod === "card" ? "Pay with card" : "Place order"} · {formatCurrency(total)}
+          {paymentMethod === "card" || paymentMethod === "bkash" ? "Pay online" : "Place order"} · {formatCurrency(total)}
         </Button>
       </section>
     </form>

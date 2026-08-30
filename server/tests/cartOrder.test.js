@@ -225,6 +225,20 @@ describe("orderService.createOrder pricing", () => {
     expect(cart.save).not.toHaveBeenCalled(); // cart cleared later by webhook
   });
 
+  it("treats bKash as an online payment and defers stock decrement", async () => {
+    const cart = setupCart([{ book: populatedBooks.b1, quantity: 2 }], undefined);
+
+    const { order, isOnlinePayment } = await orderService.createOrder("u1", {
+      paymentMethod: "bkash",
+    });
+
+    expect(isOnlinePayment).toBe(true);
+    expect(order.paymentMethod).toBe("bkash");
+    expect(order.paymentStatus).toBe("pending");
+    expect(Book.updateOne).not.toHaveBeenCalled();
+    expect(cart.save).not.toHaveBeenCalled();
+  });
+
   it("rejects checkout with an empty cart", async () => {
     Cart.findOne.mockReturnValue({ populate: jest.fn(async () => makeCart()) });
     await expect(orderService.createOrder("u1", {})).rejects.toMatchObject({
@@ -338,6 +352,33 @@ describe("orderService.confirmPayment (Stripe webhook path)", () => {
       { user: "u1" },
       expect.anything()
     );
+  });
+
+  it("stores bKash payment + transaction IDs when confirming a bKash order", async () => {
+    Book.updateOne.mockResolvedValue({});
+    Book.find.mockReturnValue({ select: jest.fn().mockResolvedValue([]) });
+    const order = {
+      _id: "o1",
+      user: "u1",
+      orderNumber: "ORD-BK",
+      total: 41.79,
+      paymentStatus: "pending",
+      items: [{ book: "b1", quantity: 1 }],
+      save: jest.fn().mockResolvedValue(undefined),
+    };
+    Order.findById.mockResolvedValue(order);
+    Cart.findOneAndUpdate.mockResolvedValue({});
+
+    const result = await orderService.confirmPayment("o1", null, null, {
+      bkashPaymentId: "TR0011PAY123",
+      bkashTrxId: "BKTX456",
+    });
+
+    expect(result.paymentStatus).toBe("paid");
+    expect(result.bkashPaymentId).toBe("TR0011PAY123");
+    expect(result.bkashTrxId).toBe("BKTX456");
+    expect(Book.updateOne).toHaveBeenCalled();
+    expect(Cart.findOneAndUpdate).toHaveBeenCalled();
   });
 });
 

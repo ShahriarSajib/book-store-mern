@@ -12,7 +12,7 @@ A production-grade online bookstore built on the MERN stack. Semantic search, pe
 - **AI-native catalog** — semantic search (`all-MiniLM-L6-v2` embeddings, 384-dim), similarity recommendations, multi-factor personalized ranking, trending algorithm.
 - **Tool-calling chatbot** — 18 read/write tools (search, cart, wishlist, orders), LLM-driven with regex fallback path and confirmation-gated writes.
 - **RAG** — FAQ knowledge base retrieved and injected into the LLM prompt for grounded answers.
-- **Stripe Checkout + webhooks** with cash-on-delivery fallback.
+- **Payments** — Stripe Checkout + webhooks, **bKash Tokenized Checkout** (sandbox/prod), and cash-on-delivery fallback. Refunds supported for card and bKash.
 - **Real-time** — Socket.IO rooms (`user:{id}`, `admin`, `inventory`) for orders, payments, and stock alerts.
 - **Role-based access** — `customer`, `book_manager`, `order_manager`, `admin` with middleware-enforced permissions.
 - **Background jobs** — low-stock notifier, expiring-coupon sweeper, on-demand embedding rebuild.
@@ -87,7 +87,7 @@ A production-grade online bookstore built on the MERN stack. Semantic search, pe
 | Auth         | JWT (access + refresh), bcrypt |
 | Email        | Nodemailer (SMTP) |
 | AI           | `@xenova/transformers` (local MiniLM), OpenAI-compatible LLM |
-| Payments     | Stripe Checkout + Webhooks |
+| Payments     | Stripe Checkout + Webhooks, bKash Tokenized Checkout |
 | Upload       | Multer (disk) + Sharp |
 | Security     | Helmet, CORS, express-rate-limit, express-validator |
 | Container    | Docker + Docker Compose |
@@ -218,6 +218,10 @@ cp client/.env.example client/.env
 | `PAYMENT_PROVIDER` | `stripe` | Payment backend |
 | `STRIPE_SECRET_KEY` | — | Stripe secret |
 | `STRIPE_WEBHOOK_SECRET` | — | Webhook signing secret |
+| `BKASH_BASE_URL` | `https://tokenized.sandbox.bka.sh/v1.2.0-beta` | bKash tokenized checkout base URL (prod: `https://tokenized.pay.bka.sh/v1.2.0-beta`) |
+| `BKASH_APP_KEY` / `BKASH_APP_SECRET` | — | bKash merchant app credentials |
+| `BKASH_USERNAME` / `BKASH_PASSWORD` | — | bKash merchant panel credentials |
+| `BKASH_EXCHANGE_RATE_BDT_PER_USD` | `110` | USD→BDT rate; bKash only accepts integer BDT amounts |
 | `ADMIN_EMAIL` / `ADMIN_PASSWORD` | — | Seed admin credentials |
 | `LOW_STOCK_JOB_INTERVAL_MS` | `1800000` | Low-stock job (30 min) |
 | `EXPIRING_COUPONS_JOB_INTERVAL_MS` | `3600000` | Coupon sweeper (1 hr) |
@@ -350,8 +354,8 @@ Middleware: `protect`, `requireVerified`, `requireAdmin`, `restrictTo(...roles)`
 3. `/cart` — adjust quantities, apply coupon (percent/fixed)
 4. `/checkout` — shipping address + payment method:
    - **Stripe Card** → redirect to hosted checkout, webhook confirms
+   - **bKash** → one-time wallet linking (agreement, OTP) → bKash's secure checkout → server verifies via Execute + Query Payment and confirms
    - **Cash on Delivery** → order created immediately, stock decremented
-   - **bKash** → placeholder for mobile wallet
 5. Stock validation gates order creation
 
 ### Orders
@@ -576,11 +580,19 @@ Base URL: `http://localhost:5001/api`
 
 ### Payments
 
-| Method | Endpoint                              | Description |
-|--------|---------------------------------------|-------------|
-| POST   | `/payments/create-checkout-session`   | Stripe session |
-| GET    | `/payments/config`                    | Publishable key |
-| POST   | `/payments/webhook`                   | Stripe webhook (raw body) |
+| Method | Endpoint                              | Auth      | Description |
+|--------|---------------------------------------|-----------|-------------|
+| POST   | `/payments/create-checkout-session`   | Auth      | Stripe session |
+| GET    | `/payments/config`                    | Public    | Stripe publishable key |
+| POST   | `/payments/webhook`                   | Public    | Stripe webhook (raw body) |
+| POST   | `/payments/bkash/create`              | Auth      | Create bKash payment → `{ paymentID, url }`; starts agreement flow if no wallet linked | 
+| GET    | `/payments/bkash/callback`            | Public    | bKash payment redirect target; verifies via Execute + Query, confirms |
+| POST   | `/payments/bkash/status`              | Auth      | Verify/confirm by `paymentID` (Query Payment) |
+| POST   | `/payments/bkash/execute`             | Auth      | ExecuteButton flow |
+| POST   | `/payments/bkash/agreement`           | Auth      | Start one-time wallet linking → `{ paymentID, url }` |
+| GET    | `/payments/bkash/agreement`           | Auth      | Whether the user has a linked bKash wallet |
+| DELETE | `/payments/bkash/agreement`           | Auth      | Unlink the stored bKash agreement |
+| GET    | `/payments/bkash/agreement/callback`  | Public    | bKash agreement redirect target; executes + stores agreementID |
 
 ### Reviews
 
@@ -668,7 +680,7 @@ Base URL: `http://localhost:5001/api`
 | `authors`           | name, bio, image, bornYear, country, isActive | Author profiles |
 | `publishers`        | name, slug, country, website, isActive | Publisher profiles |
 | `carts`             | user, items[{book, quantity, price}], coupon | Per-user cart |
-| `orders`            | orderNumber, user, items[], coupon, subtotal, shipping, tax, total, status, paymentStatus, paymentMethod, stripeSessionId, shippingAddress, trackingNumber | Orders |
+| `orders`            | orderNumber, user, items[], coupon, subtotal, shipping, tax, total, status, paymentStatus, paymentMethod, stripeSessionId, stripePaymentIntentId, bkashPaymentId, bkashTrxId, shippingAddress, trackingNumber | Orders |
 | `reviews`           | book, user, rating, title, body, helpfulCount, isApproved | Per-user-per-book reviews |
 | `coupons`           | code, type, value, minOrder, maxDiscount, expiresAt, usageLimit, usedCount, isActive | Discount codes |
 | `conversations`     | user, title, messages[{role, content, books[], tool{}}] | Chat history |
@@ -755,6 +767,7 @@ docker build -t ai-bookstore-client ./client
 - Live LLM API key (OpenAI or compatible)
 - TLS via reverse proxy (nginx / Caddy)
 - Stripe live keys + production webhook endpoint
+- bKash live `BKASH_BASE_URL`, app keys, and merchant credentials (verify callback URL is publicly reachable)
 
 ---
 

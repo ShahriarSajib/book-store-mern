@@ -71,6 +71,8 @@ const orderSchema = new mongoose.Schema(
     },
     stripeSessionId: { type: String, trim: true, index: true },
     stripePaymentIntentId: { type: String, trim: true },
+    bkashPaymentId: { type: String, trim: true, index: true },
+    bkashTrxId: { type: String, trim: true },
     paidAt: { type: Date },
     refundedAt: { type: Date },
     refundReason: { type: String, trim: true, maxlength: 500 },

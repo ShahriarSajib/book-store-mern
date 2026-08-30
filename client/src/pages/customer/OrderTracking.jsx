@@ -212,6 +212,14 @@ export default function OrderTracking() {
                 {t.trackingNumber}
               </span>
             </div>
+            {t.trackingProvider && (
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-ink-500">Carrier</span>
+                <span className="text-sm font-medium text-ink-700">
+                  {t.trackingProvider}
+                </span>
+              </div>
+            )}
             {t.shippingAddress && (
               <div className="border-t border-ink-100 pt-3">
                 <p className="text-sm font-semibold text-ink-800">

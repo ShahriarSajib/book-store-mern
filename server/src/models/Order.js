@@ -76,7 +76,9 @@ const orderSchema = new mongoose.Schema(
     refundReason: { type: String, trim: true, maxlength: 500 },
 
     shippingAddress: { type: addressSnapshotSchema, required: true },
-    trackingNumber: { type: String, trim: true },
+    trackingNumber: { type: String, trim: true, index: { sparse: true, unique: true } },
+    trackingProvider: { type: String, trim: true, maxlength: 50 },
+    shippedAt: { type: Date },
     notes: { type: String, trim: true, maxlength: 1000 },
 
     cancelledAt: { type: Date },

@@ -11,6 +11,7 @@ import socketService from "./socketService.js";
 import * as cartService from "./cartService.js";
 import logger from "../utils/logger.js";
 import { getPagination, buildPageMeta } from "../utils/paginate.js";
+import { generateTrackingNumber } from "../utils/tracking.js";
 
 const CANCELLABLE = ["pending", "confirmed", "processing"];
 const ONLINE_PAYMENT_METHODS = ["card"];
@@ -39,6 +40,23 @@ function generateOrderNumber() {
   ].join("");
   const rand = crypto.randomBytes(3).toString("hex").toUpperCase();
   return `ORD-${date}-${rand}`;
+}
+
+/**
+ * Save an order, regenerating the tracking number once if the (sparse, unique)
+ * tracking index ever reports a collision. Collisions are astronomically rare
+ * given the 32^12 space, so a single retry is more than enough.
+ */
+async function saveOrderWithTrackingRetry(order) {
+  try {
+    return await order.save();
+  } catch (error) {
+    if (error?.code === 11000 && order.trackingNumber) {
+      order.trackingNumber = generateTrackingNumber();
+      return order.save();
+    }
+    throw error;
+  }
 }
 
 async function resolveShippingAddress(userId, payload) {
@@ -257,21 +275,22 @@ async function getTracking(userId, orderId) {
         if (i === 0) statusSteps[i].date = order.createdAt;
         else if (i === 1) statusSteps[i].date = order.status === "confirmed" ? order.updatedAt : order.paidAt || null;
         else if (i === 2) statusSteps[i].date = order.status === "processing" ? order.updatedAt : null;
-        else if (i === 3) statusSteps[i].date = order.status === "shipped" ? order.updatedAt : null;
+        else if (i === 3) statusSteps[i].date = order.status === "shipped" ? (order.shippedAt || order.updatedAt) : null;
         else if (i === 4) statusSteps[i].date = order.status === "delivered" ? order.updatedAt : null;
       }
     }
     if (currentIdx >= 3) {
-      statusSteps[3].date = statusSteps[3].date || order.updatedAt;
+      statusSteps[3].date = statusSteps[3].date || order.shippedAt || order.updatedAt;
     }
     if (currentIdx >= 4) {
       statusSteps[4].date = statusSteps[4].date || order.updatedAt;
     }
   }
 
+  const shippedAt = order.shippedAt || order.updatedAt;
   const estimatedDelivery =
     order.status === "shipped"
-      ? new Date(new Date(order.updatedAt).getTime() + 7 * 24 * 60 * 60 * 1000)
+      ? new Date(new Date(shippedAt).getTime() + 7 * 24 * 60 * 60 * 1000)
       : order.status === "delivered"
         ? order.updatedAt
         : null;
@@ -280,6 +299,7 @@ async function getTracking(userId, orderId) {
     orderNumber: order.orderNumber,
     status: order.status,
     trackingNumber: order.trackingNumber || null,
+    trackingProvider: order.trackingProvider || null,
     shippingAddress: order.shippingAddress,
     statusSteps,
     estimatedDelivery,
@@ -340,11 +360,23 @@ async function updateStatus(orderId, patch) {
   const order = await Order.findById(orderId);
   if (!order) throw new AppError("Order not found", 404, "NOT_FOUND");
   const oldStatus = order.status;
-  const allowed = ["status", "paymentStatus", "trackingNumber"];
+  const allowed = ["status", "paymentStatus", "trackingNumber", "trackingProvider"];
   allowed.forEach((field) => {
     if (patch[field] !== undefined) order[field] = patch[field];
   });
-  await order.save();
+
+  // The moment an order ships, assign a tracking number if one isn't already
+  // set (e.g. admin entered a real courier number). Idempotent: never
+  // overwrites an existing number or re-stamps the shippedAt date.
+  if (order.status === "shipped") {
+    order.shippedAt = order.shippedAt || new Date();
+    if (!order.trackingNumber) {
+      order.trackingNumber = generateTrackingNumber();
+      order.trackingProvider = order.trackingProvider || "Standard Post";
+    }
+  }
+
+  await saveOrderWithTrackingRetry(order);
   if (patch.status && patch.status !== oldStatus) {
     const user = await User.findById(order.user).select("name email");
     order.user = user;

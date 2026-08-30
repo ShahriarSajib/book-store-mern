@@ -27,7 +27,7 @@ function orderStatusUpdateTemplate(order, oldStatus) {
       <h2 style="color:#4f46e5">Order status update</h2>
       <p>Hi ${order.user?.name || "there"},</p>
       <p>Your order <strong>#${order.orderNumber}</strong> status has changed from <em>${oldStatus}</em> to <strong>${order.status}</strong>.</p>
-      ${order.status === "shipped" && order.trackingNumber ? `<p><strong>Tracking:</strong> ${order.trackingNumber}</p>` : ""}
+      ${order.status === "shipped" && order.trackingNumber ? `<p><strong>Tracking${order.trackingProvider ? ` (${order.trackingProvider})` : ""}:</strong> ${order.trackingNumber}</p>` : ""}
       <p style="color:#777;font-size:12px">If you have any questions, please contact support.</p>
     </div>`,
   };

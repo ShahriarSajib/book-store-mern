@@ -149,7 +149,7 @@
     background-image: linear-gradient(135deg, var(--accent-500), var(--accent-700));
   }
   .btn-accent:hover { filter: brightness(1.08); box-shadow: var(--shadow-lg); transform: translateY(-1px); }
-  .btn-sm { @apply px-3 py-1.5 text-sm; }
+  .btn-sm { @apply px-3 py-2 text-sm; }
   .btn-lg { @apply px-5 py-2.5 text-base; }
   .btn-block { @apply w-full; }
 
@@ -296,10 +296,12 @@
     @apply fixed left-1/2 top-1/2 z-[70] w-[92vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/40 bg-white p-6;
     box-shadow: var(--shadow-xl);
     animation: modal-pop 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    max-height: 85vh;
+    overflow-y: auto;
   }
   .modal__header { @apply mb-3 flex items-center justify-between; }
   .modal__title { @apply text-lg font-bold text-ink-900; }
-  .modal__close { @apply inline-flex h-8 w-8 items-center justify-center rounded-full text-ink-500 hover:bg-ink-100; }
+  .modal__close { @apply inline-flex h-10 w-10 items-center justify-center rounded-full text-ink-500 hover:bg-ink-100; }
   .modal__body { @apply text-sm text-ink-700; }
   .modal__footer { @apply mt-5 flex justify-end gap-2; }
 
@@ -310,10 +312,11 @@
     box-shadow: 0 1px 0 rgba(5, 150, 105, 0.06), 0 12px 30px -22px rgba(15, 23, 42, 0.25);
   }
   .navbar__inner {
-    @apply mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6;
+    @apply mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-2 px-3 sm:gap-3 sm:px-6;
   }
   .navbar__brand {
     @apply inline-flex items-center gap-2 text-lg font-extrabold tracking-tight text-ink-900;
+    min-width: 0;
   }
   .navbar__brand-mark {
     @apply inline-flex h-9 w-9 items-center justify-center rounded-xl text-white;
@@ -321,7 +324,7 @@
     box-shadow: 0 8px 18px -8px rgba(5, 150, 105, 0.55);
   }
   .navbar__link {
-    @apply relative inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-ink-700 transition-colors hover:bg-sand hover:text-ink-900;
+    @apply relative inline-flex items-center justify-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium text-ink-700 transition-colors hover:bg-sand hover:text-ink-900 sm:px-3;
   }
   .navbar__link.is-active {
     @apply bg-sand text-ink-900;
@@ -338,7 +341,7 @@
     @apply ml-1 inline-flex items-center rounded-full bg-gradient-to-r from-brand-600 to-accent-600 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white shadow-sm shadow-brand-700/30;
   }
   .navbar__menu { @apply hidden items-center gap-1 md:flex; }
-  .navbar__actions { @apply flex items-center gap-2; }
+  .navbar__actions { @apply flex shrink-0 items-center gap-1 sm:gap-2; }
   .navbar__burger {
     @apply inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink-700 hover:bg-sand hover:text-ink-900 md:hidden;
   }
@@ -823,6 +826,12 @@
     box-shadow: 0 8px 18px -8px rgba(5, 150, 105, 0.6);
   }
   .home-card:hover .home-card__cta { opacity: 100; transform: translateY(0); }
+
+  /* Touch devices: no hover, so always show the CTA so it's discoverable */
+  @media (hover: none) {
+    .home-card__overlay { opacity: 1; background: linear-gradient(to top, rgba(6, 78, 59, 0.55), transparent 70%); }
+    .home-card__cta { opacity: 1; transform: translateY(0); }
+  }
   .home-card__rating {
     @apply absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-ivory/95 px-2 py-0.5 text-xs font-bold text-brand-700 backdrop-blur;
   }

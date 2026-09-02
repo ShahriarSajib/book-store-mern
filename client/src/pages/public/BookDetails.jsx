@@ -85,7 +85,7 @@ export default function BookDetails() {
 
       <div className="grid gap-8 md:grid-cols-[320px_1fr]">
         <div>
-          <div className="flex aspect-[2/3] items-center justify-center overflow-hidden rounded-2xl border border-ink-100 bg-ink-50 shadow-soft">
+          <div className="mx-auto flex max-w-xs aspect-[2/3] items-center justify-center overflow-hidden rounded-2xl border border-ink-100 bg-ink-50 shadow-soft sm:mx-0">
             {book.coverImage ? (
               <img
                 src={book.coverImage}

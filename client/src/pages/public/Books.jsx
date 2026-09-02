@@ -5,6 +5,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { FaSlidersH, FaTimes } from "react-icons/fa";
 import bookApi from "../../services/bookApi";
 import SearchBar from "../../components/books/SearchBar";
 import BookSort from "../../components/books/BookSort";
@@ -30,6 +31,7 @@ export default function Books() {
   const [searchParams, setSearchParams] = useSearchParams();
   const filters = parseParams(searchParams);
   const [query, setQuery] = useState(filters.q);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const updateParams = (patch) => {
     const next = new URLSearchParams(searchParams);
@@ -86,15 +88,28 @@ export default function Books() {
       />
 
       <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
-        <aside>
-          <div className="lg:sticky lg:top-24">
-            <BookFilters
-              facets={facets}
-              category={filters.category}
-              author={filters.author}
-              inStock={filters.inStock}
-              onChange={(patch) => updateParams(patch)}
-            />
+        <aside className="lg:block">
+          <button
+            type="button"
+            onClick={() => setFiltersOpen((v) => !v)}
+            className="mb-3 inline-flex w-full items-center justify-between rounded-xl border border-ink-200 bg-white px-4 py-2.5 text-sm font-medium text-ink-700 shadow-sm lg:hidden"
+            aria-expanded={filtersOpen}
+          >
+            <span className="inline-flex items-center gap-2">
+              <FaSlidersH className="text-brand-600" /> Filters
+            </span>
+            {filtersOpen ? <FaTimes /> : null}
+          </button>
+          <div className={filtersOpen ? "block" : "hidden lg:block"}>
+            <div className="lg:sticky lg:top-24">
+              <BookFilters
+                facets={facets}
+                category={filters.category}
+                author={filters.author}
+                inStock={filters.inStock}
+                onChange={(patch) => updateParams(patch)}
+              />
+            </div>
           </div>
         </aside>
 

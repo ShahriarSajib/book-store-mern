@@ -71,7 +71,7 @@ export default function Profile() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">My profile</h1>
           <p className="text-sm text-slate-500">Manage your account details and security.</p>
@@ -80,8 +80,8 @@ export default function Profile() {
       </div>
 
       {!user.isEmailVerified && (
-        <div className="flex items-center justify-between gap-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <div className="flex min-w-0 items-center gap-3">
             <FaExclamationTriangle className="text-amber-500" />
             <div>
               <p className="text-sm font-medium text-amber-800">Email not verified</p>

@@ -74,11 +74,11 @@ export default function Navbar() {
   return (
     <header className="navbar">
       <div className="navbar__inner">
-        <Link to="/" className="navbar__brand" onClick={() => setDrawerOpen(false)}>
+        <Link to="/" className="navbar__brand shrink-0" onClick={() => setDrawerOpen(false)}>
           <span className="navbar__brand-mark">
             <img src="/favicon.svg" alt="BookVerse logo" className="h-9 w-9 rounded-xl" />
           </span>
-          <span>BookVerse</span>
+          <span className="hidden min-[420px]:inline">BookVerse</span>
         </Link>
 
         <nav className="navbar__menu" aria-label="Primary">

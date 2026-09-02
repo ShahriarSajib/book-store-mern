@@ -41,7 +41,7 @@ export default function CartItem({ item, onUpdate, onRemove, disabled }) {
           type="button"
           disabled={disabled}
           onClick={() => onUpdate?.(Math.max(1, qty - 1))}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-ink-200 text-ink-600 transition-colors hover:bg-ink-100 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-ink-200 text-ink-600 transition-colors hover:bg-ink-100 disabled:cursor-not-allowed disabled:opacity-50"
           aria-label="Decrease quantity"
         >
           <FaMinus />
@@ -51,7 +51,7 @@ export default function CartItem({ item, onUpdate, onRemove, disabled }) {
           type="button"
           disabled={disabled}
           onClick={() => onUpdate?.(qty + 1)}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-ink-200 text-ink-600 transition-colors hover:bg-ink-100 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-ink-200 text-ink-600 transition-colors hover:bg-ink-100 disabled:cursor-not-allowed disabled:opacity-50"
           aria-label="Increase quantity"
         >
           <FaPlus />

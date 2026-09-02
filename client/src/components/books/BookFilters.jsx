@@ -68,12 +68,12 @@ export default function BookFilters({ facets = {}, category, author, inStock, on
             role="switch"
             aria-checked={Boolean(inStock)}
             onClick={() => update({ inStock: inStock ? "" : "true" })}
-            className={`relative h-6 w-11 rounded-full transition-colors ${
+            className={`relative h-7 w-12 rounded-full transition-colors ${
               inStock ? "bg-brand-600" : "bg-ink-200"
             }`}
           >
             <span
-              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+              className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${
                 inStock ? "translate-x-5" : "translate-x-0.5"
               }`}
             />

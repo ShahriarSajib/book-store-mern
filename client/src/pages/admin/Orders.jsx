@@ -99,7 +99,7 @@ export default function Orders() {
                 setPage(1);
               }}
               placeholder="Search order number…"
-              className="w-64 rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200"
+              className="w-full min-w-0 sm:w-64 rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200"
             />
           </div>
         </form>

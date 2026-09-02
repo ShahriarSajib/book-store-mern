@@ -19,7 +19,7 @@ export default function Pagination({ page, pages, onChange }) {
   if (end < pages) items.push(pages);
 
   return (
-    <nav className="flex items-center justify-center gap-1.5" aria-label="Pagination">
+    <nav className="flex flex-wrap items-center justify-center gap-1.5" aria-label="Pagination">
       <button
         type="button"
         className="btn btn-secondary px-2.5 py-1.5"

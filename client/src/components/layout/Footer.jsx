@@ -109,7 +109,7 @@ export default function Footer() {
       <div className="footer__bottom">
         <div className="footer__bottom-inner">
           <p>© {new Date().getFullYear()} BookVerse : Way of Life</p>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <span className="inline-flex items-center gap-1">
               Made with <FaHeart className="text-rose-500" /> for readers by Nonchalants
             </span>

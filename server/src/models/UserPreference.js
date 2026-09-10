@@ -19,19 +19,33 @@ const userPreferenceSchema = new mongoose.Schema(
       default: [],
     },
 
-    viewedBooks: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Book",
+    viewedBooks: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Book",
+        },
+      ],
+      default: [],
+      validate: {
+        validator: (v) => v.length <= 50,
+        message: "viewedBooks cannot exceed 50 entries",
       },
-    ],
+    },
 
-    likedBooks: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Book",
+    likedBooks: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Book",
+        },
+      ],
+      default: [],
+      validate: {
+        validator: (v) => v.length <= 50,
+        message: "likedBooks cannot exceed 50 entries",
       },
-    ],
+    },
   },
   {
     timestamps: true,

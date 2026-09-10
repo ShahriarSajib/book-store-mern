@@ -36,13 +36,26 @@ async function run() {
     });
   }
 
-  // Persist a notification per admin so the alert survives reconnects.
+  // Persist a notification per admin — skip if an unread stock alert
+  // for the same book already exists (avoids duplicate accumulation).
   try {
     const admins = await User.find({ role: "admin", isActive: true }).select("_id").lean();
     if (admins.length > 0) {
-      await Notification.insertMany(
-        admins.flatMap((admin) =>
-          lowStockBooks.map((book) => ({
+      const existingAlerts = await Notification.find({
+        type: "stock",
+        read: false,
+      })
+        .select("user data.bookId")
+        .lean();
+
+      const existingSet = new Set(
+        existingAlerts.map((a) => `${a.user}-${a.data?.bookId}`)
+      );
+
+      const newNotifications = admins.flatMap((admin) =>
+        lowStockBooks
+          .filter((book) => !existingSet.has(`${admin._id}-${String(book._id)}`))
+          .map((book) => ({
             user: admin._id,
             type: "stock",
             title: "Low stock alert",
@@ -50,8 +63,11 @@ async function run() {
             link: `/admin/books?search=${encodeURIComponent(book.title)}`,
             data: { bookId: String(book._id), stock: book.stock },
           }))
-        )
       );
+
+      if (newNotifications.length > 0) {
+        await Notification.insertMany(newNotifications);
+      }
     }
   } catch (err) {
     logger.warn("[job:lowStockNotifier] failed to persist notifications", { error: err.message });

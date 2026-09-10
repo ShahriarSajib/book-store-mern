@@ -29,6 +29,8 @@ const recommendationLogSchema = new mongoose.Schema(
   }
 );
 
+recommendationLogSchema.index({ createdAt: 1 }, { expireAfterSeconds: 14 * 24 * 60 * 60 });
+
 export default mongoose.model(
   "RecommendationLog",
   recommendationLogSchema

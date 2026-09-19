@@ -36,37 +36,38 @@ async function run() {
     });
   }
 
-  // Persist a notification per admin — skip if an unread stock alert
-  // for the same book already exists (avoids duplicate accumulation).
+  // Persist a notification per admin and keep at most ONE stock alert per
+  // book+admin (upsert). The old logic only deduplicated against *unread*
+  // notifications, so the moment an admin marked an alert as read the next
+  // run re-inserted it — notifications (and storage) grew forever. Upserting
+  // on { user, type, "data.bookId" } makes this idempotent regardless of
+  // read state; the message/stock simply refresh on each run.
   try {
     const admins = await User.find({ role: "admin", isActive: true }).select("_id").lean();
     if (admins.length > 0) {
-      const existingAlerts = await Notification.find({
-        type: "stock",
-        read: false,
-      })
-        .select("user data.bookId")
-        .lean();
-
-      const existingSet = new Set(
-        existingAlerts.map((a) => `${a.user}-${a.data?.bookId}`)
+      const ops = admins.flatMap((admin) =>
+        lowStockBooks.map((book) => ({
+          updateOne: {
+            filter: {
+              user: admin._id,
+              type: "stock",
+              "data.bookId": String(book._id),
+            },
+            update: {
+              $set: {
+                title: "Low stock alert",
+                message: `"${book.title}" has only ${book.stock} unit(s) left`,
+                link: `/admin/books?search=${encodeURIComponent(book.title)}`,
+                data: { bookId: String(book._id), stock: book.stock },
+              },
+            },
+            upsert: true,
+          },
+        }))
       );
 
-      const newNotifications = admins.flatMap((admin) =>
-        lowStockBooks
-          .filter((book) => !existingSet.has(`${admin._id}-${String(book._id)}`))
-          .map((book) => ({
-            user: admin._id,
-            type: "stock",
-            title: "Low stock alert",
-            message: `"${book.title}" has only ${book.stock} unit(s) left`,
-            link: `/admin/books?search=${encodeURIComponent(book.title)}`,
-            data: { bookId: String(book._id), stock: book.stock },
-          }))
-      );
-
-      if (newNotifications.length > 0) {
-        await Notification.insertMany(newNotifications);
+      if (ops.length > 0) {
+        await Notification.bulkWrite(ops, { ordered: false });
       }
     }
   } catch (err) {

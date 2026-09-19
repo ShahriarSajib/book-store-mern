@@ -29,6 +29,7 @@ async function run() {
   await db.createCollection("notifications");
   await db.collection("notifications").createIndex({ user: 1, read: 1 });
   await db.collection("notifications").createIndex({ user: 1, createdAt: -1 });
+  await db.collection("notifications").createIndex({ user: 1, type: 1, "data.bookId": 1 });
   await db.collection("notifications").createIndex({ createdAt: 1 }, { expireAfterSeconds: 14 * 24 * 60 * 60 });
   console.log("[drop] notifications collection recreated with indexes.");
 

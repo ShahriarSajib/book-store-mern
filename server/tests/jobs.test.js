@@ -18,7 +18,7 @@ const Coupon = require("../src/models/Coupon");
 
 jest.mock("../src/models/Book", () => ({ find: jest.fn() }));
 jest.mock("../src/models/User", () => ({ find: jest.fn() }));
-jest.mock("../src/models/Notification", () => ({ insertMany: jest.fn(), create: jest.fn() }));
+jest.mock("../src/models/Notification", () => ({ bulkWrite: jest.fn(), create: jest.fn() }));
 const Book = require("../src/models/Book");
 const User = require("../src/models/User");
 const Notification = require("../src/models/Notification");
@@ -69,7 +69,7 @@ describe("lowStockNotifier", () => {
     User.find.mockReturnValue({
       select: jest.fn(() => ({ lean: jest.fn().mockResolvedValue([{ _id: "admin1" }, { _id: "admin2" }]) })),
     });
-    Notification.insertMany.mockResolvedValue([]);
+    Notification.bulkWrite.mockResolvedValue({});
 
     const result = await lowStockNotifier.run();
 
@@ -80,14 +80,16 @@ describe("lowStockNotifier", () => {
     // both channels alerted per book
     expect(socketService.emitToAdmins).toHaveBeenCalledTimes(2);
     expect(socketService.emitToInventory).toHaveBeenCalledTimes(2);
-    // one persisted notification per admin per book (2×2)
-    expect(Notification.insertMany).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({ user: "admin1", title: "Low stock alert" }),
-        expect.objectContaining({ user: "admin2", type: "stock" }),
-      ])
-    );
-    expect(Notification.insertMany.mock.calls[0][0]).toHaveLength(4);
+    // one upsert per admin per book (2×2)
+    expect(Notification.bulkWrite).toHaveBeenCalledWith(expect.any(Array), { ordered: false });
+    const ops = Notification.bulkWrite.mock.calls[0][0];
+    expect(ops).toHaveLength(4);
+    ops.forEach((op) => {
+      // upsert keyed on user + bookId so a read alert can never regenerate
+      expect(op.updateOne.upsert).toBe(true);
+      expect(op.updateOne.filter.type).toBe("stock");
+      expect(op.updateOne.filter["data.bookId"]).toBeTruthy();
+    });
     expect(result.alerted).toBe(2);
   });
 

@@ -1,5 +1,4 @@
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5001";
+import apiBase from "../../config/api";
 
 export const semanticSearch = async ({
   query,
@@ -25,11 +24,16 @@ export const semanticSearch = async ({
     params.append("maxPrice", maxPrice);
   }
 
-  const response = await fetch(
-    `${API_URL}/api/semantic-search?${params.toString()}`
-  );
+  let response;
+  try {
+    response = await fetch(
+      `${apiBase}/semantic-search?${params.toString()}`
+    );
+  } catch {
+    throw new Error("Network error — could not reach the server");
+  }
 
-  const data = await response.json();
+  const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
     throw new Error(

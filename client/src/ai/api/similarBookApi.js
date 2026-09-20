@@ -1,6 +1,4 @@
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  "http://localhost:5001";
+import apiBase from "../../config/api";
 
 export async function getSimilarBooks(
   bookId,
@@ -27,11 +25,16 @@ export async function getSimilarBooks(
     params.set("maxPrice", maxPrice);
   }
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/similar-books/${bookId}?${params.toString()}`
-  );
+  let response;
+  try {
+    response = await fetch(
+      `${apiBase}/similar-books/${bookId}?${params.toString()}`
+    );
+  } catch {
+    throw new Error("Network error — could not reach the server");
+  }
 
-  const data = await response.json();
+  const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
     throw new Error(

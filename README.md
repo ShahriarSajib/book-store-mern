@@ -2,7 +2,7 @@
 
 A production-grade online bookstore built on the MERN stack. Semantic search, personalized recommendations, a tool-calling AI assistant, Stripe payments, real-time notifications, and a complete admin panel — all behind a responsive Tailwind UI.
 
-**Live demo:** https://book-store-mern.vercel.app
+**Live demo:** https://book-store-mern-pearl-omega.vercel.app
 **Repository:** https://github.com/ShahriarSajib/book-store-mern
 
 ---
@@ -231,9 +231,8 @@ cp client/.env.example client/.env
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `VITE_API_BASE_URL` | `http://localhost:5001/api` | API base |
+| `VITE_API_BASE_URL` | `http://localhost:5001/api` | API base. The Socket.IO host is **derived** from this by stripping the trailing `/api` — there is no separate socket env var. |
 | `VITE_CHAT_STREAMING` | `true` | Stream chatbot replies |
-| `VITE_SOCKET_URL` | `http://localhost:5001` | Socket.IO endpoint |
 
 ---
 
@@ -722,6 +721,23 @@ Scheduler features: `setInterval`-based with overlap protection, `unref()` timer
 ---
 
 ## Deployment
+
+### Live deployment
+
+| | URL |
+|---|---|
+| **App (client)** | https://book-store-mern-pearl-omega.vercel.app |
+| **API (server)** | https://bookverse-hegxc4cxfhgecgcy.centralindia-01.azurewebsites.net/api |
+
+The client is deployed on Vercel and the Express API on Azure App Service
+(Central India). The API base is injected at **build** time through
+`VITE_API_BASE_URL` in the Vercel project settings, so changing the API
+host requires a redeploy — it is not read at runtime. The Socket.IO host is
+derived from the same variable by stripping the trailing `/api`.
+
+Because the two apps live on different hosts, the API's CORS allow-list
+(`CLIENT_URL`) must include the Vercel domain, and the client must be
+built with the `/api` suffix included in `VITE_API_BASE_URL`.
 
 ### Local development
 ```bash

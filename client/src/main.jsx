@@ -8,7 +8,21 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
 import { SocketProvider } from "./context/SocketContext.jsx";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
+import baseURL from "./config/api";
 import "./styles/index.css";
+
+// Warm the connection to the API host. The client and the API are served from
+// different origins in production, so this saves a TCP+TLS round trip on the
+// first API call. The host is environment-specific, so it has to be resolved
+// at runtime — a static <link> in index.html would point at the wrong host.
+const API_ORIGIN = baseURL.replace(/\/api\/?$/, "");
+if (API_ORIGIN && API_ORIGIN !== window.location.origin) {
+  const preconnect = document.createElement("link");
+  preconnect.rel = "preconnect";
+  preconnect.href = API_ORIGIN;
+  preconnect.crossOrigin = "anonymous";
+  document.head.appendChild(preconnect);
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {

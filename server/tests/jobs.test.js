@@ -7,7 +7,7 @@ jest.mock("../src/services/socketService", () => ({
   emitToAdmins: jest.fn(),
   emitToInventory: jest.fn(),
   isLowStock: jest.fn(() => false),
-  LOW_STOCK_THRESHOLD: 5,
+  LOW_STOCK_THRESHOLD: 2,
 }));
 const socketService = require("../src/services/socketService");
 

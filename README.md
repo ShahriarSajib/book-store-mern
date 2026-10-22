@@ -225,7 +225,7 @@ cp client/.env.example client/.env
 | `ADMIN_EMAIL` / `ADMIN_PASSWORD` | — | Seed admin credentials |
 | `LOW_STOCK_JOB_INTERVAL_MS` | `1800000` | Low-stock job (30 min) |
 | `EXPIRING_COUPONS_JOB_INTERVAL_MS` | `3600000` | Coupon sweeper (1 hr) |
-| `LOW_STOCK_THRESHOLD` | `5` | Books at/below this trigger alerts |
+| `LOW_STOCK_THRESHOLD` | `2` | Books at/below this trigger alerts |
 
 ### Client — `client/.env`
 

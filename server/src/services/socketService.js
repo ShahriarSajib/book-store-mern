@@ -5,11 +5,12 @@
 import { Server } from "socket.io";
 import { verifyAccessToken } from "../utils/jwt.js";
 import { User } from "../models/index.js";
+import env from "../config/env.js";
 import logger from "../utils/logger.js";
 
 let io = null;
 
-const LOW_STOCK_THRESHOLD = 5;
+const LOW_STOCK_THRESHOLD = env.LOW_STOCK_THRESHOLD;
 
 function init(httpServer, corsOrigin) {
   io = new Server(httpServer, {

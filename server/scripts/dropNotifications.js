@@ -34,15 +34,24 @@ async function run() {
   console.log("[drop] notifications collection recreated with indexes.");
 
   // Report sizes
+  // NOTE: collStats with `scale: 1024` returns sizes in KB, so converting to
+  // MB means dividing by 1024 once — not twice (the old code mislabelled GB as MB).
   console.log("\n[collection sizes]:");
   for (const name of ["notifications", "books", "users", "authors", "categories"]) {
     try {
       const stats = await db.command({ collStats: name, scale: 1024 });
-      console.log(`  ${name}: ${stats.count} docs, ${(stats.size / 1024).toFixed(2)} MB`);
+      console.log(
+        `  ${name}: ${stats.count} docs, data ${(stats.size / 1024).toFixed(2)} MB, index ${(stats.totalIndexSize / 1024).toFixed(2)} MB`
+      );
     } catch (e) {
       console.log(`  ${name}: error`);
     }
   }
+
+  const dbStats = await db.stats();
+  console.log(
+    `\n[db totals]: data ${(dbStats.dataSize / 1048576).toFixed(2)} MB, storage ${(dbStats.storageSize / 1048576).toFixed(2)} MB`
+  );
 
   await mongoose.disconnect();
   console.log("\n[drop] Done.");

@@ -11,7 +11,7 @@ import env from "../config/env.js";
 import logger from "../utils/logger.js";
 
 async function run() {
-  const threshold = Number(env.LOW_STOCK_THRESHOLD) || 5;
+  const threshold = Number(env.LOW_STOCK_THRESHOLD) || 2;
 
   const lowStockBooks = await Book.find({
     isActive: true,

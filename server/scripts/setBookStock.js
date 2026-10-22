@@ -21,7 +21,7 @@ if (!MONGO_URI) {
 const MIN_STOCK = Number(process.env.BOOK_STOCK_MIN) || 10;
 const MAX_STOCK = Number(process.env.BOOK_STOCK_MAX) || 150;
 const BATCH_SIZE = 500;
-const LOW_STOCK_THRESHOLD = Number(process.env.LOW_STOCK_THRESHOLD) || 5;
+const LOW_STOCK_THRESHOLD = Number(process.env.LOW_STOCK_THRESHOLD) || 2;
 
 function randomStock() {
   return Math.floor(MIN_STOCK + Math.random() * (MAX_STOCK - MIN_STOCK + 1));
@@ -56,18 +56,17 @@ async function run() {
     return;
   }
 
-  const cursor = books.find({}, { projection: { _id: 1 } }).batchSize(BATCH_SIZE);
+  // Pull the ids up front instead of streaming them. Interleaving
+  // cursor.hasNext() with cursor.next() races with the driver's internal
+  // prefetch and fails on Atlas with "cursor id ... is already in use".
+  const ids = await books.find({}, { projection: { _id: 1 } }).toArray();
   let batchCount = 0;
   let updated = 0;
 
-  while (true) {
-    const docs = [];
-    while (docs.length < BATCH_SIZE && cursor.hasNext()) {
-      docs.push(await cursor.next());
-    }
-    if (docs.length === 0) break;
+  for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+    const chunk = ids.slice(i, i + BATCH_SIZE);
 
-    const ops = docs.map((doc) => ({
+    const ops = chunk.map((doc) => ({
       updateOne: {
         filter: { _id: doc._id },
         update: { $set: { stock: randomStock() } },
@@ -76,10 +75,9 @@ async function run() {
 
     const res = await books.bulkWrite(ops, { ordered: false });
     updated += res.modifiedCount;
-    batchCount += docs.length;
+    batchCount += chunk.length;
 
     console.log(`[stock] ${batchCount}/${total} processed (updated: ${res.modifiedCount})`);
-    if (docs.length < BATCH_SIZE) break;
   }
 
   const remainingLow = await books.countDocuments({

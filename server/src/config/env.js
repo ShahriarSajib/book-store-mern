@@ -32,6 +32,11 @@ const env = {
   RATE_LIMIT_MAX: Number(process.env.RATE_LIMIT_MAX) || 300,
   CHAT_RATE_LIMIT_MAX: Number(process.env.CHAT_RATE_LIMIT_MAX) || 30,
 
+  // Inventory alerting. Books with stock <= this value are treated as
+  // low stock by the notifier job AND by the socket service, so both read
+  // from here to stay in sync.
+  LOW_STOCK_THRESHOLD: Number(process.env.LOW_STOCK_THRESHOLD) || 2,
+
   LLM_PROVIDER: process.env.LLM_PROVIDER || "openai",
   LLM_API_KEY: process.env.LLM_API_KEY,
   LLM_MODEL: process.env.LLM_MODEL || "gpt-4o-mini",
